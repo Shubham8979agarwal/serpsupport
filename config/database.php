@@ -66,12 +66,12 @@ return [
 
         'pgsql' => [
             'driver' => 'pgsql',
-            'url' => env('DATABASE_URL','postgres://root:jDU8NV3Vg3JVWelS1QEoRjS5nbMW60Pq@dpg-cpeb9d7109ks73et3n3g-a/serpdb'),
-            'host' => env('DB_HOST', 'dpg-cpeb9d7109ks73et3n3g-a'),
+            'url' => env('DATABASE_URL','postgres://u8viimltdisn9h:p57a53ebeb204442cf30bca0cfa896fde328a07dc86e71c440224c8877eac2d4b@c5hilnj7pn10vb.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/d8iopbh791c6ul'),
+            'host' => env('DB_HOST', 'cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com'),
             'port' => env('DB_PORT', '5432'),
-            'database' => env('DB_DATABASE', 'serpdb'),
-            'username' => env('DB_USERNAME', 'root'),
-            'password' => env('DB_PASSWORD', 'jDU8NV3Vg3JVWelS1QEoRjS5nbMW60Pq'),
+            'database' => env('DB_DATABASE', 'c5hilnj7pn10vb'),
+            'username' => env('DB_USERNAME', 'u8viimltdisn9h'),
+            'password' => env('DB_PASSWORD', 'p57a53ebeb204442cf30bca0cfa896fde328a07dc86e71c440224c8877eac2d4b'),
             'charset' => 'utf8',
             'prefix' => '',
             'prefix_indexes' => true,
