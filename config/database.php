@@ -67,9 +67,9 @@ return [
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL','postgres://u8viimltdisn9h:p57a53ebeb204442cf30bca0cfa896fde328a07dc86e71c440224c8877eac2d4b@c5hilnj7pn10vb.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/d8iopbh791c6ul'),
-            'host' => env('DB_HOST', 'cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com'),
+            'host' => env('DB_HOST', 'c5hilnj7pn10vb.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com'),
             'port' => env('DB_PORT', '5432'),
-            'database' => env('DB_DATABASE', 'c5hilnj7pn10vb'),
+            'database' => env('DB_DATABASE', 'd8iopbh791c6ul'),
             'username' => env('DB_USERNAME', 'u8viimltdisn9h'),
             'password' => env('DB_PASSWORD', 'p57a53ebeb204442cf30bca0cfa896fde328a07dc86e71c440224c8877eac2d4b'),
             'charset' => 'utf8',
