@@ -15,12 +15,12 @@ return new class extends Migration
     {
         Schema::create('websites', function (Blueprint $table) {
             $table->id();
-            $table->string('user_id');
-            $table->string('website_id');
-            $table->string('website_niche');
-            $table->string('website_url');
-            $table->longText('website_description');
-            $table->string('website_uploader_email');
+            $table->string('user_id')->nullable();
+            $table->string('website_id')->nullable();
+            $table->string('website_niche')->nullable();
+            $table->string('website_url')->nullable();
+            $table->longText('website_description')->nullable();
+            $table->string('website_uploader_email')->nullable();
             //$table->rememberToken();
             $table->timestamps();
         });
