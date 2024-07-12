@@ -20,6 +20,7 @@ class Backlink extends Authenticatable
     protected $fillable = [
         'from_user_id',
         'to_user_id',
+        'forwhich_user_url',
         'website_id',
         'website_url',
         'website_niche',

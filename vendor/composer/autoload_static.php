@@ -588,6 +588,8 @@ class ComposerStaticInitfe33f98a750b8c5a51b30c78bd3fab21
         'App\\Http\\Middleware\\TrustProxies' => __DIR__ . '/../..' . '/app/Http/Middleware/TrustProxies.php',
         'App\\Http\\Middleware\\ValidateSignature' => __DIR__ . '/../..' . '/app/Http/Middleware/ValidateSignature.php',
         'App\\Http\\Middleware\\VerifyCsrfToken' => __DIR__ . '/../..' . '/app/Http/Middleware/VerifyCsrfToken.php',
+        'App\\Models\\Backlink' => __DIR__ . '/../..' . '/app/Models/Backlink.php',
+        'App\\Models\\Outlink' => __DIR__ . '/../..' . '/app/Models/Outlink.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
         'App\\Models\\UserVerify' => __DIR__ . '/../..' . '/app/Models/UserVerify.php',
         'App\\Models\\Website' => __DIR__ . '/../..' . '/app/Models/Website.php',

@@ -18,6 +18,7 @@ class Website extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'user_id',
         'website_id',
         'website_niche',
         'website_url',

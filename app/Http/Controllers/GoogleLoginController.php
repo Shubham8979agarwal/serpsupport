@@ -60,76 +60,139 @@ class GoogleLoginController extends Controller
         return view('frontend.dashboard.addwebsite',$data);
     }
 
-    public function createbacklinks(){  //this function calls every hour//
+    public function backlinks($forwhich_user_url){
+        $forwhich_user_url = decrypt($forwhich_user_url);
         $data['data'] = Auth::user();
-        $a = User::all();
-        $pairs = array();
-        for ($i = 0; $i < count($a) - 1; $i++) {
-            $getarray = $a[$i]->toArray();
-            $pairs[] = $getarray['id'] . "," . $getarray['id']+1;
-            $getfirstuserdata = User::where('id',$getarray['id'])->get()->toArray();
-            $getseconduserdata = User::where('id',$getarray['id']+1)->get()->toArray();
-            $getfirstuserwebsites = Website::where('website_uploader_email',$getarray['email'])->get()->toArray();
-            foreach($getfirstuserwebsites as $send) {
-            $inserts = array_unique(array());
-            $checkifalreadyexists = Backlink::where('website_url',$send['website_url'])->get()->toArray();
-            if(empty($checkifalreadyexists) || (!$checkifalreadyexists)){
-                $inserts[] = [ 'from_user_id' => $getarray['id'],
-                'to_user_id' =>$getarray['id']+1 , 
-                'website_id' => $send['website_id'] , 
-                'website_url' => $send['website_url'],
-                'website_niche' => $send['website_niche'], 
-                'website_description' => $send['website_description'] , 
-                'status' => "not_accepted_yet",
-            ];
-            //dd($inserts);
-            $createbackink =DB::table('backlinks')->insert($inserts);
-            }else{
-                //echo "Backlink already created";
-            }
-            }
-        }
-    }
-
-    public function backlinks($id){
-        $id = decrypt($id);
-        $data['data'] = Auth::user();
-        $data['retrieve'] = DB::table('websites')->where('website_id',$id)->get();
+        $data['backlink_data'] = DB::table('backlinks')->where('forwhich_user_url',$forwhich_user_url)->get()->toArray();
         return view('frontend.dashboard.backlinks',$data);
     }
 
-    public function outlinks($id){
-        $id = decrypt($id);
+    public function outlinks($forwhich_user_url){
+        $forwhich_user_url = decrypt($forwhich_user_url);
         $data['data'] = Auth::user();
-        $data['retrieve'] = DB::table('websites')->where('website_id',$id)->get();
+        $data['outlink_data'] = DB::table('outlinks')->where('forwhich_user_url',$forwhich_user_url)->get()->toArray();
         return view('frontend.dashboard.outlinks',$data);
     }
 
-    public function deletewebsite($id){
-        $id = decrypt($id);
-        $deletereq = DB::delete('delete from websites where website_id = ?',[$id]);
-        return redirect('account-settings')->with('message','Website Deleted Successfully');
+    public function createbacklinks(){  //this function calls 5 minutes//   
+        $data['data'] = Auth::user();
+        $getverified_users = User::where('is_email_verified', '1')->get();
+
+        $checkarray = [];
+        foreach ($getverified_users as $check) {
+            $websites = Website::where('website_uploader_email', $check->email)->get()->toArray();
+            if (!empty($websites)) {
+                $checkarray[] = [
+                    'user_id' => $check->id,  // Assuming 'id' is the user_id field
+                    'websites' => $websites,
+                ];
+            }
+        }
+
+        $pairs = [];
+        for ($i = 2; $i < count($checkarray); $i++) {
+            $currentUserId = $checkarray[$i]['user_id'];
+            $previousUserId = $checkarray[$i - 2]['user_id'];
+
+            $pairs[] = $currentUserId . "," . $previousUserId;
+
+            $currentWebsites = $checkarray[$i]['websites'];
+            $previousWebsites = $checkarray[$i - 2]['websites'];
+
+            $inserts = [];
+            foreach ($currentWebsites as $currentWebsite) {
+                    foreach ($previousWebsites as $previousWebsite) {
+                        $checkIfAlreadyExists = Backlink::where('website_url', $previousWebsite['website_url'])->exists();
+                        if (!$checkIfAlreadyExists) {
+                        $inserts[] = [
+                            'from_user_id' => $currentUserId,
+                            'to_user_id' => $previousUserId,
+                            'forwhich_user_url' => $currentWebsite['website_url'],
+                            'website_id' => $currentWebsite['website_id'],
+                            'website_url' => $previousWebsite['website_url'],
+                            'website_niche' => $currentWebsite['website_niche'],
+                            'website_description' => $currentWebsite['website_description'],
+                            'status' => "not_accepted_yet",
+                        ];
+                    }
+                }
+            }
+
+            if (!empty($inserts)) {
+                // Insert data into the database
+                DB::beginTransaction();
+                try {
+                    DB::table('backlinks')->insert($inserts);
+                    DB::commit();
+                } catch (\Exception $e) {
+                    DB::rollback();
+                    // Handle the exception (e.g., log it, throw it)
+                    // Example: throw new \Exception("Error inserting data: " . $e->getMessage());
+                }
+            }
+        }
+        //dd($pairs);
     }
 
-    public function push_website(Request $request){
-        $numberOfwebsite = Website::where('website_uploader_email',Auth::user()->email)->count();
-        if($numberOfwebsite<10){
-            $request->validate([
-            'website_niche' => 'required',
-            'website_url' => 'required',
-            'website_description' => 'required',
-         ]);
-        $data = $request->all();
-        if(str_word_count($data['website_description'])>250){
-           return back()->with('error_message', 'Failed! The website description exceeds 250 words.'); 
+    public function createoutlinks(){  //this function calls 5 minutes//
+
+        $data['data'] = Auth::user();
+        $getverified_users = User::where('is_email_verified', '1')->get();
+
+        $checkarray = [];
+        foreach ($getverified_users as $check) {
+            $websites = Website::where('website_uploader_email', $check->email)->get()->toArray();
+            if (!empty($websites)) {
+                $checkarray[] = [
+                    'user_id' => $check->id,  // Assuming 'id' is the user_id field
+                    'websites' => $websites,
+                ];
+            }
         }
-        $data['website_id'] = Str::random(10);
-        $data['website_uploader_email'] = Auth::user()->email;
-        $pushwebsitetodatabse = Website::create($data);
-        return redirect('account-settings')->with('message', 'Website Added Successfully ...');
-        }else{
-            return back()->with('error_message', 'You can add Max 10 websites');
+
+        $pairs = [];
+        for ($i = 0; $i < count($checkarray) - 1; $i++) {
+            $currentUserId = $checkarray[$i]['user_id'];
+            $nextUserId = $checkarray[$i + 1]['user_id'];
+
+            $pairs[] = $currentUserId . "," . $nextUserId;
+
+            $currentWebsites = $checkarray[$i]['websites'];
+            $nextWebsites = $checkarray[$i + 1]['websites'];
+
+            $inserts = [];
+            foreach ($currentWebsites as $currentWebsite) {
+                $checkIfAlreadyExists = Outlink::where('website_url', $currentWebsite['website_url'])->exists();
+                if (!$checkIfAlreadyExists) {
+                    foreach ($nextWebsites as $nextWebsite) {
+                        $inserts[] = [
+                            'from_user_id' => $currentUserId,
+                            'to_user_id' => $nextUserId,
+                            'forwhich_user_url' => $nextWebsite['website_url'],
+                            'website_id' => $currentWebsite['website_id'],
+                            'website_url' => $currentWebsite['website_url'],
+                            'website_niche' => $currentWebsite['website_niche'],
+                            'website_description' => $currentWebsite['website_description'],
+                            'status' => "not_accepted_yet",
+                        ];
+                    }
+                }
+            }
+
+            if (!empty($inserts)) {
+                // Insert data into the database
+                DB::beginTransaction();
+                try {
+                    DB::table('outlinks')->insert($inserts);
+                    DB::commit();
+                } catch (\Exception $e) {
+                    DB::rollback();
+                    // Handle the exception (e.g., log it, throw it)
+                    // Example: throw new \Exception("Error inserting data: " . $e->getMessage());
+                }
+            }
         }
+        //dd($pairs);
     }
 
     public function redirectToGoogle()

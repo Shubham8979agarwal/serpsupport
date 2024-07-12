@@ -104,5 +104,27 @@
            "scrollX": true
        });
     </script>
+    <script type="text/javascript">
+      function callUrlbacklink() {
+          fetch("{{ route('create-backlinks')}}")
+              .then(response => response.json())
+              .then(data => console.log(data))
+              .catch(error => console.error('Error:', error));
+      }
+
+      callUrlbacklink();
+      setInterval(callUrlbacklink, 60000);
+
+      // Function to call the URL
+      function callUrloutlink() {
+          fetch("{{ route('create-outlinks')}}")
+              .then(response => response.json())
+              .then(data => console.log(data))
+              .catch(error => console.error('Error:', error));
+      }
+
+      callUrloutlink();
+      setInterval(callUrloutlink, 60000);
+    </script>
   </body>
 </html>

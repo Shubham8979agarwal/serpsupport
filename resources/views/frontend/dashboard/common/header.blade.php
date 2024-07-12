@@ -103,12 +103,12 @@
                    <div class="collapse" id="submenu<?php echo $i++ ?>">
                      <ul class="nav nav-collapse">
                        <li>
-                         <a href="/backlinks/{{ encrypt($websites->website_id) }}">
+                         <a href="/backlinks/{{ encrypt($websites->website_url) }}">
                            <span class="sub-item">Backlinks</span>
                          </a>
                        </li>
                        <li>
-                         <a href="/outlinks/{{ encrypt($websites->website_id) }}">
+                         <a href="/outlinks/{{ encrypt($websites->website_url) }}">
                            <span class="sub-item">Outlinks</span>
                          </a>
                        </li>

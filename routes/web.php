@@ -45,9 +45,19 @@ Route::group(['middleware' => ['auth']], function()
 { 
 Route::get('/account-settings', [GoogleLoginController::class, 'accountsettings'])->name('account-settings');
 Route::get('/addwebsite', [GoogleLoginController::class, 'addwebsite'])->name('addwebsite');
+
+Route::get('/create-outlinks', [GoogleLoginController::class, 'createoutlinks'])->name('create-outlinks');
+
 Route::get('/create-backlinks', [GoogleLoginController::class, 'createbacklinks'])->name('create-backlinks');
-Route::get('/backlinks/{id}', [GoogleLoginController::class, 'backlinks'])->name('backlinks');
-Route::get('/outlinks/{id}', [GoogleLoginController::class, 'outlinks'])->name('outlinks');
+
+Route::get('/backlinks/{forwhich_user_url}', [GoogleLoginController::class, 'backlinks'])->name('backlinks');
+
+//Route::get('/backlinks', [GoogleLoginController::class, 'backlinks'])->name('backlinks');
+
+Route::get('/outlinks/{forwhich_user_url}', [GoogleLoginController::class, 'outlinks'])->name('outlinks');
+
+//Route::get('/outlinks', [GoogleLoginController::class, 'outlinks'])->name('outlinks');
+
 Route::post('push-website', [GoogleLoginController::class, 'push_website'])->name('push-website');
 Route::get('delete-website/{id}', [GoogleLoginController::class, 'deletewebsite'])->name('delete-website');
 Route::get('signout', [GoogleLoginController::class, 'signout'])->name('signout');
