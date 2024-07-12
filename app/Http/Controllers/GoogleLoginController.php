@@ -60,6 +60,33 @@ class GoogleLoginController extends Controller
         return view('frontend.dashboard.addwebsite',$data);
     }
 
+    public function deletewebsite($id){
+        $id = decrypt($id);
+        $deletereq = DB::delete('delete from websites where website_id = ?',[$id]);
+        return redirect('account-settings')->with('message','Website Deleted Successfully');
+    }
+
+    public function push_website(Request $request){
+        $numberOfwebsite = Website::where('website_uploader_email',Auth::user()->email)->count();
+        if($numberOfwebsite<10){
+            $request->validate([
+            'website_niche' => 'required',
+            'website_url' => 'required',
+            'website_description' => 'required',
+         ]);
+        $data = $request->all();
+        if(str_word_count($data['website_description'])>250){
+           return back()->with('error_message', 'Failed! The website description exceeds 250 words.'); 
+        }
+        $data['website_id'] = Str::random(10);
+        $data['website_uploader_email'] = Auth::user()->email;
+        $pushwebsitetodatabse = Website::create($data);
+        return redirect('account-settings')->with('message', 'Website Added Successfully ...');
+        }else{
+            return back()->with('error_message', 'You can add Max 10 websites');
+        }
+    }
+    
     public function backlinks($forwhich_user_url){
         $forwhich_user_url = decrypt($forwhich_user_url);
         $data['data'] = Auth::user();
