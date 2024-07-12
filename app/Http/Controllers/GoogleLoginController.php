@@ -79,6 +79,7 @@ class GoogleLoginController extends Controller
            return back()->with('error_message', 'Failed! The website description exceeds 250 words.'); 
         }
         $data['website_id'] = Str::random(10);
+        $data['user_id'] = Auth::user()->id;
         $data['website_uploader_email'] = Auth::user()->email;
         $pushwebsitetodatabse = Website::create($data);
         return redirect('account-settings')->with('message', 'Website Added Successfully ...');
@@ -86,7 +87,7 @@ class GoogleLoginController extends Controller
             return back()->with('error_message', 'You can add Max 10 websites');
         }
     }
-    
+
     public function backlinks($forwhich_user_url){
         $forwhich_user_url = decrypt($forwhich_user_url);
         $data['data'] = Auth::user();
