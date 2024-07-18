@@ -16,6 +16,7 @@ use App\Models\Outlink;
 use Mail;
 use Illuminate\Support\Str;
 use DB;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Crypt;
 
 class GoogleLoginController extends Controller

@@ -110,8 +110,6 @@
                   <ul class="nav">
                      @foreach($getwebsites as $websites)
                      <?php
-                        use Illuminate\Contracts\Encryption\DecryptException;
-                        use Illuminate\Support\Facades\Crypt;
                         try {
                               $lastSegment = Crypt::decryptString(request()->segment(count(request()->segments())));
                            } catch (DecryptException $e) {
