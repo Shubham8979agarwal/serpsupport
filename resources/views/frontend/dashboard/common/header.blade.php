@@ -104,9 +104,8 @@
                   <?php
                      $currentUrl = url()->current();
                      $getwebsites = DB::table('websites')->where('website_uploader_email', Auth::user()->email)->get();
-                     //$lastSegment = new Illuminate\Encryption\Encrypter($ls);
-                     //$lastSegment = decrypt(request()->segment(count(request()->segments())));
-                     $lastSegment = decrypt(request()->segment(count(request()->segments())));
+                     $ls = request()->segment(count(request()->segments()));
+                     $lastSegment = decryptData($ls);
                      ?>
                   @if(count($getwebsites) > 0)
                   <ul class="nav">
