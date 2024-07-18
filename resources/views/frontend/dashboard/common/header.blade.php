@@ -104,7 +104,14 @@
                   <?php
                      $currentUrl = url()->current();
                      $getwebsites = DB::table('websites')->where('website_uploader_email', Auth::user()->email)->get();
-                     $lastSegment = \Crypt::decrypt(request()->segment(count(request()->segments())));
+                        use Illuminate\Contracts\Encryption\DecryptException;
+                        use Illuminate\Support\Facades\Crypt;
+                        try {
+                              $lastSegment = Crypt::decryptString(request()->segment(count(request()->segments())));
+                           } catch (DecryptException $e) {
+                              //
+                           }
+                     //$lastSegment = \Crypt::decrypt(request()->segment(count(request()->segments())));
                      ?>
                   @if(count($getwebsites) > 0)
                   <ul class="nav">
