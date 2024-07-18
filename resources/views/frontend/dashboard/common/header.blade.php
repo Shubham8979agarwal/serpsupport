@@ -104,7 +104,7 @@
                   <?php
                      $currentUrl = url()->current();
                      $getwebsites = DB::table('websites')->where('website_uploader_email', Auth::user()->email)->get();
-                     $lastSegment = request()->segment(count(request()->segments()));
+                     $lastSegment = Crypt::decrypt(request()->segment(count(request()->segments())));
                      ?>
                   @if(count($getwebsites) > 0)
                   <ul class="nav">
@@ -114,7 +114,7 @@
                         $encryptedUrl = encrypt($websites->website_url);
                         $backlinkUrl = url("/backlinks/" . $encryptedUrl);
                         $outlinkUrl = url("/outlinks/" . $encryptedUrl);
-                        $isActive = $lastSegment == encrypt($websites->website_url);
+                        $isActive = $lastSegment == $websites->website_url;
                         $submenuId = "submenu" . $loop->iteration;
                         ?>
                      <li class="nav-item @if($isActive) active submenu @endif" id="item{{ $websiteId }}">
