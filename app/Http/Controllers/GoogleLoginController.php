@@ -17,7 +17,6 @@ use Mail;
 use Illuminate\Support\Str;
 use DB;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Contracts\Encryption\DecryptException;
 
 class GoogleLoginController extends Controller
 {
