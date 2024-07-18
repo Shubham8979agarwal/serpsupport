@@ -37,7 +37,7 @@
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" />
       <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.css" />
-      
+
       <style type="text/css">
          li.nav-item.account-settings{
          position: fixed;
@@ -77,7 +77,6 @@
             <div class="logo-header" data-background-color="dark">
                <a href="#" class="logo" style="color:#FFF!important">
                   SerpSupport Portal
-                  <!-- <img src="{{ url('dashboard_assets/img/kaiadmin/logo_light.svg') }}" alt="navbar brand" class="navbar-brand" height="20"/> -->
                </a>
                <div class="nav-toggle">
                   <button class="btn btn-toggle toggle-sidebar">
@@ -106,7 +105,6 @@
                      $currentUrl = url()->current();
                      $getwebsites = DB::table('websites')->where('website_uploader_email', Auth::user()->email)->get();
                      $lastSegment = decrypt(request()->segment(count(request()->segments())));
-                     //print_r($lastSegment);
                      ?>
                   @if(count($getwebsites) > 0)
                   <ul class="nav">
