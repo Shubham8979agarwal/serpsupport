@@ -104,22 +104,17 @@
                   <?php
                      $currentUrl = url()->current();
                      $getwebsites = DB::table('websites')->where('website_uploader_email', Auth::user()->email)->get();
-                     //$lastSegment = \Crypt::decrypt(request()->segment(count(request()->segments())));
+                     $lastSegment = request()->segment(count(request()->segments()));
                      ?>
                   @if(count($getwebsites) > 0)
                   <ul class="nav">
                      @foreach($getwebsites as $websites)
                      <?php
-                        try {
-                              $lastSegment = Crypt::decryptString(request()->segment(count(request()->segments())));
-                           } catch (DecryptException $e) {
-                              //
-                           }
                         $websiteId = $websites->id;
                         $encryptedUrl = encrypt($websites->website_url);
                         $backlinkUrl = url("/backlinks/" . $encryptedUrl);
                         $outlinkUrl = url("/outlinks/" . $encryptedUrl);
-                        $isActive = $lastSegment == $websites->website_url;
+                        $isActive = $lastSegment == encrypt($websites->website_url);
                         $submenuId = "submenu" . $loop->iteration;
                         ?>
                      <li class="nav-item @if($isActive) active submenu @endif" id="item{{ $websiteId }}">
