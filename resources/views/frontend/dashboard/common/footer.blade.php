@@ -35,6 +35,9 @@
     <!-- jQuery Scrollbar -->
     <script src="{{ url('dashboard_assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js') }}"></script>
 
+    <!-- Moment JS -->
+    <script src="{{ url('dashboard_assets/js/plugin/moment/moment.min.js') }}"></script>
+
     <!-- Chart JS -->
     <script src="{{ url('dashboard_assets/js/plugin/chart.js/chart.min.js') }}"></script>
 
@@ -59,38 +62,6 @@
 
     <!-- Kaiadmin JS -->
     <script src="{{ url('dashboard_assets/js/kaiadmin.min.js') }}"></script>
-
-    <!-- Kaiadmin DEMO methods, don't include it in your project! -->
-    <script src="{{ url('dashboard_assets/js/setting-demo.js') }}"></script>
-    <script src="{{ url('dashboard_assets/js/demo.js') }}"></script>
-    <script>
-      $("#lineChart").sparkline([102, 109, 120, 99, 110, 105, 115], {
-        type: "line",
-        height: "70",
-        width: "100%",
-        lineWidth: "2",
-        lineColor: "#177dff",
-        fillColor: "rgba(23, 125, 255, 0.14)",
-      });
-
-      $("#lineChart2").sparkline([99, 125, 122, 105, 110, 124, 115], {
-        type: "line",
-        height: "70",
-        width: "100%",
-        lineWidth: "2",
-        lineColor: "#f3545d",
-        fillColor: "rgba(243, 84, 93, .14)",
-      });
-
-      $("#lineChart3").sparkline([105, 103, 123, 100, 95, 105, 115], {
-        type: "line",
-        height: "70",
-        width: "100%",
-        lineWidth: "2",
-        lineColor: "#ffa534",
-        fillColor: "rgba(255, 165, 52, .14)",
-      });
-    </script>
     
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script> -->
     <script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>

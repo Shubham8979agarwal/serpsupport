@@ -39,22 +39,32 @@
       <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.css" />
       <style type="text/css">
          li.nav-item.account-settings{
-          position: fixed;
-          bottom: 30px;
-          left: 0;
-          width:265px;
-      }
-      @media screen and (max-width: 991.5px) {
-        .topbar_open .navbar-header {
-            transform: translate3d(0, 0, 0) !important;
-            background: #fff;
-        }
-     }
-      @media(max-width:884px){
-         .main-header{
-            background: transparent!important;
+         position: fixed;
+         bottom: 30px;
+         left: 0;
+         width:265px;
          }
-      }
+         @media screen and (max-width: 991.5px) {
+         .topbar_open .navbar-header {
+         transform: translate3d(0, 0, 0) !important;
+         background: #fff;
+         }
+         }
+         @media(max-width:884px){
+         .main-header{
+         background: transparent!important;
+         }
+         }
+         .changebackground{
+            background-color: white!important;
+            margin: 2px!important;
+         }
+         .changebackground span{
+            color:#000!important;
+         }
+         .changebackground span:before{
+            background: #000!important;
+         }
       </style>
    </head>
    <body>
@@ -91,38 +101,47 @@
                         <p>Dashboard</p>
                      </a>
                   </li>
-                  <?php $getwebsites = DB::table('websites')->where('website_uploader_email',Auth::user()->email)->get(); $i=0; ?>
-                  @if(count($getwebsites)>0)
-                  @foreach($getwebsites as $websites)
-                  <li class="nav-item">  
-                   <a data-bs-toggle="collapse" href="#submenu<?php $i=$i+1; echo $i; ?>">
-                     <i class="fas fa-bars"></i>
-                     <p>{{ $websites->website_url }}</p>
-                     <span class="caret"></span>
-                   </a>
-                   <div class="collapse" id="submenu<?php echo $i++ ?>">
-                     <ul class="nav nav-collapse">
-                       <li>
-                         <a href="/backlinks/{{ encrypt($websites->website_url) }}">
-                           <span class="sub-item">Backlinks</span>
-                         </a>
-                       </li>
-                       <li>
-                         <a href="/outlinks/{{ encrypt($websites->website_url) }}">
-                           <span class="sub-item">Outlinks</span>
-                         </a>
-                       </li>
-                     </ul>
-                   </div>
-                  </li>
-                  @endforeach
+                  <?php
+                     $currentUrl = url()->current();
+                     $getwebsites = DB::table('websites')->where('website_uploader_email', Auth::user()->email)->get();
+                     $lastSegment = decrypt(request()->segment(count(request()->segments())));
+                     //print_r($lastSegment);
+                     ?>
+                  @if(count($getwebsites) > 0)
+                  <ul class="nav">
+                     @foreach($getwebsites as $websites)
+                     <?php
+                        $websiteId = $websites->id;
+                        $encryptedUrl = encrypt($websites->website_url);
+                        $backlinkUrl = url("/backlinks/" . $encryptedUrl);
+                        $outlinkUrl = url("/outlinks/" . $encryptedUrl);
+                        $isActive = $lastSegment == $websites->website_url;
+                        $submenuId = "submenu" . $loop->iteration;
+                        ?>
+                     <li class="nav-item @if($isActive) active submenu @endif" id="item{{ $websiteId }}">
+                        <a data-bs-toggle="collapse" href="#{{ $submenuId }}">
+                           <i class="fas fa-bars"></i>
+                           <p>{{ $websites->website_url }}</p>
+                           <span class="caret"></span>
+                        </a>
+                        <div class="collapse @if($isActive) show @endif" id="{{ $submenuId }}">
+                           <ul class="nav nav-collapse">
+                              <li class="@if(strpos($currentUrl,'backlinks') && ($isActive)) changebackground @endif">
+                                 <a href="{{ $backlinkUrl }}">
+                                 <span class="sub-item">Backlinks</span>
+                                 </a>
+                              </li>
+                              <li class="@if(strpos($currentUrl,'outlinks') && ($isActive)) changebackground @endif">
+                                 <a href="{{ $outlinkUrl }}">
+                                 <span class="sub-item">Outlinks</span>
+                                 </a>
+                              </li>
+                           </ul>
+                        </div>
+                     </li>
+                     @endforeach
+                  </ul>
                   @endif
-                  <!-- <li class="nav-item">
-                     <a href="{{ route('serpsupportchat') }}">
-                        <i class="fas fa-inbox"></i>
-                        <p>Chat</p>
-                     </a>
-                  </li> -->
                   <li class="nav-item account-settings">
                      <a href="{{ route('account-settings') }}">
                         <i class="fas fa-gear"></i>
@@ -139,9 +158,6 @@
          <div class="main-header-logo">
             <!-- Logo Header -->
             <div class="logo-header" data-background-color="dark">
-               <!-- <a href="index.html" class="logo">
-                  <img src="{{ url('dashboard_assets/img/kaiadmin/logo_light.svg') }}" alt="navbar brand" class="navbar-brand" height="20"/>
-                  </a> -->
                <div class="nav-toggle">
                   <button class="btn btn-toggle toggle-sidebar">
                   <i class="gg-menu-right"></i>
