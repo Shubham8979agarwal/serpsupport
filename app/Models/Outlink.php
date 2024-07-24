@@ -25,6 +25,9 @@ class Outlink extends Authenticatable
         'website_url',
         'website_niche',
         'website_description',
+        'acceptedby_from',
+        'acceptedby_to',
+        'executed',
         'status'
     ];
 

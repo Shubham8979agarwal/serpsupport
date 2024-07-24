@@ -59,7 +59,17 @@ Route::get('/outlinks/{forwhich_user_url}', [GoogleLoginController::class, 'outl
 //Route::get('/outlinks', [GoogleLoginController::class, 'outlinks'])->name('outlinks');
 
 Route::post('push-website', [GoogleLoginController::class, 'push_website'])->name('push-website');
+
 Route::get('delete-website/{id}', [GoogleLoginController::class, 'deletewebsite'])->name('delete-website');
+
+Route::get('acceptedby-to-outlink-connection/{id}', [GoogleLoginController::class, 'acceptedby_to_outlink_connection'])->name('acceptedby-to-outlink-connection');
+
+Route::get('acceptedby-from-outlink-connection/{id}', [GoogleLoginController::class, 'acceptedby_from_outlink_connection'])->name('acceptedby-from-outlink-connection');
+
+Route::get('acceptedby-to-backlink-connection/{id}', [GoogleLoginController::class, 'acceptedby_to_backlink_connection'])->name('acceptedby-to-backlink-connection');
+
+Route::get('acceptedby-from-backlink-connection/{id}', [GoogleLoginController::class, 'acceptedby_from_backlink_connection'])->name('acceptedby-from-backlink-connection');
+
 Route::get('signout', [GoogleLoginController::class, 'signout'])->name('signout');
 });
 });

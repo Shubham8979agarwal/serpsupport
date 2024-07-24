@@ -22,6 +22,9 @@ return new class extends Migration
             $table->string('website_url')->nullable();
             $table->string('website_niche')->nullable();
             $table->string('website_description')->nullable();
+            $table->string('acceptedby_from')->nullable();
+            $table->string('acceptedby_to')->nullable();
+            $table->string('executed')->nullable();
             $table->string('status')->nullable(); 
             $table->timestamps();
         });

@@ -67,6 +67,34 @@ class GoogleLoginController extends Controller
         return redirect('account-settings')->with('message','Website Deleted Successfully');
     }
 
+    public function acceptedby_to_outlink_connection($id){
+        $id = decrypt($id);
+        $updateDetails = ['acceptedby_to' => 'yes', 'status' => 'pending'];
+        $update = DB::table('outlinks')->where('id', $id)->update($updateDetails);
+        return back()->with('message_acceptedby_to_outlink_connection','Thank you for approving the connection, we are now awaiting the approval of the other user');
+    }
+
+    public function acceptedby_from_outlink_connection($id){
+        $id = decrypt($id);
+        $updateDetails = ['acceptedby_from' => 'yes', 'status' => 'accepted'];
+        $update = DB::table('outlinks')->where('id', $id)->update($updateDetails);
+        return back()->with('message_acceptedby_from_outlink_connection','Thank you for approving the connection, You are now able to chat');
+    }
+
+    public function acceptedby_from_backlink_connection($id){
+        $id = decrypt($id);
+        $updateDetails = ['acceptedby_from' => 'yes', 'status' => 'pending'];
+        $update = DB::table('backlinks')->where('id', $id)->update($updateDetails);
+        return back()->with('message_acceptedby_from_backlink_connection','Thank you for approving the connection, we are now awaiting the approval of the other user');
+    }
+
+    public function acceptedby_to_backlink_connection($id){
+        $id = decrypt($id);
+        $updateDetails = ['acceptedby_to' => 'yes', 'status' => 'accepted'];
+        $update = DB::table('backlinks')->where('id', $id)->update($updateDetails);
+        return back()->with('message_acceptedby_to_backlink_connection','Thank you for approving the connection, You are now able to chat');
+    }
+
     public function push_website(Request $request){
         $numberOfwebsite = Website::where('website_uploader_email',Auth::user()->email)->count();
         if($numberOfwebsite<10){
@@ -103,45 +131,104 @@ class GoogleLoginController extends Controller
         return view('frontend.dashboard.outlinks',$data);
     }
 
-    public function createbacklinks(){  //this function calls 5 minutes//   
-        $data['data'] = Auth::user();
-        $getverified_users = User::where('is_email_verified', '1')->get();
+    public function createbacklinks() {
+    $data['data'] = Auth::user();
+    $getverified_users = User::where('is_email_verified', '1')->get();
 
-        $checkarray = [];
-        foreach ($getverified_users as $check) {
-            $websites = Website::where('website_uploader_email', $check->email)->get()->toArray();
-            if (!empty($websites)) {
-                $checkarray[] = [
-                    'user_id' => $check->id,  // Assuming 'id' is the user_id field
-                    'websites' => $websites,
-                ];
+    if ($getverified_users->count() < 4) {
+        // Not enough users to create backlinks
+        return; // Or handle the case with a message, exception, etc.
+    }
+
+    $checkarray = [];
+    foreach ($getverified_users as $check) {
+        $websites = Website::where('website_uploader_email', $check->email)->get()->toArray();
+        if (!empty($websites)) {
+            $checkarray[] = [
+                'user_id' => $check->id,  // Correctly using 'id' for user_id
+                'websites' => $websites,
+            ];
+        }
+    }
+
+    // Initialize pairs array
+    $pairs = [];
+
+    // Ensure the pattern and avoid reciprocal backlinks
+    for ($i = 2; $i < count($checkarray); $i++) {
+        $currentUserId = $checkarray[$i]['user_id'];
+        $targetUserId = $checkarray[$i - 2]['user_id'];
+
+        // Create the desired pairing pattern
+        $pairs[] = $currentUserId . "," . $targetUserId;
+
+        $currentWebsites = $checkarray[$i]['websites'];
+        $targetWebsites = $checkarray[$i - 2]['websites'];
+
+        $inserts = [];
+        foreach ($currentWebsites as $currentWebsite) {
+            foreach ($targetWebsites as $targetWebsite) {
+                $checkIfAlreadyExists = Backlink::where('website_url', $targetWebsite['website_url'])
+                                                ->where('from_user_id', $currentUserId)
+                                                ->where('to_user_id', $targetUserId)
+                                                ->exists();
+                if (!$checkIfAlreadyExists) {
+                    $inserts[] = [
+                        'from_user_id' => $currentUserId,
+                        'to_user_id' => $targetUserId,
+                        'forwhich_user_url' => $currentWebsite['website_url'],
+                        'website_id' => $currentWebsite['website_id'],
+                        'website_url' => $targetWebsite['website_url'],
+                        'website_niche' => $currentWebsite['website_niche'],
+                        'website_description' => $currentWebsite['website_description'],
+                        'status' => "",
+                    ];
+                }
             }
         }
 
-        $pairs = [];
-        for ($i = 2; $i < count($checkarray); $i++) {
-            $currentUserId = $checkarray[$i]['user_id'];
-            $previousUserId = $checkarray[$i - 2]['user_id'];
+        if (!empty($inserts)) {
+            // Insert data into the database
+            DB::beginTransaction();
+            try {
+                DB::table('backlinks')->insert($inserts);
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollback();
+                // Handle the exception (e.g., log it, throw it)
+                // Example: throw new \Exception("Error inserting data: " . $e->getMessage());
+            }
+        }
+    }
 
-            $pairs[] = $currentUserId . "," . $previousUserId;
+    // Handle the first two users separately if necessary
+    if (count($checkarray) >= 4) {
+        for ($i = 0; $i < 2; $i++) {
+            $currentUserId = $checkarray[$i]['user_id'];
+            $targetUserId = $checkarray[count($checkarray) - 2 + $i]['user_id'];
+
+            $pairs[] = $currentUserId . "," . $targetUserId;
 
             $currentWebsites = $checkarray[$i]['websites'];
-            $previousWebsites = $checkarray[$i - 2]['websites'];
+            $targetWebsites = $checkarray[count($checkarray) - 2 + $i]['websites'];
 
             $inserts = [];
             foreach ($currentWebsites as $currentWebsite) {
-                    foreach ($previousWebsites as $previousWebsite) {
-                        $checkIfAlreadyExists = Backlink::where('website_url', $previousWebsite['website_url'])->exists();
-                        if (!$checkIfAlreadyExists) {
+                foreach ($targetWebsites as $targetWebsite) {
+                    $checkIfAlreadyExists = Backlink::where('website_url', $targetWebsite['website_url'])
+                                                    ->where('from_user_id', $currentUserId)
+                                                    ->where('to_user_id', $targetUserId)
+                                                    ->exists();
+                    if (!$checkIfAlreadyExists) {
                         $inserts[] = [
                             'from_user_id' => $currentUserId,
-                            'to_user_id' => $previousUserId,
+                            'to_user_id' => $targetUserId,
                             'forwhich_user_url' => $currentWebsite['website_url'],
                             'website_id' => $currentWebsite['website_id'],
-                            'website_url' => $previousWebsite['website_url'],
+                            'website_url' => $targetWebsite['website_url'],
                             'website_niche' => $currentWebsite['website_niche'],
                             'website_description' => $currentWebsite['website_description'],
-                            'status' => "not_accepted_yet",
+                            'status' => "",
                         ];
                     }
                 }
@@ -160,69 +247,96 @@ class GoogleLoginController extends Controller
                 }
             }
         }
-        //dd($pairs);
     }
 
-    public function createoutlinks(){  //this function calls 5 minutes//
+    //dd($pairs);
+}
 
-        $data['data'] = Auth::user();
-        $getverified_users = User::where('is_email_verified', '1')->get();
 
-        $checkarray = [];
-        foreach ($getverified_users as $check) {
-            $websites = Website::where('website_uploader_email', $check->email)->get()->toArray();
-            if (!empty($websites)) {
-                $checkarray[] = [
-                    'user_id' => $check->id,  // Assuming 'id' is the user_id field
-                    'websites' => $websites,
-                ];
-            }
+    public function createoutlinks() {
+    $data['data'] = Auth::user();
+    $getverified_users = User::where('is_email_verified', '1')->get();
+
+    // Check if there are enough users
+    $userCount = $getverified_users->count();
+    if ($userCount < 2) {
+        // Not enough users to create outlinks
+        return;
+        //return response()->json(['message' => 'Not enough users to create outlinks. At least 2 users are required.'], 400);
+    }
+
+    // Prepare users and their websites
+    $checkarray = [];
+    foreach ($getverified_users as $check) {
+        $websites = Website::where('website_uploader_email', $check->email)->get()->toArray();
+        if (!empty($websites)) {
+            $checkarray[] = [
+                'user_id' => $check->id,  // Assuming 'id' is the user_id field
+                'websites' => $websites,
+            ];
         }
+    }
 
-        $pairs = [];
-        for ($i = 0; $i < count($checkarray) - 1; $i++) {
-            $currentUserId = $checkarray[$i]['user_id'];
-            $nextUserId = $checkarray[$i + 1]['user_id'];
+    // Ensure there are at least 2 users with websites
+    if (count($checkarray) < 2) {
+        return;
+        //return response()->json(['message' => 'Not enough users with websites to create outlinks. At least 2 users with websites are required.'], 400);
+    }
 
-            $pairs[] = $currentUserId . "," . $nextUserId;
+    // Create outlinks with cyclic pattern
+    $pairs = [];
+    for ($i = 0; $i < count($checkarray); $i++) {
+        $currentUserId = $checkarray[$i]['user_id'];
+        $nextUserId = $checkarray[($i + 1) % count($checkarray)]['user_id'];  // Wrap around to the first user
 
-            $currentWebsites = $checkarray[$i]['websites'];
-            $nextWebsites = $checkarray[$i + 1]['websites'];
+        $pairs[] = $currentUserId . "," . $nextUserId;
 
-            $inserts = [];
-            foreach ($currentWebsites as $currentWebsite) {
-                $checkIfAlreadyExists = Outlink::where('website_url', $currentWebsite['website_url'])->exists();
+        $currentWebsites = $checkarray[$i]['websites'];
+        $nextWebsites = $checkarray[($i + 1) % count($checkarray)]['websites'];
+
+        $inserts = [];
+        foreach ($currentWebsites as $currentWebsite) {
+            foreach ($nextWebsites as $nextWebsite) {
+                // Check if outlink already exists
+                $checkIfAlreadyExists = Outlink::where('from_user_id', $currentUserId)
+                                                ->where('to_user_id', $nextUserId)
+                                                ->where('website_url', $currentWebsite['website_url'])
+                                                ->exists();
                 if (!$checkIfAlreadyExists) {
-                    foreach ($nextWebsites as $nextWebsite) {
-                        $inserts[] = [
-                            'from_user_id' => $currentUserId,
-                            'to_user_id' => $nextUserId,
-                            'forwhich_user_url' => $nextWebsite['website_url'],
-                            'website_id' => $currentWebsite['website_id'],
-                            'website_url' => $currentWebsite['website_url'],
-                            'website_niche' => $currentWebsite['website_niche'],
-                            'website_description' => $currentWebsite['website_description'],
-                            'status' => "not_accepted_yet",
-                        ];
-                    }
-                }
-            }
-
-            if (!empty($inserts)) {
-                // Insert data into the database
-                DB::beginTransaction();
-                try {
-                    DB::table('outlinks')->insert($inserts);
-                    DB::commit();
-                } catch (\Exception $e) {
-                    DB::rollback();
-                    // Handle the exception (e.g., log it, throw it)
-                    // Example: throw new \Exception("Error inserting data: " . $e->getMessage());
+                    $inserts[] = [
+                        'from_user_id' => $currentUserId,
+                        'to_user_id' => $nextUserId,
+                        'forwhich_user_url' => $nextWebsite['website_url'],
+                        'website_id' => $currentWebsite['website_id'],
+                        'website_url' => $currentWebsite['website_url'],
+                        'website_niche' => $currentWebsite['website_niche'],
+                        'website_description' => $currentWebsite['website_description'],
+                        'status' => "",
+                    ];
                 }
             }
         }
-        //dd($pairs);
+
+        // Insert data into the database if there are new outlinks
+        if (!empty($inserts)) {
+            DB::beginTransaction();
+            try {
+                DB::table('outlinks')->insert($inserts);
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollback();
+                // Log or handle the exception
+                // Example: throw new \Exception("Error inserting data: " . $e->getMessage());
+            }
+        }
     }
+
+    // Uncomment the line below to see the generated pairs
+    // dd($pairs);
+
+    //return response()->json(['message' => 'Outlinks created successfully.'], 200);
+}
+
 
     public function redirectToGoogle()
     {
