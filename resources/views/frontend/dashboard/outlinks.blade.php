@@ -66,7 +66,7 @@
                               @elseif($mywebsite->status=="pending" && $mywebsite->acceptedby_to=="yes")
                               <a href="#" class="btn btn-warning">Waiting for Approval</a>
 
-                              @elseif($mywebsite->website_url==$outlink_data[0]->forwhich_user_url && $mywebsite->acceptedby_to=="yes" && $mywebsite->acceptedby_from=="yes" && $mywebsite->status=="accepted")
+                              @elseif($mywebsite->acceptedby_to=="yes" && $mywebsite->acceptedby_from=="yes" && $mywebsite->status=="accepted")
                               <a href="#" class="btn btn-success">Go to chat</a>
                               @endif
                            </td>
