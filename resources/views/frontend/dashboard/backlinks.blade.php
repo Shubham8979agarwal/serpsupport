@@ -45,7 +45,15 @@
                        @foreach ($backlink_data as $mywebsite)
                         <tr>
                            <td>{{ $mywebsite->website_url }}</td>
-                           <td>{{ $mywebsite->website_niche }}</td>
+                           <td>
+                              <?php 
+                                $getniche = DB::table('websites')->where('website_url', $mywebsite->website_url)->get()->toArray();
+                              ?>
+                              @foreach ($getniche as $niche)
+                              {{ $niche->website_niche }}
+                              @endforeach
+
+                           </td>
                            <td>
                               <p> 
                                 <a data-bs-toggle="collapse" href="#collapseExample<?php $i=$i+1; echo $i; ?>" role="button" aria-expanded="false" aria-controls="collapseExample<?php echo $i; ?>">
