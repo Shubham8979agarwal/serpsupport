@@ -93,7 +93,7 @@
          </div>
       </div>
       <!--- chat connection requests --->
-      <?php $data = DB::table('backlinks')->where('website_url',$backlink_data[0]->forwhich_user_url)->where('acceptedby_to','yes')->orwhere('acceptedby_from','yes')->where('status','pending')->orwhere('status','accepted')->get();
+      <?php $data = DB::table('backlinks')->where('website_url',$backlink_data[0]->forwhich_user_url)->where('acceptedby_from','yes')->where('status','pending')->get();
       
       $find_data = [];
       foreach ($data as $conn_req){

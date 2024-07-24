@@ -87,7 +87,7 @@
          </div>
       </div>
       <!--- chat connection requests --->
-      <?php $data = DB::table('outlinks')->where('website_url',$outlink_data[0]->forwhich_user_url)->where('acceptedby_to','yes')->orwhere('acceptedby_from','yes')->where('status','pending')->orwhere('status','accepted')->get();
+      <?php $data = DB::table('outlinks')->where('website_url',$outlink_data[0]->forwhich_user_url)->where('acceptedby_to','yes')->where('status','pending')->get();
       
       $find_data = [];
       foreach ($data as $conn_req){
