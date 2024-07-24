@@ -152,10 +152,10 @@
                            </td>
 
                            <td>
-                              @if($mywebsite->acceptedby_to=='yes' && $mywebsite->status=="pending")
+                              @if($mywebsite->website_url==$outlink_data[0]->forwhich_user_url && $mywebsite->acceptedby_to=='yes' && $mywebsite->status=="pending")
                               <a onclick="return confirm('Are you sure?')" href="/acceptedby-from-outlink-connection/{{ encrypt($mywebsite->id) }}" class="btn btn-success">Approve</a> | <a onclick="return confirm('Are you sure?')" href="#" class="btn btn-danger">Reject</a>
-                              @elseif($mywebsite->website_url==$outlink_data[0]->forwhich_user_url && $mywebsite->acceptedby_to=='yes' && $mywebsite->acceptedby_from=='yes' && $mywebsite->status=="accepted")
-                              <a href="#" class="btn btn-success">Go to chat</a>
+                              <!-- @elseif($mywebsite->website_url==$outlink_data[0]->forwhich_user_url && $mywebsite->acceptedby_to=='yes' && $mywebsite->acceptedby_from=='yes' && $mywebsite->status=="accepted")
+                              <a href="#" class="btn btn-success">Go to chat</a> -->
                               @endif
                            </td>
                         </tr>
