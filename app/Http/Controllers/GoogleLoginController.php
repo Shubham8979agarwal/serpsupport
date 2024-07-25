@@ -118,157 +118,63 @@ class GoogleLoginController extends Controller
         }
     }
 
-    /*public function backlinks($forwhich_user_url){
+    public function backlinks($forwhich_user_url){
         $forwhich_user_url = decrypt($forwhich_user_url);
         $data['data'] = Auth::user();
         $data['backlink_data'] = DB::table('backlinks')->where('forwhich_user_url',$forwhich_user_url)->get()->toArray();
         return view('frontend.dashboard.backlinks',$data);
-    }*/
+    }
 
-    /*public function outlinks($forwhich_user_url){
+    public function outlinks($forwhich_user_url){
         $forwhich_user_url = decrypt($forwhich_user_url);
         $data['data'] = Auth::user();
         $data['outlink_data'] = DB::table('outlinks')->where('forwhich_user_url',$forwhich_user_url)->get()->toArray();
         return view('frontend.dashboard.outlinks',$data);
-    }*/
-
-   public function backlinks($forwhich_user_url) {
-    $forwhich_user_url = decrypt($forwhich_user_url);
-    $data['data'] = Auth::user();
-
-    // Fetch all rejected pairs
-    $rejectedPairs = RejectedPair::all(['from_user_id', 'to_user_id'])->toArray();
-
-    // Create a set of rejected pairs for quick lookup
-    $rejectedPairsSet = [];
-    foreach ($rejectedPairs as $pair) {
-        $rejectedPairsSet[$this->sortPair($pair['from_user_id'], $pair['to_user_id'])] = true;
     }
 
-    // Generate the valid pattern pairs
-    $validPairs = [];
-    $userIds = User::where('is_email_verified', '1')->pluck('id')->toArray();
-    
-    // Ensure there are enough users to create pairs
-    if (count($userIds) < 4) {
-        return view('frontend.dashboard.backlinks', $data); // Not enough users to create valid pairs
-    }
-
-    foreach ($userIds as $i => $fromUserId) {
-        $toUserId = $userIds[$i + 2] ?? null; // Ensure fromUserId is two steps before toUserId
-        if ($toUserId) {
-            $pairKey = $this->sortPair($fromUserId, $toUserId);
-            if (!isset($rejectedPairsSet[$pairKey])) {
-                $validPairs[] = (object)[
-                    'from_user_id' => $fromUserId,
-                    'to_user_id' => $toUserId,
-                    'website_url' => '', // Placeholder
-                    'website_niche' => '', // Placeholder
-                    'website_description' => '', // Placeholder
-                    'status' => '' // Placeholder
-                ];
-            }
-        }
-    }
-
-    // Pass filtered backlink data to the view
-    $data['backlink_data'] = $validPairs;
-    dd($data['backlink_data']);
-    return view('frontend.dashboard.backlinks', $data);
-}
-
-
-    public function outlinks($forwhich_user_url) {
-        $forwhich_user_url = decrypt($forwhich_user_url);
-        $data['data'] = Auth::user();
-
-        // Fetch the outlinks data
-        $outlinkData = DB::table('outlinks')
-            ->where('forwhich_user_url', $forwhich_user_url)
-            ->get()
-            ->toArray();
-
-        // Fetch all rejected pairs
-        $rejectedPairs = RejectedPair::all(['from_user_id', 'to_user_id'])->toArray();
-        //dd($rejectedPairs);
-
-        // Create a set of rejected pairs for quick lookup
-        $rejectedPairsSet = [];
-        foreach ($rejectedPairs as $pair) {
-            // Ensure each rejected pair is represented as a sorted key to avoid order issues
-            $rejectedPairsSet[$this->sortPair($pair['from_user_id'], $pair['to_user_id'])] = true;
-        }
-
-        // Filter out rejected pairs from outlinkData
-        $filteredOutlinkData = array_filter($outlinkData, function($outlink) use ($rejectedPairsSet) {
-            // Create a key for the current outlink pair, sorted to match the rejected pairs
-            $pairKey = $this->sortPair($outlink->from_user_id, $outlink->to_user_id);
-            
-            // Check if this pair is in the rejected pairs set
-            return !isset($rejectedPairsSet[$pairKey]);
-        });
-
-        // Pass filtered outlink data to the view
-        $data['outlink_data'] = $filteredOutlinkData;
-        dd($data['outlink_data']);
-        return view('frontend.dashboard.outlinks', $data);
-    }
-
-    /**
-     * Sort the pair so that (1, 2) is the same as (2, 1)
-     *
-     * @param int $fromUserId
-     * @param int $toUserId
-     * @return string
-     */
-    private function sortPair($fromUserId, $toUserId) {
-        // Ensure the smaller ID comes first in the sorted key
-        return $fromUserId < $toUserId ? "{$fromUserId}-{$toUserId}" : "{$toUserId}-{$fromUserId}";
-    }
 
     public function rejectPair($from_user_id, $to_user_id)
-{
-    $fromUserId = decrypt($from_user_id);
-    $toUserId = decrypt($to_user_id);
+    {
+        $fromUserId = decrypt($from_user_id);
+        $toUserId = decrypt($to_user_id);
 
-    // Check if the rejection already exists
-    $exists = RejectedPair::where('from_user_id', $fromUserId)
-                ->where('to_user_id', $toUserId)
-                ->exists();
+        // Check if the rejection already exists
+        $exists = RejectedPair::where('from_user_id', $fromUserId)
+                    ->where('to_user_id', $toUserId)
+                    ->exists();
 
-    if (!$exists) {
-        RejectedPair::create([
-            'from_user_id' => $fromUserId,
-            'to_user_id' => $toUserId,
-        ]);
-    }
+        if (!$exists) {
+            RejectedPair::create([
+                'from_user_id' => $fromUserId,
+                'to_user_id' => $toUserId,
+            ]);
+        }
 
-    // Check in backlinks table
-    $backlinkExists = Backlink::where('from_user_id', $fromUserId)
+        // Check in backlinks table
+        $backlinkExists = Backlink::where('from_user_id', $fromUserId)
+                                    ->where('to_user_id', $toUserId)
+                                    ->exists();
+
+        // Check in outlinks table
+        $outlinkExists = Outlink::where('from_user_id', $fromUserId)
                                 ->where('to_user_id', $toUserId)
                                 ->exists();
 
-    // Check in outlinks table
-    $outlinkExists = Outlink::where('from_user_id', $fromUserId)
-                            ->where('to_user_id', $toUserId)
-                            ->exists();
+        // Update status to "rejected" in the appropriate table
+        if ($backlinkExists) {
+            Backlink::where('from_user_id', $fromUserId)
+                    ->where('to_user_id', $toUserId)
+                    ->update(['status' => 'rejected']);
+        }
 
-    // Update status to "rejected" in the appropriate table
-    if ($backlinkExists) {
-        Backlink::where('from_user_id', $fromUserId)
-                ->where('to_user_id', $toUserId)
-                ->update(['status' => 'rejected']);
+        if ($outlinkExists) {
+            Outlink::where('from_user_id', $fromUserId)
+                    ->where('to_user_id', $toUserId)
+                    ->update(['status' => 'rejected']);
+        }
+
+        return back()->with('reject_message', 'Connection request rejected successfully');
     }
-
-    if ($outlinkExists) {
-        Outlink::where('from_user_id', $fromUserId)
-                ->where('to_user_id', $toUserId)
-                ->update(['status' => 'rejected']);
-    }
-
-    return back()->with('reject_message', 'Connection request rejected successfully');
-}
-
 
     public function redirectToGoogle()
     {
