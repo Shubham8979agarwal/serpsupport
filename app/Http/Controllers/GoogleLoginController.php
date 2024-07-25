@@ -164,7 +164,7 @@ class GoogleLoginController extends Controller
         // Pass filtered backlink data to the view
         $data['backlink_data'] = $filteredBacklinkData;
 
-        //dd($data['backlink_data']);
+        dd($data['backlink_data']);
 
         return view('frontend.dashboard.backlinks', $data);
     }
@@ -200,7 +200,7 @@ class GoogleLoginController extends Controller
 
         // Pass filtered outlink data to the view
         $data['outlink_data'] = $filteredOutlinkData;
-
+        dd($data['outlink_data']);
         return view('frontend.dashboard.outlinks', $data);
     }
 
