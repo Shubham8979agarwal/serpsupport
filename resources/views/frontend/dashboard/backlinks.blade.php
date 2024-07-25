@@ -1,11 +1,10 @@
 @include('frontend.dashboard.common.header')
-@if(count($backlink_data)>0)
+@if(count($backlink_data) > 0)
 <div class="container">
    <div class="page-inner">
-      <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4"
-         >
+      <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
          <div>
-         	<h3 class="fw-bold mb-3">{{ $backlink_data[0]->forwhich_user_url }}</h3>
+            <h3 class="fw-bold mb-3">{{ $backlink_data[0]['website_url'] }}</h3>
             @if (session('message_acceptedby_to_backlink_connection'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                <i class="fa fa-check"></i> {{ session('message_acceptedby_to_backlink_connection') }}
@@ -32,7 +31,7 @@
                <div class="card-header">
                   <div class="card-head-row card-tools-still-right">
                      <div class="card-title">Backlink connections
-                     	<p>These are the websites you get a backlink from</p>
+                        <p>These are the websites you get a backlink from</p>
                      </div>
                   </div>
                </div>
@@ -47,13 +46,13 @@
                         </tr>
                      </thead>
                      <tbody>
-                        <?php $i=0; ?>
-                       @foreach ($backlink_data as $mywebsite)
+                        <?php $i = 0; ?>
+                        @foreach ($backlink_data as $mywebsite)
                         <tr>
-                           <td>{{ $mywebsite->website_url }}</td>
+                           <td>{{ $mywebsite['website_url'] }}</td>
                            <td>
                               <?php 
-                                $getniche = DB::table('websites')->where('website_url', $mywebsite->website_url)->get()->toArray();
+                                $getniche = DB::table('websites')->where('website_url', $mywebsite['website_url'])->get()->toArray();
                               ?>
                               @foreach ($getniche as $niche)
                               {{ $niche->website_niche }}
@@ -61,27 +60,27 @@
                            </td>
                            <td>
                               <p> 
-                                <a data-bs-toggle="collapse" href="#collapseExample<?php $i=$i+1; echo $i; ?>" role="button" aria-expanded="false" aria-controls="collapseExample<?php echo $i; ?>">
+                                <a data-bs-toggle="collapse" href="#collapseExample{{ ++$i }}" role="button" aria-expanded="false" aria-controls="collapseExample{{ $i }}">
                                   Show/Hide
                                 </a>
                               </p>
-                              <div class="collapse" id="collapseExample<?php echo $i; ?>">
+                              <div class="collapse" id="collapseExample{{ $i }}">
                                 <div class="card card-body">
-                                  {{ $mywebsite->website_description }}
+                                  {{ $mywebsite['website_description'] }}
                                 </div>
                               </div>
                            </td>
                            <td>
-                              @if((Auth::user()->id==$mywebsite->from_user_id) && $mywebsite->status=="")
-                              <a onclick="return confirm('Are you sure?')" href="/acceptedby-from-backlink-connection/{{ encrypt($mywebsite->id) }}" class="btn btn-success">Accept</a> | <a onclick="return confirm('Are you sure?')" href="/reject/{{encrypt($mywebsite->from_user_id)}}/{{encrypt($mywebsite->to_user_id)}}" class="btn btn-danger">Reject</a>
+                              @if((Auth::user()->id == $mywebsite['from_user_id']) && $mywebsite['status'] == "")
+                              <a onclick="return confirm('Are you sure?')" href="/acceptedby-from-backlink-connection/{{ encrypt($mywebsite['id']) }}" class="btn btn-success">Accept</a> | <a onclick="return confirm('Are you sure?')" href="/reject/{{ encrypt($mywebsite['from_user_id']) }}/{{ encrypt($mywebsite['to_user_id']) }}" class="btn btn-danger">Reject</a>
 
-                              @elseif($mywebsite->status=="pending" && $mywebsite->acceptedby_from=="yes")
+                              @elseif($mywebsite['status'] == "pending" && $mywebsite['acceptedby_from'] == "yes")
                               <a href="#" class="btn btn-warning">Waiting for Approval</a>
 
-                              @elseif($mywebsite->acceptedby_to=="yes" && $mywebsite->acceptedby_from=="yes" && $mywebsite->status=="accepted")
+                              @elseif($mywebsite['acceptedby_to'] == "yes" && $mywebsite['acceptedby_from'] == "yes" && $mywebsite['status'] == "accepted")
                               <a href="#" class="btn btn-success">Go to chat</a>
 
-                              @elseif($mywebsite->status=="rejected")
+                              @elseif($mywebsite['status'] == "rejected")
                               <a href="#" class="btn btn-danger">Rejected</a>
                               @endif
 
@@ -103,11 +102,12 @@
          </div>
       </div>
       <!--- chat connection requests --->
-      <?php $data = DB::table('backlinks')->where('website_url',$backlink_data[0]->forwhich_user_url)->where('acceptedby_from','yes')->where('status','pending')->get();
+      <?php 
+      $data = DB::table('backlinks')->where('website_url', $backlink_data[0]['website_url'])->where('acceptedby_from', 'yes')->where('status', 'pending')->get();
       
       $find_data = [];
       foreach ($data as $conn_req){
-         if($backlink_data[0]->forwhich_user_url==$conn_req->website_url){
+         if($backlink_data[0]['website_url'] == $conn_req->website_url){
             $find_data[] = $conn_req;
          }
       }
@@ -133,9 +133,9 @@
                         </tr>
                      </thead>
                      <tbody>
-                        <?php $i=0; ?>
-                         @foreach ($find_data as $mywebsite)
-                         @if(Auth::user()->id==$mywebsite->to_user_id)
+                        <?php $i = 0; ?>
+                        @foreach ($find_data as $mywebsite)
+                        @if(Auth::user()->id == $mywebsite->to_user_id)
                         <tr>
                            <td>
                               {{ $mywebsite->forwhich_user_url }}
@@ -155,11 +155,11 @@
                               ?>
                               @foreach ($getdesc as $desc)
                               <p> 
-                                <a data-bs-toggle="collapse" href="#collapseExample<?php $i=$i+1; echo $i; ?>" role="button" aria-expanded="false" aria-controls="collapseExample<?php echo $i; ?>">
+                                <a data-bs-toggle="collapse" href="#collapseExample{{ ++$i }}" role="button" aria-expanded="false" aria-controls="collapseExample{{ $i }}">
                                   Show/Hide
                                 </a>
                               </p>
-                              <div class="collapse" id="collapseExample<?php echo $i; ?>">
+                              <div class="collapse" id="collapseExample{{ $i }}">
                                 <div class="card card-body">
                                   {{ $desc->website_description }}
                                 </div>
@@ -168,9 +168,9 @@
                            </td>
 
                            <td>
-                              @if($mywebsite->website_url==$backlink_data[0]->forwhich_user_url && $mywebsite->acceptedby_from=='yes' && $mywebsite->status=="pending")
-                              <a onclick="return confirm('Are you sure?')" href="/acceptedby-to-backlink-connection/{{ encrypt($mywebsite->id) }}" class="btn btn-success">Approve</a> | <a onclick="return confirm('Are you sure?')" href="/reject/{{encrypt($mywebsite->from_user_id)}}/{{encrypt($mywebsite->to_user_id)}}" class="btn btn-danger">Reject</a>
-                              @elseif(status=="rejected")
+                              @if($mywebsite->forwhich_user_url == $backlink_data[0]['website_url'] && $mywebsite->acceptedby_from == 'yes' && $mywebsite->status == "pending")
+                              <a onclick="return confirm('Are you sure?')" href="/acceptedby-to-backlink-connection/{{ encrypt($mywebsite->id) }}" class="btn btn-success">Approve</a> | <a onclick="return confirm('Are you sure?')" href="/reject/{{ encrypt($mywebsite->from_user_id) }}/{{ encrypt($mywebsite->to_user_id) }}" class="btn btn-danger">Reject</a>
+                              @elseif($mywebsite->status == "rejected")
                               <a href="#" class="btn btn-danger">Rejected</a>
                               @endif
                            </td>
@@ -181,7 +181,7 @@
                            <td></td>
                            <td></td>
                            <td></td>
-                        <tr>
+                        </tr>
                         @endif
                         @endforeach
                      </tbody>
@@ -203,8 +203,7 @@
 @else
 <div class="container">
    <div class="page-inner">
-      <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4"
-         >
+      <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
          <div>
             <h3 class="fw-bold mb-3"></h3>
          </div>

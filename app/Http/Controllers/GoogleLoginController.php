@@ -159,9 +159,13 @@ class GoogleLoginController extends Controller
         if ($toUserId) {
             $pairKey = $this->sortPair($fromUserId, $toUserId);
             if (!isset($rejectedPairsSet[$pairKey])) {
-                $validPairs[] = [
+                $validPairs[] = (object)[
                     'from_user_id' => $fromUserId,
-                    'to_user_id' => $toUserId
+                    'to_user_id' => $toUserId,
+                    'website_url' => '', // Placeholder
+                    'website_niche' => '', // Placeholder
+                    'website_description' => '', // Placeholder
+                    'status' => '' // Placeholder
                 ];
             }
         }
@@ -169,7 +173,7 @@ class GoogleLoginController extends Controller
 
     // Pass filtered backlink data to the view
     $data['backlink_data'] = $validPairs;
-
+    dd($data['backlink_data']);
     return view('frontend.dashboard.backlinks', $data);
 }
 
