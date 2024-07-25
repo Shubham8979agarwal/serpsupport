@@ -136,12 +136,6 @@ class GoogleLoginController extends Controller
     $forwhich_user_url = decrypt($forwhich_user_url);
     $data['data'] = Auth::user();
 
-    // Fetch the backlinks data
-    $backlinkData = DB::table('backlinks')
-        ->where('forwhich_user_url', $forwhich_user_url)
-        ->get()
-        ->toArray();
-
     // Fetch all rejected pairs
     $rejectedPairs = RejectedPair::all(['from_user_id', 'to_user_id'])->toArray();
 
@@ -152,24 +146,24 @@ class GoogleLoginController extends Controller
         $rejectedPairsSet[$this->sortPair($pair['from_user_id'], $pair['to_user_id'])] = true;
     }
 
-    // Filter out rejected pairs and ensure correct series from backlinkData
-    $filteredBacklinkData = array_filter($backlinkData, function($backlink) use ($rejectedPairsSet) {
-        // Create a key for the current backlink pair, sorted to match the rejected pairs
-        $pairKey = $this->sortPair($backlink->from_user_id, $backlink->to_user_id);
-        
-        // Check if this pair is in the rejected pairs set
-        if (isset($rejectedPairsSet[$pairKey])) {
-            return false;
+    // Generate the valid pattern pairs
+    $validPairs = [];
+    $userIds = User::where('is_email_verified', '1')->pluck('id')->toArray();
+    foreach ($userIds as $i => $fromUserId) {
+        $toUserId = $userIds[$i + 2] ?? null; // Ensure fromUserId is two steps before toUserId
+        if ($toUserId) {
+            $pairKey = $this->sortPair($fromUserId, $toUserId);
+            if (!isset($rejectedPairsSet[$pairKey])) {
+                $validPairs[] = [
+                    'from_user_id' => $fromUserId,
+                    'to_user_id' => $toUserId
+                ];
+            }
         }
-        
-        // Ensure that the pairs follow the series pattern: (n+2, n+1) where n starts from 1
-        // For example: (3, 1), (4, 2), (5, 3), (6, 4)
-        return ($backlink->from_user_id - $backlink->to_user_id === 2);
-    });
+    }
 
     // Pass filtered backlink data to the view
-    $data['backlink_data'] = $filteredBacklinkData;
-    dd($data['backlink_data']);
+    $data['backlink_data'] = $validPairs;
 
     return view('frontend.dashboard.backlinks', $data);
 }
