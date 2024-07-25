@@ -152,22 +152,28 @@ class GoogleLoginController extends Controller
         $rejectedPairsSet[$this->sortPair($pair['from_user_id'], $pair['to_user_id'])] = true;
     }
 
-    // Filter out rejected pairs from backlinkData
+    // Filter out rejected pairs and ensure correct series from backlinkData
     $filteredBacklinkData = array_filter($backlinkData, function($backlink) use ($rejectedPairsSet) {
         // Create a key for the current backlink pair, sorted to match the rejected pairs
         $pairKey = $this->sortPair($backlink->from_user_id, $backlink->to_user_id);
         
         // Check if this pair is in the rejected pairs set
-        return !isset($rejectedPairsSet[$pairKey]);
+        if (isset($rejectedPairsSet[$pairKey])) {
+            return false;
+        }
+        
+        // Ensure that the pairs follow the series pattern: (n+2, n+1) where n starts from 1
+        // For example: (3, 1), (4, 2), (5, 3), (6, 4)
+        return ($backlink->from_user_id - $backlink->to_user_id === 2);
     });
 
     // Pass filtered backlink data to the view
     $data['backlink_data'] = $filteredBacklinkData;
-
-    dd($data['backlink_data']); // Uncomment this line to debug the data
+    dd($data['backlink_data']);
 
     return view('frontend.dashboard.backlinks', $data);
 }
+
 
     public function outlinks($forwhich_user_url) {
         $forwhich_user_url = decrypt($forwhich_user_url);
