@@ -25,6 +25,7 @@ return array(
     'App\\Http\\Middleware\\VerifyCsrfToken' => $baseDir . '/app/Http/Middleware/VerifyCsrfToken.php',
     'App\\Models\\Backlink' => $baseDir . '/app/Models/Backlink.php',
     'App\\Models\\Outlink' => $baseDir . '/app/Models/Outlink.php',
+    'App\\Models\\RejectedPair' => $baseDir . '/app/Models/RejectedPair.php',
     'App\\Models\\User' => $baseDir . '/app/Models/User.php',
     'App\\Models\\UserVerify' => $baseDir . '/app/Models/UserVerify.php',
     'App\\Models\\Website' => $baseDir . '/app/Models/Website.php',

@@ -23,7 +23,9 @@ class User extends Authenticatable
         'avatar',
         'password',
         'is_email_verified',
-        'status'
+        'status',
+        'last_backlinks_created_at', 
+        'last_outlinks_created_at',
     ];
 
     /**

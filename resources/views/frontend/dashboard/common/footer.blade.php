@@ -56,7 +56,7 @@
            "scrollX": true
        });
     </script>
-    <script type="text/javascript">
+    <!-- <script type="text/javascript">
       function callUrlbacklink() {
           fetch("{{ route('create-backlinks')}}")
               .then(response => response.json())
@@ -77,6 +77,6 @@
 
       callUrloutlink();
       setInterval(callUrloutlink, 60000);
-    </script>
+    </script> -->
   </body>
 </html>

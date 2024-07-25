@@ -18,6 +18,12 @@
                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
             @endif
+            @if (session('reject_message'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+               <i class="fa fa-check"></i> {{ session('reject_message') }}
+               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
          </div>
       </div>
       <div class="row">
@@ -67,14 +73,18 @@
                            </td>
                            <td>
                               @if((Auth::user()->id==$mywebsite->from_user_id) && $mywebsite->status=="")
-                              <a onclick="return confirm('Are you sure?')" href="/acceptedby-from-backlink-connection/{{ encrypt($mywebsite->id) }}" class="btn btn-success">Accept</a> | <a onclick="return confirm('Are you sure?')" href="#" class="btn btn-danger">Reject</a>
+                              <a onclick="return confirm('Are you sure?')" href="/acceptedby-from-backlink-connection/{{ encrypt($mywebsite->id) }}" class="btn btn-success">Accept</a> | <a onclick="return confirm('Are you sure?')" href="/reject/{{encrypt($mywebsite->from_user_id)}}/{{encrypt($mywebsite->to_user_id)}}" class="btn btn-danger">Reject</a>
 
                               @elseif($mywebsite->status=="pending" && $mywebsite->acceptedby_from=="yes")
                               <a href="#" class="btn btn-warning">Waiting for Approval</a>
 
                               @elseif($mywebsite->acceptedby_to=="yes" && $mywebsite->acceptedby_from=="yes" && $mywebsite->status=="accepted")
                               <a href="#" class="btn btn-success">Go to chat</a>
+
+                              @elseif($mywebsite->status=="rejected")
+                              <a href="#" class="btn btn-danger">Rejected</a>
                               @endif
+
                            </td>
                         </tr>
                         @endforeach
@@ -159,7 +169,9 @@
 
                            <td>
                               @if($mywebsite->website_url==$backlink_data[0]->forwhich_user_url && $mywebsite->acceptedby_from=='yes' && $mywebsite->status=="pending")
-                              <a onclick="return confirm('Are you sure?')" href="/acceptedby-to-backlink-connection/{{ encrypt($mywebsite->id) }}" class="btn btn-success">Approve</a> | <a onclick="return confirm('Are you sure?')" href="#" class="btn btn-danger">Reject</a>
+                              <a onclick="return confirm('Are you sure?')" href="/acceptedby-to-backlink-connection/{{ encrypt($mywebsite->id) }}" class="btn btn-success">Approve</a> | <a onclick="return confirm('Are you sure?')" href="/reject/{{encrypt($mywebsite->from_user_id)}}/{{encrypt($mywebsite->to_user_id)}}" class="btn btn-danger">Reject</a>
+                              @elseif(status=="rejected")
+                              <a href="#" class="btn btn-danger">Rejected</a>
                               @endif
                            </td>
                         </tr>

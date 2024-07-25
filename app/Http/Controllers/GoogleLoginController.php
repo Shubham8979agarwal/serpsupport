@@ -13,6 +13,7 @@ use App\Models\UserVerify;
 use App\Models\Website;
 use App\Models\Backlink;
 use App\Models\Outlink;
+use App\Models\RejectedPair;
 use Mail;
 use Illuminate\Support\Str;
 use DB;
@@ -117,225 +118,153 @@ class GoogleLoginController extends Controller
         }
     }
 
-    public function backlinks($forwhich_user_url){
+    /*public function backlinks($forwhich_user_url){
         $forwhich_user_url = decrypt($forwhich_user_url);
         $data['data'] = Auth::user();
         $data['backlink_data'] = DB::table('backlinks')->where('forwhich_user_url',$forwhich_user_url)->get()->toArray();
         return view('frontend.dashboard.backlinks',$data);
-    }
+    }*/
 
-    public function outlinks($forwhich_user_url){
+    /*public function outlinks($forwhich_user_url){
         $forwhich_user_url = decrypt($forwhich_user_url);
         $data['data'] = Auth::user();
         $data['outlink_data'] = DB::table('outlinks')->where('forwhich_user_url',$forwhich_user_url)->get()->toArray();
         return view('frontend.dashboard.outlinks',$data);
-    }
+    }*/
 
-    public function createbacklinks() {
-    $data['data'] = Auth::user();
-    $getverified_users = User::where('is_email_verified', '1')->get();
+   public function backlinks($forwhich_user_url) {
+        $forwhich_user_url = decrypt($forwhich_user_url);
+        $data['data'] = Auth::user();
 
-    if ($getverified_users->count() < 4) {
-        // Not enough users to create backlinks
-        return; // Or handle the case with a message, exception, etc.
-    }
+        // Fetch the backlinks data
+        $backlinkData = DB::table('backlinks')
+            ->where('forwhich_user_url', $forwhich_user_url)
+            ->get()
+            ->toArray();
 
-    $checkarray = [];
-    foreach ($getverified_users as $check) {
-        $websites = Website::where('website_uploader_email', $check->email)->get()->toArray();
-        if (!empty($websites)) {
-            $checkarray[] = [
-                'user_id' => $check->id,  // Correctly using 'id' for user_id
-                'websites' => $websites,
-            ];
-        }
-    }
+        // Fetch all rejected pairs
+        $rejectedPairs = RejectedPair::all(['from_user_id', 'to_user_id'])->toArray();
 
-    // Initialize pairs array
-    $pairs = [];
-
-    // Ensure the pattern and avoid reciprocal backlinks
-    for ($i = 2; $i < count($checkarray); $i++) {
-        $currentUserId = $checkarray[$i]['user_id'];
-        $targetUserId = $checkarray[$i - 2]['user_id'];
-
-        // Create the desired pairing pattern
-        $pairs[] = $currentUserId . "," . $targetUserId;
-
-        $currentWebsites = $checkarray[$i]['websites'];
-        $targetWebsites = $checkarray[$i - 2]['websites'];
-
-        $inserts = [];
-        foreach ($currentWebsites as $currentWebsite) {
-            foreach ($targetWebsites as $targetWebsite) {
-                $checkIfAlreadyExists = Backlink::where('website_url', $targetWebsite['website_url'])
-                                                ->where('from_user_id', $currentUserId)
-                                                ->where('to_user_id', $targetUserId)
-                                                ->exists();
-                if (!$checkIfAlreadyExists) {
-                    $inserts[] = [
-                        'from_user_id' => $currentUserId,
-                        'to_user_id' => $targetUserId,
-                        'forwhich_user_url' => $currentWebsite['website_url'],
-                        'website_id' => $currentWebsite['website_id'],
-                        'website_url' => $targetWebsite['website_url'],
-                        'website_niche' => $currentWebsite['website_niche'],
-                        'website_description' => $currentWebsite['website_description'],
-                        'status' => "",
-                    ];
-                }
-            }
+        // Create a set of rejected pairs for quick lookup
+        $rejectedPairsSet = [];
+        foreach ($rejectedPairs as $pair) {
+            // Ensure each rejected pair is represented as a sorted key to avoid order issues
+            $rejectedPairsSet[$this->sortPair($pair['from_user_id'], $pair['to_user_id'])] = true;
         }
 
-        if (!empty($inserts)) {
-            // Insert data into the database
-            DB::beginTransaction();
-            try {
-                DB::table('backlinks')->insert($inserts);
-                DB::commit();
-            } catch (\Exception $e) {
-                DB::rollback();
-                // Handle the exception (e.g., log it, throw it)
-                // Example: throw new \Exception("Error inserting data: " . $e->getMessage());
-            }
-        }
+        // Filter out rejected pairs from backlinkData
+        $filteredBacklinkData = array_filter($backlinkData, function($backlink) use ($rejectedPairsSet) {
+            // Create a key for the current backlink pair, sorted to match the rejected pairs
+            $pairKey = $this->sortPair($backlink->from_user_id, $backlink->to_user_id);
+            
+            // Check if this pair is in the rejected pairs set
+            return !isset($rejectedPairsSet[$pairKey]);
+        });
+
+        // Pass filtered backlink data to the view
+        $data['backlink_data'] = $filteredBacklinkData;
+
+        //dd($data['backlink_data']);
+
+        return view('frontend.dashboard.backlinks', $data);
     }
 
-    // Handle the first two users separately if necessary
-    if (count($checkarray) >= 4) {
-        for ($i = 0; $i < 2; $i++) {
-            $currentUserId = $checkarray[$i]['user_id'];
-            $targetUserId = $checkarray[count($checkarray) - 2 + $i]['user_id'];
+    public function outlinks($forwhich_user_url) {
+        $forwhich_user_url = decrypt($forwhich_user_url);
+        $data['data'] = Auth::user();
 
-            $pairs[] = $currentUserId . "," . $targetUserId;
+        // Fetch the outlinks data
+        $outlinkData = DB::table('outlinks')
+            ->where('forwhich_user_url', $forwhich_user_url)
+            ->get()
+            ->toArray();
 
-            $currentWebsites = $checkarray[$i]['websites'];
-            $targetWebsites = $checkarray[count($checkarray) - 2 + $i]['websites'];
+        // Fetch all rejected pairs
+        $rejectedPairs = RejectedPair::all(['from_user_id', 'to_user_id'])->toArray();
 
-            $inserts = [];
-            foreach ($currentWebsites as $currentWebsite) {
-                foreach ($targetWebsites as $targetWebsite) {
-                    $checkIfAlreadyExists = Backlink::where('website_url', $targetWebsite['website_url'])
-                                                    ->where('from_user_id', $currentUserId)
-                                                    ->where('to_user_id', $targetUserId)
-                                                    ->exists();
-                    if (!$checkIfAlreadyExists) {
-                        $inserts[] = [
-                            'from_user_id' => $currentUserId,
-                            'to_user_id' => $targetUserId,
-                            'forwhich_user_url' => $currentWebsite['website_url'],
-                            'website_id' => $currentWebsite['website_id'],
-                            'website_url' => $targetWebsite['website_url'],
-                            'website_niche' => $currentWebsite['website_niche'],
-                            'website_description' => $currentWebsite['website_description'],
-                            'status' => "",
-                        ];
-                    }
-                }
-            }
-
-            if (!empty($inserts)) {
-                // Insert data into the database
-                DB::beginTransaction();
-                try {
-                    DB::table('backlinks')->insert($inserts);
-                    DB::commit();
-                } catch (\Exception $e) {
-                    DB::rollback();
-                    // Handle the exception (e.g., log it, throw it)
-                    // Example: throw new \Exception("Error inserting data: " . $e->getMessage());
-                }
-            }
+        // Create a set of rejected pairs for quick lookup
+        $rejectedPairsSet = [];
+        foreach ($rejectedPairs as $pair) {
+            // Ensure each rejected pair is represented as a sorted key to avoid order issues
+            $rejectedPairsSet[$this->sortPair($pair['from_user_id'], $pair['to_user_id'])] = true;
         }
+
+        // Filter out rejected pairs from outlinkData
+        $filteredOutlinkData = array_filter($outlinkData, function($outlink) use ($rejectedPairsSet) {
+            // Create a key for the current outlink pair, sorted to match the rejected pairs
+            $pairKey = $this->sortPair($outlink->from_user_id, $outlink->to_user_id);
+            
+            // Check if this pair is in the rejected pairs set
+            return !isset($rejectedPairsSet[$pairKey]);
+        });
+
+        // Pass filtered outlink data to the view
+        $data['outlink_data'] = $filteredOutlinkData;
+
+        return view('frontend.dashboard.outlinks', $data);
     }
 
-    //dd($pairs);
+    /**
+     * Sort the pair so that (1, 2) is the same as (2, 1)
+     *
+     * @param int $fromUserId
+     * @param int $toUserId
+     * @return string
+     */
+    private function sortPair($fromUserId, $toUserId) {
+        // Ensure the smaller ID comes first in the sorted key
+        return $fromUserId < $toUserId ? "{$fromUserId}-{$toUserId}" : "{$toUserId}-{$fromUserId}";
+    }
+
+    public function rejectPair($from_user_id, $to_user_id)
+{
+    $fromUserId = decrypt($from_user_id);
+    $toUserId = decrypt($to_user_id);
+
+    // Check if the rejection already exists
+    $exists = RejectedPair::where('from_user_id', $fromUserId)
+                ->where('to_user_id', $toUserId)
+                ->exists();
+
+    if (!$exists) {
+        RejectedPair::create([
+            'from_user_id' => $fromUserId,
+            'to_user_id' => $toUserId,
+        ]);
+    }
+
+    // Check in backlinks table
+    $backlinkExists = Backlink::where('from_user_id', $fromUserId)
+                                ->where('to_user_id', $toUserId)
+                                ->exists();
+
+    // Check in outlinks table
+    $outlinkExists = Outlink::where('from_user_id', $fromUserId)
+                            ->where('to_user_id', $toUserId)
+                            ->exists();
+
+    // Update status to "rejected" in the appropriate table
+    if ($backlinkExists) {
+        Backlink::where('from_user_id', $fromUserId)
+                ->where('to_user_id', $toUserId)
+                ->update(['status' => 'rejected']);
+    }
+
+    if ($outlinkExists) {
+        Outlink::where('from_user_id', $fromUserId)
+                ->where('to_user_id', $toUserId)
+                ->update(['status' => 'rejected']);
+    }
+
+    return back()->with('reject_message', 'Connection request rejected successfully');
 }
 
 
-    public function createoutlinks() {
-    $data['data'] = Auth::user();
-    $getverified_users = User::where('is_email_verified', '1')->get();
 
-    // Check if there are enough users
-    $userCount = $getverified_users->count();
-    if ($userCount < 2) {
-        // Not enough users to create outlinks
-        return;
-        //return response()->json(['message' => 'Not enough users to create outlinks. At least 2 users are required.'], 400);
-    }
 
-    // Prepare users and their websites
-    $checkarray = [];
-    foreach ($getverified_users as $check) {
-        $websites = Website::where('website_uploader_email', $check->email)->get()->toArray();
-        if (!empty($websites)) {
-            $checkarray[] = [
-                'user_id' => $check->id,  // Assuming 'id' is the user_id field
-                'websites' => $websites,
-            ];
-        }
-    }
 
-    // Ensure there are at least 2 users with websites
-    if (count($checkarray) < 2) {
-        return;
-        //return response()->json(['message' => 'Not enough users with websites to create outlinks. At least 2 users with websites are required.'], 400);
-    }
 
-    // Create outlinks with cyclic pattern
-    $pairs = [];
-    for ($i = 0; $i < count($checkarray); $i++) {
-        $currentUserId = $checkarray[$i]['user_id'];
-        $nextUserId = $checkarray[($i + 1) % count($checkarray)]['user_id'];  // Wrap around to the first user
 
-        $pairs[] = $currentUserId . "," . $nextUserId;
-
-        $currentWebsites = $checkarray[$i]['websites'];
-        $nextWebsites = $checkarray[($i + 1) % count($checkarray)]['websites'];
-
-        $inserts = [];
-        foreach ($currentWebsites as $currentWebsite) {
-            foreach ($nextWebsites as $nextWebsite) {
-                // Check if outlink already exists
-                $checkIfAlreadyExists = Outlink::where('from_user_id', $currentUserId)
-                                                ->where('to_user_id', $nextUserId)
-                                                ->where('website_url', $currentWebsite['website_url'])
-                                                ->exists();
-                if (!$checkIfAlreadyExists) {
-                    $inserts[] = [
-                        'from_user_id' => $currentUserId,
-                        'to_user_id' => $nextUserId,
-                        'forwhich_user_url' => $nextWebsite['website_url'],
-                        'website_id' => $currentWebsite['website_id'],
-                        'website_url' => $currentWebsite['website_url'],
-                        'website_niche' => $currentWebsite['website_niche'],
-                        'website_description' => $currentWebsite['website_description'],
-                        'status' => "",
-                    ];
-                }
-            }
-        }
-
-        // Insert data into the database if there are new outlinks
-        if (!empty($inserts)) {
-            DB::beginTransaction();
-            try {
-                DB::table('outlinks')->insert($inserts);
-                DB::commit();
-            } catch (\Exception $e) {
-                DB::rollback();
-                // Log or handle the exception
-                // Example: throw new \Exception("Error inserting data: " . $e->getMessage());
-            }
-        }
-    }
-
-    // Uncomment the line below to see the generated pairs
-    // dd($pairs);
-
-    //return response()->json(['message' => 'Outlinks created successfully.'], 200);
-}
 
 
     public function redirectToGoogle()

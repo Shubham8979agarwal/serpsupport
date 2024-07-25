@@ -69,6 +69,7 @@ Route::get('acceptedby-from-outlink-connection/{id}', [GoogleLoginController::cl
 Route::get('acceptedby-to-backlink-connection/{id}', [GoogleLoginController::class, 'acceptedby_to_backlink_connection'])->name('acceptedby-to-backlink-connection');
 
 Route::get('acceptedby-from-backlink-connection/{id}', [GoogleLoginController::class, 'acceptedby_from_backlink_connection'])->name('acceptedby-from-backlink-connection');
+Route::get('reject/{from_user_id}/{to_user_id}', [GoogleLoginController::class, 'rejectPair'])->name('reject');
 
 Route::get('signout', [GoogleLoginController::class, 'signout'])->name('signout');
 });
