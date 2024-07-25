@@ -133,41 +133,41 @@ class GoogleLoginController extends Controller
     }*/
 
    public function backlinks($forwhich_user_url) {
-        $forwhich_user_url = decrypt($forwhich_user_url);
-        $data['data'] = Auth::user();
+    $forwhich_user_url = decrypt($forwhich_user_url);
+    $data['data'] = Auth::user();
 
-        // Fetch the backlinks data
-        $backlinkData = DB::table('backlinks')
-            ->where('forwhich_user_url', $forwhich_user_url)
-            ->get()
-            ->toArray();
+    // Fetch the backlinks data
+    $backlinkData = DB::table('backlinks')
+        ->where('forwhich_user_url', $forwhich_user_url)
+        ->get()
+        ->toArray();
 
-        // Fetch all rejected pairs
-        $rejectedPairs = RejectedPair::all(['from_user_id', 'to_user_id'])->toArray();
-        
-        // Create a set of rejected pairs for quick lookup
-        $rejectedPairsSet = [];
-        foreach ($rejectedPairs as $pair) {
-            // Ensure each rejected pair is represented as a sorted key to avoid order issues
-            $rejectedPairsSet[$this->sortPair($pair['from_user_id'], $pair['to_user_id'])] = true;
-        }
+    // Fetch all rejected pairs
+    $rejectedPairs = RejectedPair::all(['from_user_id', 'to_user_id'])->toArray();
 
-        // Filter out rejected pairs from backlinkData
-        $filteredBacklinkData = array_filter($backlinkData, function($backlink) use ($rejectedPairsSet) {
-            // Create a key for the current backlink pair, sorted to match the rejected pairs
-            $pairKey = $this->sortPair($backlink->from_user_id, $backlink->to_user_id);
-            
-            // Check if this pair is in the rejected pairs set
-            return !isset($rejectedPairsSet[$pairKey]);
-        });
-
-        // Pass filtered backlink data to the view
-        $data['backlink_data'] = $filteredBacklinkData;
-
-        dd($data['backlink_data']);
-
-        return view('frontend.dashboard.backlinks', $data);
+    // Create a set of rejected pairs for quick lookup
+    $rejectedPairsSet = [];
+    foreach ($rejectedPairs as $pair) {
+        // Ensure each rejected pair is represented as a sorted key to avoid order issues
+        $rejectedPairsSet[$this->sortPair($pair['from_user_id'], $pair['to_user_id'])] = true;
     }
+
+    // Filter out rejected pairs from backlinkData
+    $filteredBacklinkData = array_filter($backlinkData, function($backlink) use ($rejectedPairsSet) {
+        // Create a key for the current backlink pair, sorted to match the rejected pairs
+        $pairKey = $this->sortPair($backlink->from_user_id, $backlink->to_user_id);
+        
+        // Check if this pair is in the rejected pairs set
+        return !isset($rejectedPairsSet[$pairKey]);
+    });
+
+    // Pass filtered backlink data to the view
+    $data['backlink_data'] = $filteredBacklinkData;
+
+    //dd($data['backlink_data']); // Uncomment this line to debug the data
+
+    return view('frontend.dashboard.backlinks', $data);
+}
 
     public function outlinks($forwhich_user_url) {
         $forwhich_user_url = decrypt($forwhich_user_url);
@@ -259,13 +259,6 @@ class GoogleLoginController extends Controller
 
     return back()->with('reject_message', 'Connection request rejected successfully');
 }
-
-
-
-
-
-
-
 
 
     public function redirectToGoogle()
