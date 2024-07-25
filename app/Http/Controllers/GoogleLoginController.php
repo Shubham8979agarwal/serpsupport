@@ -132,7 +132,6 @@ class GoogleLoginController extends Controller
         return view('frontend.dashboard.outlinks',$data);
     }
 
-
     public function rejectPair($from_user_id, $to_user_id)
     {
         $fromUserId = decrypt($from_user_id);
