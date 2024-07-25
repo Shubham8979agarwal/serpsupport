@@ -142,13 +142,18 @@ class GoogleLoginController extends Controller
     // Create a set of rejected pairs for quick lookup
     $rejectedPairsSet = [];
     foreach ($rejectedPairs as $pair) {
-        // Ensure each rejected pair is represented as a sorted key to avoid order issues
         $rejectedPairsSet[$this->sortPair($pair['from_user_id'], $pair['to_user_id'])] = true;
     }
 
     // Generate the valid pattern pairs
     $validPairs = [];
     $userIds = User::where('is_email_verified', '1')->pluck('id')->toArray();
+    
+    // Ensure there are enough users to create pairs
+    if (count($userIds) < 4) {
+        return view('frontend.dashboard.backlinks', $data); // Not enough users to create valid pairs
+    }
+
     foreach ($userIds as $i => $fromUserId) {
         $toUserId = $userIds[$i + 2] ?? null; // Ensure fromUserId is two steps before toUserId
         if ($toUserId) {
