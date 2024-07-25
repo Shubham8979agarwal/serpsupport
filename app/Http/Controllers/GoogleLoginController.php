@@ -144,7 +144,7 @@ class GoogleLoginController extends Controller
 
         // Fetch all rejected pairs
         $rejectedPairs = RejectedPair::all(['from_user_id', 'to_user_id'])->toArray();
-
+        
         // Create a set of rejected pairs for quick lookup
         $rejectedPairsSet = [];
         foreach ($rejectedPairs as $pair) {
@@ -181,7 +181,7 @@ class GoogleLoginController extends Controller
 
         // Fetch all rejected pairs
         $rejectedPairs = RejectedPair::all(['from_user_id', 'to_user_id'])->toArray();
-        dd($rejectedPairs);
+        //dd($rejectedPairs);
 
         // Create a set of rejected pairs for quick lookup
         $rejectedPairsSet = [];
