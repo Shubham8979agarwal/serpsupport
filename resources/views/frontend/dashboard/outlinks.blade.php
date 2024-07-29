@@ -51,7 +51,9 @@
                         <?php $i=0; ?>
                        @foreach ($outlink_data as $mywebsite)
                         <tr>
-                           <td>{{ $mywebsite->website_url }}</td>
+                           <td>
+                              {{ $mywebsite->website_url }}
+                           </td>
                            <td>{{ $mywebsite->website_niche }}</td>
                            <td>
                               <p> 
@@ -66,14 +68,13 @@
                               </div>
                            </td>
                            <td>
-                              @if((Auth::user()->id==$mywebsite->to_user_id) && $mywebsite->status=="")
-                              
+                              @if($mywebsite->status=="" || ($mywebsite->acceptedby_to=="" && $mywebsite->status=="pending"))
                               <a onclick="return confirm('Are you sure?')" href="/acceptedby-to-outlink-connection/{{ encrypt($mywebsite->id) }}" class="btn btn-success">Approve</a> | <a onclick="return confirm('Are you sure?')" href="/reject/{{encrypt($mywebsite->from_user_id)}}/{{encrypt($mywebsite->to_user_id)}}" class="btn btn-danger">Reject</a>
 
-                              @elseif($mywebsite->status=="pending" && $mywebsite->acceptedby_to=="yes")
+                              @elseif($mywebsite->status=="pending")
                               <a href="#" class="btn btn-warning">Waiting for Approval</a>
 
-                              @elseif($mywebsite->acceptedby_to=="yes" && $mywebsite->acceptedby_from=="yes" && $mywebsite->status=="accepted")
+                              @elseif($mywebsite->status=="accepted")
                               <a href="#" class="btn btn-success">Go to chat</a>
 
                               @elseif($mywebsite->status=="rejected")
@@ -82,107 +83,7 @@
                               @endif
                            </td>
                         </tr>
-                        @endforeach
-                     </tbody>
-                     <tfoot>
-                        <tr>
-                           <th>Website</th>
-                           <th>Niche</th>
-                           <th>Description</th>
-                           <th>Action</th>
-                        </tr>
-                     </tfoot>
-                  </table>
-               </div>
-            </div>
-         </div>
-      </div>
-      <!--- chat connection requests --->
-      <?php
-      //$lastSegment = $lastSegment
-      //$lastSegment=$lastSegment;
-      $data = DB::table('outlinks')->where('website_url',$lastSegment)->where('acceptedby_to','yes')->where('status','pending')->orwhere('status','rejected')->get();
-      //print_r($data);
-      //die();
-      $find_data = [];
-      foreach ($data as $conn_req){
-         if($lastSegment==$conn_req->website_url){
-            $find_data[] = $conn_req;
-         }
-      }
-      ?>
-      <div class="row">
-         <div class="col-md-12">
-            <div class="card card-round">
-               <div class="card-header">
-                  <div class="card-head-row card-tools-still-right">
-                     <div class="card-title">Chat connection requests
-                        <!-- <p>These are the websites you have to give a backlink to</p> -->
-                     </div>
-                  </div>
-               </div>
-               <div class="card-body p-4">
-                  <table id="websites" class="table" style="width: 100%;">
-                     <thead>
-                        <tr>
-                           <th>Website</th>
-                           <th>Niche</th>
-                           <th>Description</th>
-                           <th>Action</th>
-                        </tr>
-                     </thead>
-                     <tbody>
-                        <?php $i=0; ?>
-                         @foreach ($find_data as $mywebsite)
-                         @if(Auth::user()->id==$mywebsite->from_user_id)
-                        <tr>
-                           <td>
-                              {{ $mywebsite->forwhich_user_url }}
-                           </td>
-
-                           <td>
-                              <?php 
-                                $getniche = DB::table('websites')->where('website_url', $mywebsite->forwhich_user_url)->get()->toArray();
-                              ?>
-                              @foreach ($getniche as $niche)
-                              {{ $niche->website_niche }}
-                              @endforeach
-                           </td>
-                           <td>
-                              <?php 
-                                $getdesc = DB::table('websites')->where('website_url', $mywebsite->forwhich_user_url)->get()->toArray();
-                              ?>
-                              @foreach ($getdesc as $desc)
-                              <p> 
-                                <a data-bs-toggle="collapse" href="#collapseExample<?php $i=$i+1; echo $i; ?>" role="button" aria-expanded="false" aria-controls="collapseExample<?php echo $i; ?>">
-                                  Show/Hide
-                                </a>
-                              </p>
-                              <div class="collapse" id="collapseExample<?php echo $i; ?>">
-                                <div class="card card-body">
-                                  {{ $desc->website_description }}
-                                </div>
-                              </div>
-                              @endforeach
-                           </td>
-
-                           <td>
-                              @if($mywebsite->website_url==$lastSegment && $mywebsite->acceptedby_to=='yes' && $mywebsite->status=="pending")
-                              <a onclick="return confirm('Are you sure?')" href="/acceptedby-from-outlink-connection/{{ encrypt($mywebsite->id) }}" class="btn btn-success">Approve</a> | <a onclick="return confirm('Are you sure?')" href="/reject/{{encrypt($mywebsite->from_user_id)}}/{{encrypt($mywebsite->to_user_id)}}" class="btn btn-danger">Reject</a>
-                              @elseif($mywebsite->status=="rejected")
-                              <a href="#" class="btn btn-danger">Rejected</a>
-                              @endif
-                           </td>
-                        </tr>
-                        @else
-                        <tr>
-                           <td>There is no chat connection request yet...</td>
-                           <td></td>
-                           <td></td>
-                           <td></td>
-                        <tr>
-                        @endif
-                        @endforeach
+                        @endforeach 
                      </tbody>
                      <tfoot>
                         <tr>
@@ -248,106 +149,6 @@
                   <div class="card-title">
                      <p>No connection at the moment</p>
                </div>
-               </div>
-            </div>
-         </div>
-      </div>
-      <!--- chat connection requests --->
-      <?php
-      //$lastSegment = $lastSegment
-      //$lastSegment=$lastSegment;
-      $data = DB::table('outlinks')->where('website_url',$lastSegment)->where('acceptedby_to','yes')->where('status','pending')->orwhere('status','rejected')->get();
-      //print_r($data);
-      //die();
-      $find_data = [];
-      foreach ($data as $conn_req){
-         if($lastSegment==$conn_req->website_url){
-            $find_data[] = $conn_req;
-         }
-      }
-      ?>
-      <div class="row">
-         <div class="col-md-12">
-            <div class="card card-round">
-               <div class="card-header">
-                  <div class="card-head-row card-tools-still-right">
-                     <div class="card-title">Chat connection requests
-                        <!-- <p>These are the websites you have to give a backlink to</p> -->
-                     </div>
-                  </div>
-               </div>
-               <div class="card-body p-4">
-                  <table id="websites" class="table" style="width: 100%;">
-                     <thead>
-                        <tr>
-                           <th>Website</th>
-                           <th>Niche</th>
-                           <th>Description</th>
-                           <th>Action</th>
-                        </tr>
-                     </thead>
-                     <tbody>
-                        <?php $i=0; ?>
-                         @foreach ($find_data as $mywebsite)
-                         @if(Auth::user()->id==$mywebsite->from_user_id)
-                        <tr>
-                           <td>
-                              {{ $mywebsite->forwhich_user_url }}
-                           </td>
-
-                           <td>
-                              <?php 
-                                $getniche = DB::table('websites')->where('website_url', $mywebsite->forwhich_user_url)->get()->toArray();
-                              ?>
-                              @foreach ($getniche as $niche)
-                              {{ $niche->website_niche }}
-                              @endforeach
-                           </td>
-                           <td>
-                              <?php 
-                                $getdesc = DB::table('websites')->where('website_url', $mywebsite->forwhich_user_url)->get()->toArray();
-                              ?>
-                              @foreach ($getdesc as $desc)
-                              <p> 
-                                <a data-bs-toggle="collapse" href="#collapseExample<?php $i=$i+1; echo $i; ?>" role="button" aria-expanded="false" aria-controls="collapseExample<?php echo $i; ?>">
-                                  Show/Hide
-                                </a>
-                              </p>
-                              <div class="collapse" id="collapseExample<?php echo $i; ?>">
-                                <div class="card card-body">
-                                  {{ $desc->website_description }}
-                                </div>
-                              </div>
-                              @endforeach
-                           </td>
-
-                           <td>
-                              @if($mywebsite->website_url==$lastSegment && $mywebsite->acceptedby_to=='yes' && $mywebsite->status=="pending")
-                              <a onclick="return confirm('Are you sure?')" href="/acceptedby-from-outlink-connection/{{ encrypt($mywebsite->id) }}" class="btn btn-success">Approve</a> | <a onclick="return confirm('Are you sure?')" href="/reject/{{encrypt($mywebsite->from_user_id)}}/{{encrypt($mywebsite->to_user_id)}}" class="btn btn-danger">Reject</a>
-                              @elseif($mywebsite->status=="rejected")
-                              <a href="#" class="btn btn-danger">Rejected</a>
-                              @endif
-                           </td>
-                        </tr>
-                        @else
-                        <tr>
-                           <td>There is no chat connection request yet...</td>
-                           <td></td>
-                           <td></td>
-                           <td></td>
-                        <tr>
-                        @endif
-                        @endforeach
-                     </tbody>
-                     <tfoot>
-                        <tr>
-                           <th>Website</th>
-                           <th>Niche</th>
-                           <th>Description</th>
-                           <th>Action</th>
-                        </tr>
-                     </tfoot>
-                  </table>
                </div>
             </div>
          </div>

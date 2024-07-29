@@ -71,6 +71,8 @@ Route::get('acceptedby-to-backlink-connection/{id}', [GoogleLoginController::cla
 Route::get('acceptedby-from-backlink-connection/{id}', [GoogleLoginController::class, 'acceptedby_from_backlink_connection'])->name('acceptedby-from-backlink-connection');
 Route::get('reject/{from_user_id}/{to_user_id}', [GoogleLoginController::class, 'rejectPair'])->name('reject');
 
+Route::get('/weekly-update', [WebsiteController::class, 'weeklyUpdate']);
+
 Route::get('signout', [GoogleLoginController::class, 'signout'])->name('signout');
 });
 });
