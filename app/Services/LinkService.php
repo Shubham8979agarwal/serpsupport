@@ -6,7 +6,6 @@ use App\Models\User;
 use App\Models\Website;
 use App\Models\Backlink;
 use App\Models\Outlink;
-use App\Models\RejectedPair;
 use Illuminate\Support\Facades\DB;
 
 class LinkService
@@ -130,11 +129,46 @@ class LinkService
         $link = new $linkClass();
         $link->website_url = $website->website_url;
         $link->from_user_id = $website->user_id;
-        $toUser = User::where('email', $website->website_uploader_email)->first();
+
+        if ($linkType === 'backlinks') {
+            $toUser = $this->getBacklinkUser($website->user_id);
+        } else {
+            $toUser = $this->getOutlinkUser($website->user_id);
+        }
+
         if ($toUser) {
             $link->to_user_id = $toUser->id;
+            $link->forwhich_user_url = $website->website_url;
             $link->save();
         }
+    }
+
+    private function getBacklinkUser($userId)
+    {
+        $usersWithWebsites = User::whereHas('websites')->pluck('id')->toArray();
+
+        $index = array_search($userId, $usersWithWebsites);
+
+        if ($index === false || $index < 2) {
+            return null;
+        }
+
+        $targetUserId = $usersWithWebsites[$index - 2];
+        return User::find($targetUserId);
+    }
+
+    private function getOutlinkUser($userId)
+    {
+        $usersWithWebsites = User::whereHas('websites')->pluck('id')->toArray();
+
+        $index = array_search($userId, $usersWithWebsites);
+
+        if ($index === false || $index >= count($usersWithWebsites) - 1) {
+            return null;
+        }
+
+        $targetUserId = $usersWithWebsites[$index + 1];
+        return User::find($targetUserId);
     }
 
     public function weeklyUpdate()

@@ -61,6 +61,7 @@
                               @else
                               {{ $mywebsite->website_url }}
                               @endif
+                              
                            </td>
                            <td>
                               @if($mywebsite->website_url==$lastSegment)
