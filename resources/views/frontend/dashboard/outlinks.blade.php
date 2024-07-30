@@ -52,10 +52,31 @@
                        @foreach ($outlink_data as $mywebsite)
                         <tr>
                            <td>
+                              @if($mywebsite->website_url==$lastSegment)
+                              {{ $mywebsite->forwhich_user_url }}
+                              @else
                               {{ $mywebsite->website_url }}
+                              @endif
+                              
                            </td>
-                           <td>{{ $mywebsite->website_niche }}</td>
                            <td>
+                              @if($mywebsite->website_url==$lastSegment)
+                              <?php 
+                                $getniche = DB::table('websites')->where('website_url', $mywebsite->forwhich_user_url)->select('website_niche')->pluck('website_niche')->first();
+                              ?>
+                              {{ $getniche }}
+                              @else
+                              <?php 
+                                $getniche = DB::table('websites')->where('website_url', $mywebsite->website_url)->select('website_niche')->pluck('website_niche')->first();
+                              ?>
+                              {{ $getniche }}
+                              @endif
+                           </td>
+                           <td>
+                              @if($mywebsite->website_url==$lastSegment)
+                              <?php 
+                                $get_website_description = DB::table('websites')->where('website_url', $mywebsite->forwhich_user_url)->select('website_description')->pluck('website_description')->first();
+                              ?>
                               <p> 
                                 <a data-bs-toggle="collapse" href="#collapseExample<?php $i=$i+1; echo $i; ?>" role="button" aria-expanded="false" aria-controls="collapseExample<?php echo $i; ?>">
                                   Show/Hide
@@ -63,11 +84,27 @@
                               </p>
                               <div class="collapse" id="collapseExample<?php echo $i; ?>">
                                 <div class="card card-body">
-                                  {{ $mywebsite->website_description }}
+                                  {{ $get_website_description }}
                                 </div>
                               </div>
+                              @else
+                              <?php 
+                                $get_website_description = DB::table('websites')->where('website_url', $mywebsite->website_url)->select('website_description')->pluck('website_description')->first();
+                              ?>
+                              <p> 
+                                <a data-bs-toggle="collapse" href="#collapseExample<?php $i=$i+1; echo $i; ?>" role="button" aria-expanded="false" aria-controls="collapseExample<?php echo $i; ?>">
+                                  Show/Hide
+                                </a>
+                              </p>
+                              <div class="collapse" id="collapseExample<?php echo $i; ?>">
+                                <div class="card card-body">
+                                  {{ $get_website_description }}
+                                </div>
+                              </div>
+                              @endif
                            </td>
                            <td>
+
                               @if($mywebsite->status=="" || ($mywebsite->acceptedby_to=="" && $mywebsite->status=="pending"))
                               <a onclick="return confirm('Are you sure?')" href="/acceptedby-to-outlink-connection/{{ encrypt($mywebsite->id) }}" class="btn btn-success">Approve</a> | <a onclick="return confirm('Are you sure?')" href="/reject/{{encrypt($mywebsite->from_user_id)}}/{{encrypt($mywebsite->to_user_id)}}" class="btn btn-danger">Reject</a>
 
@@ -79,8 +116,8 @@
 
                               @elseif($mywebsite->status=="rejected")
                               <a href="#" class="btn btn-danger">Rejected</a>
-                              
                               @endif
+
                            </td>
                         </tr>
                         @endforeach 

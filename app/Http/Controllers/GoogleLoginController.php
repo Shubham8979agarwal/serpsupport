@@ -74,20 +74,21 @@ class GoogleLoginController extends Controller
     }
 
 
-    public function acceptedby_to_outlink_connection($id)
+    /*public function acceptedby_to_outlink_connection($id)
     {
-        //dd("hello");
         $id = decrypt($id);
-        //dd($id);
+        
         // Fetch the outlink data
-        $outlink = DB::table('backlinks')->where('id', $id)->first();
-        //dd($outlink);
+        $outlink = DB::table('outlinks')->where('id', $id)->first();
+
+        
+
         if (!$outlink) {
             return back()->with('error', 'Outlink not found');
         }
 
         // Update the acceptedby_to field in the outlink
-        DB::table('backlinks')->where('id', $id)->update(['acceptedby_to' => 'yes']);
+        DB::table('outlinks')->where('id', $id)->update(['acceptedby_to' => 'yes']);
 
         // Determine the new status
         $newStatus = (
@@ -95,41 +96,133 @@ class GoogleLoginController extends Controller
         ) ? 'accepted' : 'pending';
 
         // Update both records with the new status
-        DB::table('backlinks')->where('id', $id)->update(['status' => $newStatus]);
-        //dd("hello");
+        DB::table('outlinks')->where('id', $id)->update(['status' => $newStatus]);
         return back()->with('message_acceptedby_to_outlink_connection', 'Thank you for approving the connection');
-    }
+    }*/
 
+    public function acceptedby_to_outlink_connection($id)
+{
+    $id = decrypt($id);
+    
+    // Fetch the outlink data
+    $outlink = DB::table('outlinks')->where('id', $id)->first();
 
-    public function acceptedby_from_backlink_connection($id)
-    {
-        //dd("hello");
-        $id = decrypt($id);
-
-        // Fetch the backlink data
-        $backlink = DB::table('backlinks')->where('id', $id)->first();
-
-        if (!$backlink) {
-            return back()->with('error', 'Backlink not found');
-        }
-
-        // Update the acceptedby_from field in the outlink
-        DB::table('backlinks')->where('id', $backlink->id)->update(
-            [
-                'acceptedby_from' => 'yes',
-                /*'executed' => 'Accepted by other user. The other user is waiting for your approval for chat'*/
-            ]
-        );
+    if ($outlink) {
+        // Update the acceptedby_to field in the outlink
+        DB::table('outlinks')->where('id', $id)->update(['acceptedby_to' => 'yes']);
 
         // Determine the new status
         $newStatus = (
-            $backlink->acceptedby_from == 'yes' || $backlink->acceptedby_to == 'yes'
+            $outlink->acceptedby_from == 'yes' || $outlink->acceptedby_to == 'yes'
         ) ? 'accepted' : 'pending';
 
-        // Update both records with the new status
-        DB::table('backlinks')->where('id', $backlink->id)->update(['status' => $newStatus]);
-        return back()->with('message_acceptedby_from_backlink_connection', 'Thank you for approving the connection');
+        // Update the outlink record with the new status
+        DB::table('outlinks')->where('id', $id)->update(['status' => $newStatus]);
+
+        return back()->with('message_acceptedby_to_outlink_connection', 'Thank you for approving the connection');
+    } else {
+        // Fetch the backlink data
+        $backlink = DB::table('backlinks')->where('id', $id)->first();
+
+        if ($backlink) {
+            // Update the acceptedby_to field in the backlink
+            DB::table('backlinks')->where('id', $id)->update(['acceptedby_to' => 'yes']);
+
+            // Determine the new status
+            $newStatus = (
+                $backlink->acceptedby_from == 'yes' || $backlink->acceptedby_to == 'yes'
+            ) ? 'accepted' : 'pending';
+
+            // Update the backlink record with the new status
+            DB::table('backlinks')->where('id', $id)->update(['status' => $newStatus]);
+
+            return back()->with('message_acceptedby_to_outlink_connection', 'Thank you for approving the connection');
+        } else {
+            return back()->with('error', 'Record not found in both outlinks and backlinks');
+        }
     }
+}
+
+
+
+    public function acceptedby_from_backlink_connection($id)
+{
+    $id = decrypt($id);
+
+    // Fetch the outlink data
+    $outlink = DB::table('outlinks')->where('id', $id)->first();
+
+    if ($outlink) {
+        // Update the acceptedby_from field in the outlink
+        DB::table('outlinks')->where('id', $id)->update([
+            'acceptedby_from' => 'yes'
+        ]);
+
+        // Determine the new status
+        $newStatus = (
+            $outlink->acceptedby_from == 'yes' || $outlink->acceptedby_to == 'yes'
+        ) ? 'accepted' : 'pending';
+
+        // Update the outlink record with the new status
+        DB::table('outlinks')->where('id', $id)->update(['status' => $newStatus]);
+
+        return back()->with('message_acceptedby_from_backlink_connection', 'Thank you for approving the connection');
+    } else {
+        // Fetch the backlink data
+        $backlink = DB::table('backlinks')->where('id', $id)->first();
+
+        if ($backlink) {
+            // Update the acceptedby_from field in the backlink
+            DB::table('backlinks')->where('id', $id)->update([
+                'acceptedby_from' => 'yes'
+            ]);
+
+            // Determine the new status
+            $newStatus = (
+                $backlink->acceptedby_from == 'yes' || $backlink->acceptedby_to == 'yes'
+            ) ? 'accepted' : 'pending';
+
+            // Update the backlink record with the new status
+            DB::table('backlinks')->where('id', $id)->update(['status' => $newStatus]);
+
+            return back()->with('message_acceptedby_from_backlink_connection', 'Thank you for approving the connection');
+        } else {
+            return back()->with('error', 'Record not found in both outlinks and backlinks');
+        }
+    }
+}
+
+
+
+
+    /*public function acceptedby_to_backlink_connection($id){
+        $id = decrypt($id);
+        $updateDetails = ['acceptedby_to' => 'yes', 'status' => 'accepted'];
+        $update = DB::table('backlinks')->where('id', $id)->update($updateDetails);
+        return back()->with('message_acceptedby_to_backlink_connection','Thank you for approving the connection, You are now able to chat');
+    }*/
+
+    /*public function push_website(Request $request){
+        $numberOfwebsite = Website::where('website_uploader_email',Auth::user()->email)->count();
+        if($numberOfwebsite<10){
+            $request->validate([
+            'website_niche' => 'required',
+            'website_url' => 'required',
+            'website_description' => 'required',
+         ]);
+        $data = $request->all();
+        if(str_word_count($data['website_description'])>250){
+           return back()->with('error_message', 'Failed! The website description exceeds 250 words.'); 
+        }
+        $data['website_id'] = Str::random(10);
+        $data['user_id'] = Auth::user()->id;
+        $data['website_uploader_email'] = Auth::user()->email;
+        $pushwebsitetodatabse = Website::create($data);
+        return redirect('account-settings')->with('message', 'Website Added Successfully ...');
+        }else{
+            return back()->with('error_message', 'You can add Max 10 websites');
+        }
+    }*/
 
     public function push_website(Request $request)
     {
@@ -172,9 +265,22 @@ class GoogleLoginController extends Controller
     }
 
 
-   public function backlinks($forwhich_user_url)
-    {
+    /*public function backlinks($forwhich_user_url){
+        $forwhich_user_url = decrypt($forwhich_user_url);
+        $data['data'] = Auth::user();
+        $data['backlink_data'] = DB::table('backlinks')->where('forwhich_user_url',$forwhich_user_url)->get()->toArray();
+        return view('frontend.dashboard.backlinks',$data);
+    }
 
+    public function outlinks($forwhich_user_url){
+        $forwhich_user_url = decrypt($forwhich_user_url);
+        $data['data'] = Auth::user();
+        $data['outlink_data'] = DB::table('outlinks')->where('forwhich_user_url',$forwhich_user_url)->get()->toArray();
+        return view('frontend.dashboard.outlinks',$data);
+    }*/
+
+    public function backlinks($forwhich_user_url)
+    {
         $forwhich_user_url = decrypt($forwhich_user_url);
         $website_url = $forwhich_user_url;
         $data['data'] = Auth::user();
@@ -208,44 +314,61 @@ class GoogleLoginController extends Controller
         return view('frontend.dashboard.backlinks', $data);
     }
 
-    public function outlinks($forwhich_user_url)
+
+    /*public function outlinks($forwhich_user_url)
     {
         $forwhich_user_url = decrypt($forwhich_user_url);
         $website_url = $forwhich_user_url;
         $data['data'] = Auth::user();
-
-        // Fetch user backlink URLs
-        $userBacklinkUrls = DB::table('backlinks')
-            ->where('website_url', $website_url)
-            ->get()
-            ->toArray();   
-
-        // Fetch outlinks
-        $outlink_data = DB::table('outlinks')
+        $data['outlink_data'] = DB::table('outlinks')
             ->where('forwhich_user_url', $forwhich_user_url)
             ->get()
             ->toArray();
-
-        // Get all backlink records to compare
-        $backlinks = DB::table('backlinks')->get()->toArray();
-
-        // Filter out outlinks that have matching reversed from_user_id and to_user_id in backlinks
-        $filtered_outlink_data = array_filter($outlink_data, function($outlink) use ($backlinks) {
-            foreach ($backlinks as $backlink) {
-                if ($outlink->from_user_id == $backlink->to_user_id && $outlink->to_user_id == $backlink->from_user_id) {
-                    return false;
-                }
-            }
-            return true;
-        });
-
-        // Remove duplicates from userBacklinkUrls and filtered_outlink_data
-        $unique_outlink_data = array_unique(array_merge($userBacklinkUrls, $filtered_outlink_data), SORT_REGULAR);
-
-        // Assign the unique data to outlink_data
-        $data['outlink_data'] = $unique_outlink_data;
         return view('frontend.dashboard.outlinks', $data);
-    }
+    }*/
+
+    public function outlinks($forwhich_user_url)
+{
+    $forwhich_user_url = decrypt($forwhich_user_url);
+    $website_url = $forwhich_user_url;
+    $data['data'] = Auth::user();
+
+    // Fetch user backlink URLs
+    $userBacklinkUrls = DB::table('backlinks')
+        ->where('website_url', $website_url)
+        ->get()
+        ->toArray();   
+
+    // Fetch outlinks
+    $outlink_data = DB::table('outlinks')
+        ->where('forwhich_user_url', $forwhich_user_url)
+        ->get()
+        ->toArray();
+
+    // Get all backlink records to compare
+    $backlinks = DB::table('backlinks')->get()->toArray();
+
+    // Filter out outlinks that have matching reversed from_user_id and to_user_id in backlinks
+    $filtered_outlink_data = array_filter($outlink_data, function($outlink) use ($backlinks) {
+        foreach ($backlinks as $backlink) {
+            if ($outlink->from_user_id == $backlink->to_user_id && $outlink->to_user_id == $backlink->from_user_id) {
+                return false;
+            }
+        }
+        return true;
+    });
+
+    // Remove duplicates from userBacklinkUrls and filtered_outlink_data
+    $unique_outlink_data = array_unique(array_merge($userBacklinkUrls, $filtered_outlink_data), SORT_REGULAR);
+
+    // Assign the unique data to outlink_data
+    $data['outlink_data'] = $unique_outlink_data;
+
+    //dd($data['outlink_data']);
+
+    return view('frontend.dashboard.outlinks', $data);
+}
+
 
     public function rejectPair($from_user_id, $to_user_id)
     {

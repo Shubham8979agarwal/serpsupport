@@ -108,6 +108,7 @@
                               @endif
                            </td>
                            <td>
+                              
                               @if($mywebsite->status=="" || ($mywebsite->acceptedby_from=="" && $mywebsite->status=="pending"))
                               <a onclick="return confirm('Are you sure?')" href="/acceptedby-from-backlink-connection/{{ encrypt($mywebsite->id) }}" class="btn btn-success">Accept</a> | <a onclick="return confirm('Are you sure?')" href="/reject/{{encrypt($mywebsite->from_user_id)}}/{{encrypt($mywebsite->to_user_id)}}" class="btn btn-danger">Reject</a>
 
