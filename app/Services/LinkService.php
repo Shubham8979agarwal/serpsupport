@@ -22,7 +22,7 @@ class LinkService
 
     private function createLinks($type)
     {
-        $usersWithWebsites = User::whereHas('websites')->get();
+        $usersWithWebsites = User::whereHas('websites')->orderBy('id')->get();
 
         if ($usersWithWebsites->count() < 3) {
             return;
@@ -47,26 +47,30 @@ class LinkService
             $fromUserId = $pair[0];
             $toUserId = $pair[1];
 
+            // Check for valid pairings according to the rules
+            if (($type === 'outlinks' && $fromUserId + 1 !== $toUserId) ||
+                ($type === 'backlinks' && $fromUserId - 2 !== $toUserId)) {
+                continue;
+            }
+
             $fromUser = User::find($fromUserId);
             $toUser = User::find($toUserId);
 
-            $fromWebsite = $fromUser->websites->first();
-            $toWebsite = $toUser->websites->first();
-
-            if ($fromWebsite && $toWebsite) {
-                $linkData = [
-                    'from_user_id' => $fromUserId,
-                    'to_user_id' => $toUserId,
-                    'forwhich_user_url' => $type == 'backlinks' ? $fromWebsite->website_url : $toWebsite->website_url,
-                    'website_id' => $type == 'backlinks' ? $fromWebsite->website_id : $toWebsite->website_id,
-                    'website_url' => $type == 'backlinks' ? $toWebsite->website_url : $fromWebsite->website_url,
-                    'website_niche' => $fromWebsite->website_niche,
-                    'website_description' => $fromWebsite->website_description,
-                    'status' => "",
-                ];
-
-                if (!$this->isPairExisting($fromUserId, $toUserId, $type)) {
-                    $inserts[] = $linkData;
+            foreach ($fromUser->websites as $fromWebsite) {
+                foreach ($toUser->websites as $toWebsite) {
+                    if (!$this->isPairExisting($fromUserId, $toUserId, $fromWebsite->website_url, $toWebsite->website_url, $type)) {
+                        $linkData = [
+                            'from_user_id' => $fromUserId,
+                            'to_user_id' => $toUserId,
+                            'forwhich_user_url' => $type == 'backlinks' ? $fromWebsite->website_url : $toWebsite->website_url,
+                            'website_id' => $type == 'backlinks' ? $fromWebsite->website_id : $toWebsite->website_id,
+                            'website_url' => $type == 'backlinks' ? $toWebsite->website_url : $fromWebsite->website_url,
+                            'website_niche' => $fromWebsite->website_niche,
+                            'website_description' => $fromWebsite->website_description,
+                            'status' => "",
+                        ];
+                        $inserts[] = $linkData;
+                    }
                 }
             }
         }
@@ -83,11 +87,28 @@ class LinkService
         }
     }
 
-    private function isPairExisting($fromUserId, $toUserId, $type)
+    private function isPairExisting($fromUserId, $toUserId, $fromWebsiteUrl, $toWebsiteUrl, $type)
     {
+        // Check for both original and reversed pairs in both tables
         return DB::table($type)
             ->where('from_user_id', $fromUserId)
             ->where('to_user_id', $toUserId)
+            ->where('website_url', $toWebsiteUrl)
+            ->exists() || DB::table($type)
+            ->where('from_user_id', $toUserId)
+            ->where('to_user_id', $fromUserId)
+            ->where('website_url', $fromWebsiteUrl)
+            ->exists() || DB::table('backlinks')
+            ->where('from_user_id', $toUserId)
+            ->where('to_user_id', $fromUserId)
+            ->where('website_url', $fromWebsiteUrl)
+            ->exists() || DB::table('outlinks')
+            ->where('from_user_id', $toUserId)
+            ->where('to_user_id', $fromUserId)
+            ->where('website_url', $fromWebsiteUrl)
+            ->exists() || DB::table($type)
+            ->where('from_user_id', $fromUserId)
+            ->where('website_url', $fromWebsiteUrl)
             ->exists();
     }
 

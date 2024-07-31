@@ -280,39 +280,56 @@ class GoogleLoginController extends Controller
     }*/
 
     public function backlinks($forwhich_user_url)
-    {
-        $forwhich_user_url = decrypt($forwhich_user_url);
-        $website_url = $forwhich_user_url;
-        $data['data'] = Auth::user();
+{
+    $forwhich_user_url = decrypt($forwhich_user_url);
+    $website_url = $forwhich_user_url;
+    $data['data'] = Auth::user();
 
-        $userOutlinkUrls = DB::table('outlinks')
-            ->where('website_url', $website_url)
-            ->get()
-            ->toArray(); 
+    // Fetch user outlink URLs
+    $userOutlinkUrls = DB::table('outlinks')
+        ->where('website_url', $website_url)
+        ->get()
+        ->toArray(); 
 
-        // Fetch backlinks
-        $backlink_data = DB::table('backlinks')
-            ->where('forwhich_user_url', $forwhich_user_url)
-            ->get()
-            ->toArray();
+    // Fetch backlinks
+    $backlink_data = DB::table('backlinks')
+        ->where('forwhich_user_url', $forwhich_user_url)
+        ->get()
+        ->toArray();
 
-        // Get all outlink records to compare
-        $outlinks = DB::table('outlinks')->get()->toArray();
+    // Get all outlink records to compare
+    $outlinks = DB::table('outlinks')->get()->toArray();
 
-        // Filter out backlinks that have matching reversed from_user_id and to_user_id in outlinks
-        $filtered_backlink_data = array_filter($backlink_data, function($backlink) use ($outlinks) {
-            foreach ($outlinks as $outlink) {
-                if ($backlink->from_user_id == $outlink->to_user_id && $backlink->to_user_id == $outlink->from_user_id) {
-                    return false;
-                }
+    // Filter out backlinks that have matching reversed from_user_id and to_user_id in outlinks
+    $filtered_backlink_data = array_filter($backlink_data, function($backlink) use ($outlinks) {
+        foreach ($outlinks as $outlink) {
+            if ($backlink->from_user_id == $outlink->to_user_id && $backlink->to_user_id == $outlink->from_user_id) {
+                return false;
             }
-            return true;
-        });
-        // Assign the filtered data to backlink_data
-        $backlink_data = $filtered_backlink_data;
-        $data['backlink_data'] = array_merge($userOutlinkUrls, $backlink_data);
-        return view('frontend.dashboard.backlinks', $data);
+        }
+        return true;
+    });
+
+    // Merge and filter unique data based on both `forwhich_user_url` and `website_url`
+    $all_backlinks = array_merge($userOutlinkUrls, $filtered_backlink_data);
+
+    $unique_backlink_data = [];
+    $seen = [];
+
+    foreach ($all_backlinks as $backlink) {
+        $key = $backlink->forwhich_user_url . '-' . $backlink->website_url;
+        if (!in_array($key, $seen)) {
+            $seen[] = $key;
+            $unique_backlink_data[] = $backlink;
+        }
     }
+
+    // Assign the unique data to backlink_data
+    $data['backlink_data'] = $unique_backlink_data;
+
+    return view('frontend.dashboard.backlinks', $data);
+}
+
 
 
     /*public function outlinks($forwhich_user_url)
@@ -358,16 +375,26 @@ class GoogleLoginController extends Controller
         return true;
     });
 
-    // Remove duplicates from userBacklinkUrls and filtered_outlink_data
-    $unique_outlink_data = array_unique(array_merge($userBacklinkUrls, $filtered_outlink_data), SORT_REGULAR);
+    // Merge and filter unique data based on both `forwhich_user_url` and `website_url`
+    $all_outlinks = array_merge($userBacklinkUrls, $filtered_outlink_data);
+
+    $unique_outlink_data = [];
+    $seen = [];
+
+    foreach ($all_outlinks as $outlink) {
+        $key = $outlink->forwhich_user_url . '-' . $outlink->website_url;
+        if (!in_array($key, $seen)) {
+            $seen[] = $key;
+            $unique_outlink_data[] = $outlink;
+        }
+    }
 
     // Assign the unique data to outlink_data
     $data['outlink_data'] = $unique_outlink_data;
-
     //dd($data['outlink_data']);
-
     return view('frontend.dashboard.outlinks', $data);
 }
+
 
 
     public function rejectPair($from_user_id, $to_user_id)
