@@ -31,30 +31,26 @@ class LinkService
         $users = $usersWithWebsites->pluck('id')->toArray();
         $maxIndex = count($users);
 
-        $pairs = [];
-        if ($type === 'outlinks') {
-            for ($i = 0; $i < $maxIndex - 1; $i++) {
-                $pairs[] = [$users[$i], $users[$i + 1]];
-            }
-        } elseif ($type === 'backlinks') {
-            for ($i = 2; $i < $maxIndex; $i++) {
-                $pairs[] = [$users[$i], $users[$i - 2]];
-            }
-        }
+        $pairs = $this->generatePairs($type, $users, $maxIndex);
 
         $inserts = [];
         foreach ($pairs as $pair) {
             $fromUserId = $pair[0];
             $toUserId = $pair[1];
 
-            // Check for valid pairings according to the rules
-            if (($type === 'outlinks' && $fromUserId + 1 !== $toUserId) ||
-                ($type === 'backlinks' && $fromUserId - 2 !== $toUserId)) {
+            // Ensure valid pairings according to the selected pattern
+            if (($type === 'outlinks' && abs($fromUserId - $toUserId) !== 1) ||
+                ($type === 'backlinks' && abs($fromUserId - $toUserId) !== 2)) {
                 continue;
             }
 
             $fromUser = User::find($fromUserId);
             $toUser = User::find($toUserId);
+
+            // Check if users exist
+            if (!$fromUser || !$toUser) {
+                continue;
+            }
 
             foreach ($fromUser->websites as $fromWebsite) {
                 foreach ($toUser->websites as $toWebsite) {
@@ -87,28 +83,50 @@ class LinkService
         }
     }
 
+    private function generatePairs($type, $users, $maxIndex)
+    {
+        $pairs = [];
+
+        if ($type === 'outlinks') {
+            // Generate outlinks as sequential pairs
+            for ($i = 0; $i < $maxIndex - 1; $i++) {
+                $pairs[] = [$users[$i], $users[$i + 1]];
+            }
+        } elseif ($type === 'backlinks') {
+            // Generate backlinks with the pattern (i, i-2)
+            for ($i = 2; $i < $maxIndex; $i++) {
+                $pairs[] = [$users[$i], $users[$i - 2]];
+            }
+        }
+
+        // Shuffle pairs to ensure randomness
+        shuffle($pairs);
+
+        return $pairs;
+    }
+
     private function isPairExisting($fromUserId, $toUserId, $fromWebsiteUrl, $toWebsiteUrl, $type)
     {
-        // Check for both original and reversed pairs in both tables
         return DB::table($type)
-            ->where('from_user_id', $fromUserId)
-            ->where('to_user_id', $toUserId)
-            ->where('website_url', $toWebsiteUrl)
+            ->where(function($query) use ($fromUserId, $toUserId, $toWebsiteUrl, $fromWebsiteUrl) {
+                $query->where('from_user_id', $fromUserId)
+                      ->where('to_user_id', $toUserId)
+                      ->where('website_url', $toWebsiteUrl);
+            })
+            ->orWhere(function($query) use ($fromUserId, $toUserId, $toWebsiteUrl, $fromWebsiteUrl) {
+                $query->where('from_user_id', $toUserId)
+                      ->where('to_user_id', $fromUserId)
+                      ->where('website_url', $fromWebsiteUrl);
+            })
             ->exists() || DB::table($type)
-            ->where('from_user_id', $toUserId)
-            ->where('to_user_id', $fromUserId)
-            ->where('website_url', $fromWebsiteUrl)
-            ->exists() || DB::table('backlinks')
-            ->where('from_user_id', $toUserId)
-            ->where('to_user_id', $fromUserId)
-            ->where('website_url', $fromWebsiteUrl)
-            ->exists() || DB::table('outlinks')
-            ->where('from_user_id', $toUserId)
-            ->where('to_user_id', $fromUserId)
-            ->where('website_url', $fromWebsiteUrl)
-            ->exists() || DB::table($type)
-            ->where('from_user_id', $fromUserId)
-            ->where('website_url', $fromWebsiteUrl)
+            ->where(function($query) use ($fromUserId, $toUserId, $fromWebsiteUrl, $toWebsiteUrl) {
+                $query->where('from_user_id', $fromUserId)
+                      ->where('to_user_id', $toUserId);
+            })
+            ->orWhere(function($query) use ($fromUserId, $toUserId, $toWebsiteUrl, $fromWebsiteUrl) {
+                $query->where('from_user_id', $toUserId)
+                      ->where('to_user_id', $fromUserId);
+            })
             ->exists();
     }
 
