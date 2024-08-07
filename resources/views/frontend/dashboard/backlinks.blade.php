@@ -59,6 +59,9 @@
                               @if($mywebsite->website_url==$lastSegment)
                               {{ $mywebsite->forwhich_user_url }}
                               @else
+                              <?php 
+                              $getid = DB::table('websites')->where('website_url', $mywebsite->website_url)->select('user_id')->pluck('user_id')->first();
+                              ?>
                               {{ $mywebsite->website_url }}
                               @endif
                               
@@ -116,7 +119,17 @@
                               <a href="#" class="btn btn-warning">Waiting for Approval</a>
 
                               @elseif($mywebsite->status=="accepted")
-                              <a href="#" class="btn btn-success">Go to chat</a>
+                              @if($mywebsite->website_url==$lastSegment)
+                              <?php 
+                                $getid = DB::table('websites')->where('website_url', $mywebsite->forwhich_user_url)->select('user_id')->pluck('user_id')->first();
+                              ?>
+                              <a href="{{ route('chat') }}/{{ $getid }}" target="_blank" class="btn btn-success">Go to chat</a>
+                              @else
+                              <?php 
+                                $getid = DB::table('websites')->where('website_url', $mywebsite->website_url)->select('user_id')->pluck('user_id')->first();
+                              ?>
+                              <a href="{{ route('chat') }}/{{ $getid }}" target="_blank" class="btn btn-success">Go to chat</a>
+                              @endif
 
                               @elseif($mywebsite->status=="rejected")
                               <a href="#" class="btn btn-danger">Rejected</a>

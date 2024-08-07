@@ -21,11 +21,16 @@ class User extends Authenticatable
         'name',
         'email',
         'avatar',
-        'password',
-        'is_email_verified',
+        'email_verified_at',
         'status',
+        'password',
+        'remember_token',
+        'is_email_verified',
         'last_backlinks_created_at', 
         'last_outlinks_created_at',
+        'active_status',
+        'dark_mode',
+        'messenger_color'
     ];
 
     /**

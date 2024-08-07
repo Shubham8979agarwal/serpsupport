@@ -6,7 +6,7 @@ return [
     | Messenger display name
     |-------------------------------------
     */
-    'name' => env('CHATIFY_NAME', 'SerpSupport Chat'),
+    'name' => env('CHATIFY_NAME', 'SerpSupport Messenger'),
 
     /*
     |-------------------------------------
@@ -23,12 +23,12 @@ return [
     */
     'routes' => [
         'custom' => env('CHATIFY_CUSTOM_ROUTES', false),
-        'prefix' => env('CHATIFY_ROUTES_PREFIX', 'serpsupportchat'),
+        'prefix' => env('CHATIFY_ROUTES_PREFIX', 'chat'),
         'middleware' => env('CHATIFY_ROUTES_MIDDLEWARE', ['web','auth']),
         'namespace' => env('CHATIFY_ROUTES_NAMESPACE', 'Chatify\Http\Controllers'),
     ],
     'api_routes' => [
-        'prefix' => env('CHATIFY_API_ROUTES_PREFIX', 'chatify/api'),
+        'prefix' => env('CHATIFY_API_ROUTES_PREFIX', 'chat/api'),
         'middleware' => env('CHATIFY_API_ROUTES_MIDDLEWARE', ['api']),
         'namespace' => env('CHATIFY_API_ROUTES_NAMESPACE', 'Chatify\Http\Controllers\Api'),
     ],
@@ -72,7 +72,7 @@ return [
     |-------------------------------------
     */
     'gravatar' => [
-        'enabled' => true,
+        'enabled' => false,
         'image_size' => 200,
         'imageset' => 'identicon'
     ],

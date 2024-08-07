@@ -40,6 +40,7 @@ class MessagesController extends Controller
      * @param int $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
+    
     public function index( $id = null)
     {
         $messenger_color = Auth::user()->messenger_color;
@@ -49,6 +50,23 @@ class MessagesController extends Controller
             'dark_mode' => Auth::user()->dark_mode < 1 ? 'light' : 'dark',
         ]);
     }
+
+    /*public function index($encryptedId = null)
+    {
+        try {
+            $id = $encryptedId ? decryptData($encryptedId) : null;
+        } catch (DecryptException $e) {
+            abort(404); // Handle the exception as needed
+        }
+
+        $messenger_color = Auth::user()->messenger_color;
+
+        return view('Chatify::pages.app', [
+            'id' => $id ?? 0,
+            'messengerColor' => $messenger_color ? $messenger_color : Chatify::getFallbackColor(),
+            'dark_mode' => Auth::user()->dark_mode < 1 ? 'light' : 'dark',
+        ]);
+    }*/
 
 
     /**
