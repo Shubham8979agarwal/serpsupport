@@ -113,6 +113,7 @@ class MessagesController extends Controller
      */
     public function send(Request $request)
     {
+        //dd($request['id']);
         // default variables
         $error = (object)[
             'status' => 0,

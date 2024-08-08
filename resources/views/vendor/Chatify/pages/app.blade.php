@@ -29,7 +29,7 @@
                {{-- Favorites --}}
                <div class="favorites-section">
                 <!-- <p class="messenger-title"><span>Favorites</span></p> -->
-                <div class="messenger-favorites app-scroll-hidden"></div>
+                <div class="messenger-favorites app-scroll-hidden" style="display: none;"></div>
                </div>
                
                {{-- Contact --}}
