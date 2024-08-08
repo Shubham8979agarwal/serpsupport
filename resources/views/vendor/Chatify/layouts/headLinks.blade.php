@@ -11,7 +11,7 @@
 {{-- scripts --}}
 <script
   src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="{{ asset('js/chatify/font.awesome.min.js') }}"></script>
+<!-- <script src="{{ asset('js/chatify/font.awesome.min.js') }}"></script> -->
 <script src="{{ asset('js/chatify/autosize.js') }}"></script>
 <script src="{{ asset('js/app.js') }}"></script>
 <script src='https://unpkg.com/nprogress@0.2.0/nprogress.js'></script>
@@ -32,5 +32,11 @@
 }
 .messenger-messagingView .m-body{
     padding-top: 0!important;
+}
+.messenger {
+    margin-top: 84px!important;
+}
+.fas {
+    margin:2px!important;
 }
 </style>

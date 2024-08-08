@@ -194,7 +194,7 @@
                         </div>
                         <span class="profile-username">
                         <span class="op-7">Hi,</span>
-                        <span class="fw-bold">{{ $data->email }} </span>
+                        <span class="fw-bold">{{ Auth::user()->email }} </span>
                         </span>
                      </a>
                      <ul class="dropdown-menu dropdown-user animated fadeIn">
@@ -209,8 +209,8 @@
                                        />
                                  </div>
                                  <div class="u-text">
-                                    <h4>{{ $data->first_name }} {{ $data->last_name }}</h4>
-                                    <p class="text-muted">{{ $data->email }}</p>
+                                    <h4>{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</h4>
+                                    <p class="text-muted">{{ Auth::user()->email }}</p>
                                  </div>
                               </div>
                            </li>

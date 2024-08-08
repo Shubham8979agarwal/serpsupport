@@ -123,12 +123,12 @@
                               <?php 
                                 $getid = DB::table('websites')->where('website_url', $mywebsite->forwhich_user_url)->select('user_id')->pluck('user_id')->first();
                               ?>
-                              <a href="{{ route('chat') }}/{{ $getid }}" target="_blank" class="btn btn-success">Go to chat</a>
+                              <a href="{{ route('chat') }}/{{ $getid }}" class="btn btn-success">Go to chat</a>
                               @else
                               <?php 
                                 $getid = DB::table('websites')->where('website_url', $mywebsite->website_url)->select('user_id')->pluck('user_id')->first();
                               ?>
-                              <a href="{{ route('chat') }}/{{ $getid }}" target="_blank" class="btn btn-success">Go to chat</a>
+                              <a href="{{ route('chat') }}/{{ $getid }}" class="btn btn-success">Go to chat</a>
                               @endif
 
                               @elseif($mywebsite->status=="rejected")

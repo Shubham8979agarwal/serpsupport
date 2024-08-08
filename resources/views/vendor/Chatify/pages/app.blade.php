@@ -1,3 +1,4 @@
+@include('frontend.dashboard.common.header')
 @include('Chatify::layouts.headLinks')
 <div class="messenger">
     {{-- ----------------------Users/Groups lists side---------------------- --}}
@@ -110,3 +111,4 @@
 
 @include('Chatify::layouts.modals')
 @include('Chatify::layouts.footerLinks')
+@include('frontend.dashboard.common.footer')
