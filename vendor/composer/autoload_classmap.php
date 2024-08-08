@@ -24,6 +24,8 @@ return array(
     'App\\Http\\Middleware\\ValidateSignature' => $baseDir . '/app/Http/Middleware/ValidateSignature.php',
     'App\\Http\\Middleware\\VerifyCsrfToken' => $baseDir . '/app/Http/Middleware/VerifyCsrfToken.php',
     'App\\Models\\Backlink' => $baseDir . '/app/Models/Backlink.php',
+    'App\\Models\\ChFavorite' => $baseDir . '/app/Models/ChFavorite.php',
+    'App\\Models\\ChMessage' => $baseDir . '/app/Models/ChMessage.php',
     'App\\Models\\Outlink' => $baseDir . '/app/Models/Outlink.php',
     'App\\Models\\RejectedPair' => $baseDir . '/app/Models/RejectedPair.php',
     'App\\Models\\User' => $baseDir . '/app/Models/User.php',

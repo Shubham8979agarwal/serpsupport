@@ -1641,7 +1641,7 @@ window.visualViewport.addEventListener("resize", (e) => {
   resizeTimeout = setTimeout(function () {
     const h = e.target.height;
     if (h) {
-      $(".messenger-messagingView").css({ height: h + "px" });
+      //$(".messenger-messagingView").css({ height: h + "px" });
     }
   }, 100);
 });

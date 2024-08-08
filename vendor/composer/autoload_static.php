@@ -590,6 +590,8 @@ class ComposerStaticInitfe33f98a750b8c5a51b30c78bd3fab21
         'App\\Http\\Middleware\\ValidateSignature' => __DIR__ . '/../..' . '/app/Http/Middleware/ValidateSignature.php',
         'App\\Http\\Middleware\\VerifyCsrfToken' => __DIR__ . '/../..' . '/app/Http/Middleware/VerifyCsrfToken.php',
         'App\\Models\\Backlink' => __DIR__ . '/../..' . '/app/Models/Backlink.php',
+        'App\\Models\\ChFavorite' => __DIR__ . '/../..' . '/app/Models/ChFavorite.php',
+        'App\\Models\\ChMessage' => __DIR__ . '/../..' . '/app/Models/ChMessage.php',
         'App\\Models\\Outlink' => __DIR__ . '/../..' . '/app/Models/Outlink.php',
         'App\\Models\\RejectedPair' => __DIR__ . '/../..' . '/app/Models/RejectedPair.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',

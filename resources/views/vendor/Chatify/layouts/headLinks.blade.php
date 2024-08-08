@@ -9,18 +9,17 @@
 <meta name="url" content="{{ url('').'/'.config('chatify.routes.prefix') }}" data-user="{{ Auth::user()->id }}">
 
 {{-- scripts --}}
-<script
-  src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- <script src="{{ asset('js/chatify/font.awesome.min.js') }}"></script> -->
 <script src="{{ asset('js/chatify/autosize.js') }}"></script>
-<script src="{{ asset('js/app.js') }}"></script>
+<!-- <script src="{{ asset('js/app.js') }}"></script> -->
 <script src='https://unpkg.com/nprogress@0.2.0/nprogress.js'></script>
 
 {{-- styles --}}
 <link rel='stylesheet' href='https://unpkg.com/nprogress@0.2.0/nprogress.css'/>
 <link href="{{ asset('css/chatify/style.css') }}" rel="stylesheet" />
 <link href="{{ asset('css/chatify/'.$dark_mode.'.mode.css') }}" rel="stylesheet" />
-<link href="{{ asset('css/app.css') }}" rel="stylesheet" />
+<!-- <link href="{{ asset('css/app.css') }}" rel="stylesheet" /> -->
 
 {{-- Setting messenger primary color to css --}}
 <style>
@@ -34,9 +33,17 @@
     padding-top: 0!important;
 }
 .messenger {
-    margin-top: 84px!important;
+    margin-top: 55px!important;
+    height: 85%!important;
 }
 .fas {
     margin:2px!important;
+}
+@media (max-width: 680px) {
+    .messenger-messagingView {
+        position: fixed!important;
+        top: 65px!important;
+        height: 92%!important;
+    }
 }
 </style>
