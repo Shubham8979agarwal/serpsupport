@@ -209,12 +209,6 @@ class GoogleLoginController extends Controller
     {
         $forwhich_user_url = decrypt($forwhich_user_url);
         $website_url = $forwhich_user_url;
-        
-        // Update seen status for backlinks
-        /*DB::table('backlinks')
-        ->where('forwhich_user_url', $forwhich_user_url)
-        ->update(['seenby_bl_user' => 1]);*/
-
         $data['data'] = Auth::user();
 
         // Fetch user outlink URLs
@@ -271,12 +265,6 @@ class GoogleLoginController extends Controller
     {
         $forwhich_user_url = decrypt($forwhich_user_url);
         $website_url = $forwhich_user_url;
-
-        // Update seen status for outlinks
-        /*DB::table('outlinks')
-        ->where('forwhich_user_url', $forwhich_user_url)
-        ->update(['seenby_ol_user' => 1]);*/
-
         $data['data'] = Auth::user();
 
         // Fetch user backlink URLs
@@ -484,10 +472,6 @@ class GoogleLoginController extends Controller
             return redirect("login")->with('status_signin_failed','Login details are not valid. Try forget password or login with Google.');
         }
     }
-
-    /*public function seen($forwhich_user_url){
-
-    }*/
     
     public function signOut() 
     {
