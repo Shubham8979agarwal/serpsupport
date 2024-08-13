@@ -10,7 +10,7 @@
       <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4"
          >
          <div>
-         	<h3 class="fw-bold mb-3">{{ $lastSegment }}</h3>
+            <h3 class="fw-bold mb-3">{{ $lastSegment }}</h3>
             @if (session('message_acceptedby_to_backlink_connection'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                <i class="fa fa-check"></i> {{ session('message_acceptedby_to_backlink_connection') }}
@@ -37,7 +37,7 @@
                <div class="card-header">
                   <div class="card-head-row card-tools-still-right">
                      <div class="card-title">Backlink connections
-                     	<p>These are the websites you get a backlink from</p>
+                        <p>These are the websites you get a backlink from</p>
                      </div>
                   </div>
                </div>
@@ -59,9 +59,6 @@
                               @if($mywebsite->website_url==$lastSegment)
                               {{ $mywebsite->forwhich_user_url }}
                               @else
-                              <?php 
-                              $getid = DB::table('websites')->where('website_url', $mywebsite->website_url)->select('user_id')->pluck('user_id')->first();
-                              ?>
                               {{ $mywebsite->website_url }}
                               @endif
                               
@@ -119,17 +116,7 @@
                               <a href="#" class="btn btn-warning">Waiting for Approval</a>
 
                               @elseif($mywebsite->status=="accepted")
-                              @if($mywebsite->website_url==$lastSegment)
-                              <?php 
-                                $getid = DB::table('websites')->where('website_url', $mywebsite->forwhich_user_url)->select('user_id')->pluck('user_id')->first();
-                              ?>
-                              <a href="{{ route('chat') }}/{{ $getid }}" class="btn btn-success">Go to chat</a>
-                              @else
-                              <?php 
-                                $getid = DB::table('websites')->where('website_url', $mywebsite->website_url)->select('user_id')->pluck('user_id')->first();
-                              ?>
-                              <a href="{{ route('chat') }}/{{ $getid }}" class="btn btn-success">Go to chat</a>
-                              @endif
+                              <a href="#" class="btn btn-success">Go to chat</a>
 
                               @elseif($mywebsite->status=="rejected")
                               <a href="#" class="btn btn-danger">Rejected</a>
