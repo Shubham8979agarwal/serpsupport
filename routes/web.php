@@ -56,6 +56,8 @@ Route::get('/backlinks/{forwhich_user_url}', [GoogleLoginController::class, 'bac
 
 Route::get('/outlinks/{forwhich_user_url}', [GoogleLoginController::class, 'outlinks'])->name('outlinks');
 
+#Route::get('/seen/{forwhich_user_url}', [GoogleLoginController::class, 'seen'])->name('seen');
+
 //Route::get('/outlinks', [GoogleLoginController::class, 'outlinks'])->name('outlinks');
 
 Route::post('push-website', [GoogleLoginController::class, 'push_website'])->name('push-website');

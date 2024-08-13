@@ -110,36 +110,71 @@
                   @if(count($getwebsites) > 0)
                   <ul class="nav">
                      @foreach($getwebsites as $websites)
-                     <?php
-                        $websiteId = $websites->id;
-                        $encryptedUrl = encrypt($websites->website_url);
-                        $backlinkUrl = url("/backlinks/" . $encryptedUrl);
-                        $outlinkUrl = url("/outlinks/" . $encryptedUrl);
-                        $isActive = $lastSegment == $websites->website_url;
-                        $submenuId = "submenu" . $loop->iteration;
-                        ?>
-                     <li class="nav-item @if($isActive) active submenu @endif" id="item{{ $websiteId }}">
-                        <a data-bs-toggle="collapse" href="#{{ $submenuId }}">
-                           <i class="fas fa-bars"></i>
-                           <p>{{ $websites->website_url }}</p>
-                           <span class="caret"></span>
-                        </a>
-                        <div class="collapse @if($isActive) show @endif" id="{{ $submenuId }}">
-                           <ul class="nav nav-collapse">
-                              <li class="@if(strpos($currentUrl,'backlinks') && ($isActive)) changebackground @endif">
-                                 <a href="{{ $backlinkUrl }}">
-                                 <span class="sub-item">Backlinks</span>
-                                 </a>
-                              </li>
-                              <li class="@if(strpos($currentUrl,'outlinks') && ($isActive)) changebackground @endif">
-                                 <a href="{{ $outlinkUrl }}">
-                                 <span class="sub-item">Outlinks</span>
-                                 </a>
-                              </li>
-                           </ul>
-                        </div>
-                     </li>
-                     @endforeach
+                      <?php
+                      $websiteId = $websites->id;
+                      $encryptedUrl = encrypt($websites->website_url);
+                      $backlinkUrl = url("/backlinks/" . $encryptedUrl);
+                      $outlinkUrl = url("/outlinks/" . $encryptedUrl);
+                      $isActive = $lastSegment == $websites->website_url;
+                      $submenuId = "submenu" . $loop->iteration;
+
+                     // Fetch the counts of unseen backlinks
+                     $unread_outlink_count = DB::table('outlinks')
+                          ->where('website_url', $websites->website_url)
+                          ->where('seenby_ol_user', 0)
+                          ->count();
+
+                     $unread_backlink_count = DB::table('backlinks')
+                          ->where('forwhich_user_url', $websites->website_url)
+                          ->where('seenby_ol_user', 0)
+                          ->count();
+
+                     $backlink_count = $unread_outlink_count + $unread_backlink_count  ;
+                     
+                     // Fetch the counts of unseen outlinks
+                     $unread_outlink_count_oc = DB::table('outlinks')
+                          ->where('forwhich_user_url', $websites->website_url)
+                          ->where('seenby_ol_user', 0)
+                          ->count();
+                     $unread_backlink_count_bc = DB::table('backlinks')
+                          ->where('website_url', $websites->website_url)
+                          ->where('seenby_ol_user', 0)
+                          ->count();
+                     $outlink_count =  $unread_outlink_count_oc + $unread_backlink_count_bc;
+
+                      ?>
+                      <li class="nav-item @if($isActive) active submenu @endif" id="item{{ $websiteId }}">
+                          <a data-bs-toggle="collapse" href="#{{ $submenuId }}">
+                              <i class="fas fa-bars"></i>
+                              <p>{{ $websites->website_url }}</p>
+                              <span class="caret"></span>
+                          </a>
+                          <div class="collapse @if($isActive) show @endif" id="{{ $submenuId }}">
+                              <ul class="nav nav-collapse">
+                                  <li class="@if(strpos($currentUrl,'backlinks') && ($isActive)) changebackground @endif">
+                                      <a href="{{ $backlinkUrl }}">
+                                          <span class="sub-item">
+                                              Backlinks
+                                              <span class='flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20'>
+                                                 {{ $backlink_count }} 
+                                              </span>
+                                          </span>
+                                      </a>
+                                  </li>
+                                  <li class="@if(strpos($currentUrl,'outlinks') && ($isActive)) changebackground @endif">
+                                      <a href="{{ $outlinkUrl }}">
+                                          <span class="sub-item">
+                                              Outlinks
+                                              <span class='flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20'>
+                                                 {{ $outlink_count }} 
+                                              </span>
+                                          </span>
+                                      </a>
+                                  </li>
+                              </ul>
+                          </div>
+                      </li>
+                  @endforeach
                   </ul>
                   @endif
                   <li class="nav-item account-settings">

@@ -24,7 +24,8 @@ return new class extends Migration
             $table->string('website_description')->nullable();
             $table->string('acceptedby_from')->nullable();
             $table->string('acceptedby_to')->nullable();
-            $table->string('executed')->nullable();
+            $table->string('seenby_bl_user')->default('0');
+            $table->string('seenby_ol_user')->default('0');
             $table->string('status')->nullable();
             $table->timestamps();
         });

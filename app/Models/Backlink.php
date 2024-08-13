@@ -27,7 +27,8 @@ class Backlink extends Authenticatable
         'website_description',
         'acceptedby_from',
         'acceptedby_to',
-        'executed',
+        'seenby_bl_user',
+        'seenby_ol_user',
         'status'
     ];
 
