@@ -126,7 +126,6 @@ class GoogleLoginController extends Controller
         $outlink = DB::table('outlinks')->where('id', $id)->first();
 
         if ($outlink) {
-            dd("hello");
             // Update the acceptedby_from field in the outlink
             DB::table('outlinks')->where('id', $id)->update([
                 'acceptedby_from' => 'yes'
@@ -142,8 +141,6 @@ class GoogleLoginController extends Controller
 
             return back()->with('message_acceptedby_from_backlink_connection', 'Thank you for approving the connection');
         } else {
-
-            dd("hello else");
             // Fetch the backlink data
             $backlink = DB::table('backlinks')->where('id', $id)->first();
 
