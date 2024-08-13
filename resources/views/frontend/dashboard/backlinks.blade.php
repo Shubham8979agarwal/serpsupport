@@ -1,3 +1,4 @@
+
 @include('frontend.dashboard.common.header')
 <?php 
       $currentUrl = url()->current();
@@ -10,7 +11,7 @@
       <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4"
          >
          <div>
-         	<h3 class="fw-bold mb-3">{{ $lastSegment }}</h3>
+            <h3 class="fw-bold mb-3">{{ $lastSegment }}</h3>
             @if (session('message_acceptedby_to_backlink_connection'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                <i class="fa fa-check"></i> {{ session('message_acceptedby_to_backlink_connection') }}
@@ -37,7 +38,7 @@
                <div class="card-header">
                   <div class="card-head-row card-tools-still-right">
                      <div class="card-title">Backlink connections
-                     	<p>These are the websites you get a backlink from</p>
+                        <p>These are the websites you get a backlink from</p>
                      </div>
                   </div>
                </div>
@@ -110,9 +111,8 @@
                               </div>
                               @endif
                            </td>
-                           <td> 
-
-                              {{ $mywebsite->status }}
+                           <td>
+                              
                               @if($mywebsite->status=="" || ($mywebsite->acceptedby_from=="" && $mywebsite->status=="pending")) 
                               <a onclick="return confirm('Are you sure?')" href="/acceptedby-from-backlink-connection/{{ encrypt($mywebsite->id) }}" class="btn btn-success">Accept</a> | <a onclick="return confirm('Are you sure?')" href="/reject/{{encrypt($mywebsite->forwhich_user_url)}}/{{encrypt($mywebsite->website_url)}}" class="btn btn-danger">Reject</a>
 
