@@ -141,6 +141,7 @@ class GoogleLoginController extends Controller
 
             return back()->with('message_acceptedby_from_backlink_connection', 'Thank you for approving the connection');
         } else {
+            
             // Fetch the backlink data
             $backlink = DB::table('backlinks')->where('id', $id)->first();
 
