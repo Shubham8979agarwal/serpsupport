@@ -114,7 +114,7 @@
                            <td>
                               
                               @if($mywebsite->status=="" || ($mywebsite->acceptedby_from=="" && $mywebsite->status=="pending")) 
-                              <a onclick="return confirm('Are you sure?')" href="/acceptedby-from-backlink-connection/{{ encrypt($mywebsite->id) }}" class="btn btn-success">Accept</a> | <a onclick="return confirm('Are you sure?')" href="/reject/{{encrypt($mywebsite->forwhich_user_url)}}/{{encrypt($mywebsite->website_url)}}" class="btn btn-danger">Reject</a>
+                              <a onclick="return confirm('Are you sure?')" href="/acceptedby-from-backlink-connection/{{ encrypt($mywebsite->id)}}/{{encrypt($mywebsite->forwhich_user_url)}}/{{encrypt($mywebsite->website_url)}}" class="btn btn-success">Accept</a> | <a onclick="return confirm('Are you sure?')" href="/reject/{{encrypt($mywebsite->forwhich_user_url)}}/{{encrypt($mywebsite->website_url)}}" class="btn btn-danger">Reject</a>
 
                               @elseif($mywebsite->status=="pending")
                               <a href="#" class="btn btn-warning">Waiting for Approval</a>

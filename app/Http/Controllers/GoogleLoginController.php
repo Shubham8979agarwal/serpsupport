@@ -75,41 +75,81 @@ class GoogleLoginController extends Controller
         return redirect('account-settings')->with('message','Website Deleted Successfully');
     }
 
-    public function acceptedby_to_outlink_connection($id)
+    public function acceptedby_to_outlink_connection($id, $forwhich_user_url, $website_url)
     {
         $id = decrypt($id);
-        
+        $forwhich_user_url = decrypt($forwhich_user_url);
+        $website_url = decrypt($website_url);
+
         // Fetch the outlink data
-        $outlink = DB::table('outlinks')->where('id', $id)->first();
+        $outlink = DB::table('outlinks')
+            ->where('id', $id)
+            ->where('forwhich_user_url', $forwhich_user_url)
+            ->where('website_url', $website_url)
+            ->first();
 
         if ($outlink) {
             // Update the acceptedby_to field in the outlink
-            DB::table('outlinks')->where('id', $id)->update(['acceptedby_to' => 'yes']);
+            DB::table('outlinks')
+                ->where('id', $id)
+                ->where('forwhich_user_url', $forwhich_user_url)
+                ->where('website_url', $website_url)
+                ->update(['acceptedby_to' => 'yes']);
+
+            // Re-fetch the updated outlink record to check the new status
+            $outlink = DB::table('outlinks')
+                ->where('id', $id)
+                ->where('forwhich_user_url', $forwhich_user_url)
+                ->where('website_url', $website_url)
+                ->first();
 
             // Determine the new status
             $newStatus = (
-                $outlink->acceptedby_from == 'yes' || $outlink->acceptedby_to == 'yes'
+                $outlink->acceptedby_from == 'yes' && $outlink->acceptedby_to == 'yes'
             ) ? 'accepted' : 'pending';
 
             // Update the outlink record with the new status
-            DB::table('outlinks')->where('id', $id)->update(['status' => $newStatus]);
+            DB::table('outlinks')
+                ->where('id', $id)
+                ->where('forwhich_user_url', $forwhich_user_url)
+                ->where('website_url', $website_url)
+                ->update(['status' => $newStatus]);
 
             return back()->with('message_acceptedby_to_outlink_connection', 'Thank you for approving the connection');
         } else {
             // Fetch the backlink data
-            $backlink = DB::table('backlinks')->where('id', $id)->first();
+            $backlink = DB::table('backlinks')
+                ->where('id', $id)
+                ->where('forwhich_user_url', $forwhich_user_url)
+                ->where('website_url', $website_url)
+                ->first();
 
             if ($backlink) {
                 // Update the acceptedby_to field in the backlink
-                DB::table('backlinks')->where('id', $id)->update(['acceptedby_to' => 'yes']);
+                DB::table('backlinks')
+                    ->where('id', $id)
+                    ->where('forwhich_user_url', $forwhich_user_url)
+                    ->where('website_url', $website_url)
+                    ->update(['acceptedby_to' => 'yes']);
+
+                // Re-fetch the updated backlink record to check the new status
+                $backlink = DB::table('backlinks')
+                    ->where('id', $id)
+                    ->where('forwhich_user_url', $forwhich_user_url)
+                    ->where('website_url', $website_url)
+                    ->first();
 
                 // Determine the new status
                 $newStatus = (
-                    $backlink->acceptedby_from == 'yes' || $backlink->acceptedby_to == 'yes'
+                    $backlink->acceptedby_from == 'yes' && $backlink->acceptedby_to == 'yes'
                 ) ? 'accepted' : 'pending';
 
                 // Update the backlink record with the new status
-                DB::table('backlinks')->where('id', $id)->update(['status' => $newStatus]);
+                DB::table('backlinks')
+                    ->where('id', $id)
+                    ->where('forwhich_user_url', $forwhich_user_url)
+                    ->where('website_url', $website_url)
+                    ->update(['status' => $newStatus]);
 
                 return back()->with('message_acceptedby_to_outlink_connection', 'Thank you for approving the connection');
             } else {
@@ -118,45 +158,86 @@ class GoogleLoginController extends Controller
         }
     }
 
-    public function acceptedby_from_backlink_connection($id)
+
+    public function acceptedby_from_backlink_connection($id, $forwhich_user_url, $website_url)
     {
         $id = decrypt($id);
+        $forwhich_user_url = decrypt($forwhich_user_url);
+        $website_url = decrypt($website_url);
 
         // Fetch the outlink data
-        $outlink = DB::table('outlinks')->where('id', $id)->first();
+        $outlink = DB::table('outlinks')
+            ->where('id', $id)
+            ->where('forwhich_user_url', $forwhich_user_url)
+            ->where('website_url', $website_url)
+            ->first();
 
         if ($outlink) {
             // Update the acceptedby_from field in the outlink
-            DB::table('outlinks')->where('id', $id)->update([
-                'acceptedby_from' => 'yes'
-            ]);
+            DB::table('outlinks')
+                ->where('id', $id)
+                ->where('forwhich_user_url', $forwhich_user_url)
+                ->where('website_url', $website_url)
+                ->update([
+                    'acceptedby_from' => 'yes'
+                ]);
+
+            // Re-fetch the updated outlink record to check the new status
+            $outlink = DB::table('outlinks')
+                ->where('id', $id)
+                ->where('forwhich_user_url', $forwhich_user_url)
+                ->where('website_url', $website_url)
+                ->first();
 
             // Determine the new status
             $newStatus = (
-                $outlink->acceptedby_from == 'yes' || $outlink->acceptedby_to == 'yes'
+                $outlink->acceptedby_from == 'yes' && $outlink->acceptedby_to == 'yes'
             ) ? 'accepted' : 'pending';
 
             // Update the outlink record with the new status
-            DB::table('outlinks')->where('id', $id)->update(['status' => $newStatus]);
+            DB::table('outlinks')
+                ->where('id', $id)
+                ->where('forwhich_user_url', $forwhich_user_url)
+                ->where('website_url', $website_url)
+                ->update(['status' => $newStatus]);
 
             return back()->with('message_acceptedby_from_backlink_connection', 'Thank you for approving the connection');
         } else {
             // Fetch the backlink data
-            $backlink = DB::table('backlinks')->where('id', $id)->first();
+            $backlink = DB::table('backlinks')
+                ->where('id', $id)
+                ->where('forwhich_user_url', $forwhich_user_url)
+                ->where('website_url', $website_url)
+                ->first();
 
             if ($backlink) {
                 // Update the acceptedby_from field in the backlink
-                DB::table('backlinks')->where('id', $id)->update([
-                    'acceptedby_from' => 'yes'
-                ]);
+                DB::table('backlinks')
+                    ->where('id', $id)
+                    ->where('forwhich_user_url', $forwhich_user_url)
+                    ->where('website_url', $website_url)
+                    ->update([
+                        'acceptedby_from' => 'yes'
+                    ]);
+
+                // Re-fetch the updated backlink record to check the new status
+                $backlink = DB::table('backlinks')
+                    ->where('id', $id)
+                    ->where('forwhich_user_url', $forwhich_user_url)
+                    ->where('website_url', $website_url)
+                    ->first();
 
                 // Determine the new status
                 $newStatus = (
-                    $backlink->acceptedby_from == 'yes' || $backlink->acceptedby_to == 'yes'
+                    $backlink->acceptedby_from == 'yes' && $backlink->acceptedby_to == 'yes'
                 ) ? 'accepted' : 'pending';
 
                 // Update the backlink record with the new status
-                DB::table('backlinks')->where('id', $id)->update(['status' => $newStatus]);
+                DB::table('backlinks')
+                    ->where('id', $id)
+                    ->where('forwhich_user_url', $forwhich_user_url)
+                    ->where('website_url', $website_url)
+                    ->update(['status' => $newStatus]);
 
                 return back()->with('message_acceptedby_from_backlink_connection', 'Thank you for approving the connection');
             } else {
