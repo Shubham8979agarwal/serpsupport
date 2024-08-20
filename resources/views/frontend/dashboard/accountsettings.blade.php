@@ -29,41 +29,52 @@
                   <table id="websites" class="table" style="width:100%">
                      <thead>
                         <tr>
-                           <th>Website Niche</th>
                            <th>Website URL</th>
+                           <th>Website Niche</th>
                            <th>Website Description</th>
+                           <th>Amounts</th>
                            <th>Action</th>
                         </tr>
                      </thead>
                      <tbody>
-                        <?php $i=0; ?> 
-                        @if(count($pushedwebsites)>0)
-                        @foreach($pushedwebsites as $mywebsites)
-                        <tr>
-                           <td>{{ $mywebsites->website_niche }}</td>
-                           <td>{{ $mywebsites->website_url }}</td>
-                           <td>
-                              <p> 
-                                <a data-bs-toggle="collapse" href="#collapseExample<?php $i=$i+1; echo $i; ?>" role="button" aria-expanded="false" aria-controls="collapseExample<?php echo $i; ?>">
-                                  Show/Hide
-                                </a>
-                              </p>
-                              <div class="collapse" id="collapseExample<?php echo $i; ?>">
-                                <div class="card card-body">
-                                  {{ $mywebsites->website_description }}
-                                </div>
-                              </div>
-                           </td>
-                           <td><a onclick="return confirm('Are you sure?')" href="delete-website/{{ encrypt($mywebsites->website_id) }}">Delete</a></td>
-                        </tr>
-                        @endforeach  
-                        @endif
+                         <?php $i = 0; $totalAmount = 0; ?> 
+                         @if(count($pushedwebsites) > 0)
+                             @foreach($pushedwebsites as $index => $mywebsites)
+                             <tr>
+                                 <td>{{ $mywebsites->website_url }}</td>
+                                 <td>{{ $mywebsites->website_niche }}</td>
+                                 <td>
+                                     <p> 
+                                         <a data-bs-toggle="collapse" href="#collapseExample{{ $index + 1 }}" role="button" aria-expanded="false" aria-controls="collapseExample{{ $index + 1 }}">
+                                             Show/Hide
+                                         </a>
+                                     </p>
+                                     <div class="collapse" id="collapseExample{{ $index + 1 }}">
+                                         <div class="card card-body">
+                                             {{ $mywebsites->website_description }}
+                                         </div>
+                                     </div>
+                                 </td>
+                                 <td>
+                                     @if($index == 0)
+                                         <p>$99.99/year</p>
+                                         <?php $totalAmount += 99.99; ?>
+                                     @else
+                                         <p>$49.99/year</p>
+                                         <?php $totalAmount += 49.99; ?>
+                                     @endif
+                                 </td>
+                                 <td><a onclick="return confirm('Are you sure?')" href="delete-website/{{ encrypt($mywebsites->website_id) }}">Delete Website</a></td>
+                             </tr>
+                             @endforeach  
+                         @endif
                      </tbody>
                      <tfoot>
                         <tr>
-                           <th>Website Niche</th>
                            <th>Website URL</th>
+                           <th>Website Niche</th>
                            <th>Website Description</th>
+                           <th>Total ${{ number_format($totalAmount, 2) }}/year</th>
                            <th>Action</th>
                         </tr>
                      </tfoot>

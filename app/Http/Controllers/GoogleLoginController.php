@@ -68,11 +68,44 @@ class GoogleLoginController extends Controller
         return view('frontend.dashboard.addwebsite',$data);
     }
 
+    /*public function deletewebsite($id)
+    {
+        $id = decrypt($id);
+        $getwebsitename = DB::table('websites')->where('website_id',$id)->select('website_url')->pluck('website_url')->first();
+        $deletereq = DB::delete('delete from websites where website_id = ?',[$id]);
+        return redirect('account-settings')->with('message','Website Deleted Successfully');
+    }*/
+
     public function deletewebsite($id)
     {
         $id = decrypt($id);
-        $deletereq = DB::delete('delete from websites where website_id = ?',[$id]);
-        return redirect('account-settings')->with('message','Website Deleted Successfully');
+        // Get the website URL based on the website ID
+        $getwebsitename = DB::table('websites')
+            ->where('website_id', $id)
+            ->select('website_url')
+            ->pluck('website_url')
+            ->first();
+
+        if ($getwebsitename) {
+            // Delete from websites table
+            DB::table('websites')->where('website_id', $id)->delete();
+            
+            // Delete from backlinks table where website_url or forwhich_user_url matches $getwebsitename
+            DB::table('backlinks')
+                ->where('website_url', $getwebsitename)
+                ->orWhere('forwhich_user_url', $getwebsitename)
+                ->delete();
+            
+            // Delete from outlinks table where website_url or forwhich_user_url matches $getwebsitename
+            DB::table('outlinks')
+                ->where('website_url', $getwebsitename)
+                ->orWhere('forwhich_user_url', $getwebsitename)
+                ->delete();
+            
+            return redirect('account-settings')->with('message', 'Website and associated records deleted successfully');
+        } else {
+            return redirect('account-settings')->with('error', 'Website not found');
+        }
     }
 
     public function acceptedby_to_outlink_connection($id, $forwhich_user_url, $website_url)

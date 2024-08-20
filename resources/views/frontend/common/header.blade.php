@@ -11,6 +11,6 @@
       <link rel="stylesheet" href="{{ url('assets/css/bootstrap.min.css') }}">
       <!-- Style -->
       <link rel="stylesheet" href="{{ url('assets/css/style.css') }}">
-      <title>SerpSupport</title>
+      <title>SERPsupport</title>
    </head>
    <body>
