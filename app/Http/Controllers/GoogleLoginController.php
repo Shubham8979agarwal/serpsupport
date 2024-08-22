@@ -21,6 +21,7 @@ use DB;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
+use Chatify\Facades\ChatifyMessenger as Chatify;
 
 
 class GoogleLoginController extends Controller
@@ -586,7 +587,22 @@ class GoogleLoginController extends Controller
             return redirect("login")->with('status_signin_failed','Login details are not valid. Try forget password or login with Google.');
         }
     }
-    
+
+    public function chat(Request $request){
+        $data = $request->validate([
+            'website_url' => 'required',
+        ]);
+        $website_url = $data['website_url'];
+        // Store in session
+        session(['website_url' => $website_url]);
+        $messenger_color = Auth::user()->messenger_color;
+        return view('Chatify::pages.app', [
+            'id' => $id ?? 0,
+            'messengerColor' => $messenger_color ? $messenger_color : Chatify::getFallbackColor(),
+            'dark_mode' => Auth::user()->dark_mode < 1 ? 'light' : 'dark',
+        ]);
+    }
+
     public function signOut() 
     {
         Session::flush();

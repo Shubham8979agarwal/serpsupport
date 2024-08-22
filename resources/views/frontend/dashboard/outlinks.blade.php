@@ -116,12 +116,22 @@
                               <?php 
                                 $getid = DB::table('websites')->where('website_url', $mywebsite->forwhich_user_url)->select('user_id')->pluck('user_id')->first();
                               ?>
-                              <a href="{{ route('chat') }}/{{ $getid }}" class="btn btn-success">Go to chat</a>
+                              <form action="{{ route('chat') }}/{{ $getid }}" method="POST">
+                              @csrf
+                              <input type="hidden" name="website_url" value="{{$mywebsite->forwhich_user_url}}">
+                              <input type="submit" class="btn btn-success" value="Go to chat">
+                              </form>
+                              <!-- <a href="{{ route('chat') }}/{{ $getid }}" class="btn btn-success">Go to chat</a> -->
                               @else
                               <?php 
                                 $getid = DB::table('websites')->where('website_url', $mywebsite->website_url)->select('user_id')->pluck('user_id')->first();
                               ?>
-                              <a href="{{ route('chat') }}/{{ $getid }}" class="btn btn-success">Go to chat</a>
+                              <form action="{{ route('chat') }}/{{ $getid }}" method="POST">
+                              @csrf
+                              <input type="hidden" name="website_url" value="{{$mywebsite->website_url}}">
+                              <input type="submit" class="btn btn-success" value="Go to chat">
+                              </form>
+                              <!-- <a href="{{ route('chat') }}/{{ $getid }}" class="btn btn-success">Go to chat</a> -->
                               @endif
 
                               @elseif($mywebsite->status=="rejected")

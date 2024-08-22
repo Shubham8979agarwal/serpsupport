@@ -1,4 +1,5 @@
 {{-- -------------------- Saved Messages -------------------- --}}
+
 @if($get == 'saved')
     <table class="messenger-list-item" data-contact="{{ Auth::user()->id }}">
         <tr data-action="0">
@@ -37,7 +38,7 @@ $lastMessageBody = strlen($lastMessageBody) > 30 ? mb_substr($lastMessageBody, 0
         {{-- center side --}}
         <td>
         <p data-id="{{ $user->id }}" data-type="user">
-            {{ strlen($user->name) > 12 ? trim(substr($user->name,0,12)).'..' : $user->name }}
+            <?php $website_url = session('website_url'); ?> {{ $website_url }}
             <!-- <span class="contact-item-time" data-time="{{$lastMessage->created_at}}">{{ $lastMessage->timeAgo }}</span> --></p>
         <span>
             {{-- Last Message user indicator --}}
