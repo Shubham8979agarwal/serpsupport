@@ -7,6 +7,8 @@ use App\Models\Website;
 use App\Models\Backlink;
 use App\Models\Outlink;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class LinkService
 {
@@ -22,6 +24,7 @@ class LinkService
 
     private function createLinks($type)
     {
+        // Fetch users with websites
         $usersWithWebsites = User::whereHas('websites')->orderBy('id')->get();
 
         if ($usersWithWebsites->count() < 3) {
@@ -35,39 +38,37 @@ class LinkService
 
         $inserts = [];
         foreach ($pairs as $pair) {
-            $fromUserId = $pair[0];
-            $toUserId = $pair[1];
-
-            // Ensure valid pairings according to the selected pattern
-            if (($type === 'outlinks' && abs($fromUserId - $toUserId) !== 1) ||
-                ($type === 'backlinks' && abs($fromUserId - $toUserId) !== 2)) {
-                continue;
-            }
+            $fromUserId = (string) $pair[0]; // Ensure UUID handling
+            $toUserId = (string) $pair[1]; // Ensure UUID handling
 
             $fromUser = User::find($fromUserId);
             $toUser = User::find($toUserId);
 
-            // Check if users exist
-            if (!$fromUser || !$toUser) {
-                continue;
-            }
+            if ($fromUser && $toUser) {
+                foreach ($fromUser->websites as $fromWebsite) {
+                    foreach ($toUser->websites as $toWebsite) {
+                        $forwhich_user_url = $type === 'backlinks' ? $fromWebsite->website_url : $toWebsite->website_url;
+                        $website_url = $type === 'backlinks' ? $toWebsite->website_url : $fromWebsite->website_url;
 
-            foreach ($fromUser->websites as $fromWebsite) {
-                foreach ($toUser->websites as $toWebsite) {
-                    if (!$this->isPairExisting($fromUserId, $toUserId, $fromWebsite->website_url, $toWebsite->website_url, $type)) {
-                        $linkData = [
-                            'from_user_id' => $fromUserId,
-                            'to_user_id' => $toUserId,
-                            'forwhich_user_url' => $type == 'backlinks' ? $fromWebsite->website_url : $toWebsite->website_url,
-                            'website_id' => $type == 'backlinks' ? $fromWebsite->website_id : $toWebsite->website_id,
-                            'website_url' => $type == 'backlinks' ? $toWebsite->website_url : $fromWebsite->website_url,
-                            'website_niche' => $fromWebsite->website_niche,
-                            'website_description' => $fromWebsite->website_description,
-                            'status' => "",
-                        ];
-                        $inserts[] = $linkData;
+                        // Check if the pair already exists
+                        if (!$this->isPairExisting($fromUserId, $toUserId, $forwhich_user_url, $website_url, $type)) {
+                            $linkData = [
+                                'from_user_id' => $fromUserId,
+                                'to_user_id' => $toUserId,
+                                'forwhich_user_url' => $forwhich_user_url,
+                                'website_id' => $type === 'backlinks' ? $fromWebsite->website_id : $toWebsite->website_id,
+                                'website_url' => $website_url,
+                                'website_niche' => $fromWebsite->website_niche,
+                                'website_description' => $fromWebsite->website_description,
+                                'status' => "",
+                            ];
+                            $inserts[] = $linkData;
+                        }
                     }
                 }
+            } else {
+                // Log the error or handle it
+                Log::error("User not found: fromUserId={$fromUserId}, toUserId={$toUserId}");
             }
         }
 
@@ -79,6 +80,7 @@ class LinkService
             } catch (\Exception $e) {
                 DB::rollback();
                 // Handle exception or log it
+                Log::error("Database insert failed: " . $e->getMessage());
             }
         }
     }
@@ -105,28 +107,15 @@ class LinkService
         return $pairs;
     }
 
-    private function isPairExisting($fromUserId, $toUserId, $fromWebsiteUrl, $toWebsiteUrl, $type)
+    private function isPairExisting($fromUserId, $toUserId, $forwhich_user_url, $website_url, $type)
     {
-        return DB::table($type)
-            ->where(function($query) use ($fromUserId, $toUserId, $toWebsiteUrl, $fromWebsiteUrl) {
-                $query->where('from_user_id', $fromUserId)
-                      ->where('to_user_id', $toUserId)
-                      ->where('website_url', $toWebsiteUrl);
-            })
-            ->orWhere(function($query) use ($fromUserId, $toUserId, $toWebsiteUrl, $fromWebsiteUrl) {
-                $query->where('from_user_id', $toUserId)
-                      ->where('to_user_id', $fromUserId)
-                      ->where('website_url', $fromWebsiteUrl);
-            })
-            ->exists() || DB::table($type)
-            ->where(function($query) use ($fromUserId, $toUserId, $fromWebsiteUrl, $toWebsiteUrl) {
-                $query->where('from_user_id', $fromUserId)
-                      ->where('to_user_id', $toUserId);
-            })
-            ->orWhere(function($query) use ($fromUserId, $toUserId, $toWebsiteUrl, $fromWebsiteUrl) {
-                $query->where('from_user_id', $toUserId)
-                      ->where('to_user_id', $fromUserId);
-            })
+        $table = ($type === 'backlinks') ? 'backlinks' : 'outlinks';
+
+        return DB::table($table)
+            ->where('from_user_id', $fromUserId)
+            ->where('to_user_id', $toUserId)
+            ->where('forwhich_user_url', $forwhich_user_url)
+            ->where('website_url', $website_url)
             ->exists();
     }
 

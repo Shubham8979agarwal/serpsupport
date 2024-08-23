@@ -12,21 +12,26 @@ return new class extends Migration
      * @return void
      */
     public function up()
-{
-    Schema::create('rejected_pairs', function (Blueprint $table) {
-        $table->id();
-        $table->unsignedBigInteger('from_user_id');
-        $table->unsignedBigInteger('to_user_id');
-        $table->timestamps();
+    {
+        Schema::create('rejected_pairs', function (Blueprint $table) {
+            $table->id();
+            $table->uuid('from_user_id');
+            $table->uuid('to_user_id');
+            $table->timestamps();
 
-        $table->foreign('from_user_id')->references('id')->on('users')->onDelete('cascade');
-        $table->foreign('to_user_id')->references('id')->on('users')->onDelete('cascade');
-    });
-}
+            $table->foreign('from_user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('to_user_id')->references('id')->on('users')->onDelete('cascade');
+        });
+    }
 
-public function down()
-{
-    Schema::dropIfExists('rejected_pairs');
-}
-
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('rejected_pairs');
+    }
 };
+

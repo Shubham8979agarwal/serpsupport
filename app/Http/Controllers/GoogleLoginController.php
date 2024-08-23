@@ -22,6 +22,7 @@ use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Chatify\Facades\ChatifyMessenger as Chatify;
+#use Illuminate\Support\Str;
 
 
 class GoogleLoginController extends Controller
@@ -272,7 +273,7 @@ class GoogleLoginController extends Controller
                     ->where('forwhich_user_url', $forwhich_user_url)
                     ->where('website_url', $website_url)
                     ->update(['status' => $newStatus]);
-
+                
                 return back()->with('message_acceptedby_from_backlink_connection', 'Thank you for approving the connection');
             } else {
                 return back()->with('error', 'Record not found in both outlinks and backlinks');

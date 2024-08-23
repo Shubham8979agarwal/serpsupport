@@ -36,6 +36,7 @@ $lastMessageBody = strlen($lastMessageBody) > 30 ? mb_substr($lastMessageBody, 0
         </div>
         </td>
         {{-- center side --}}
+        
         <td>
         <p data-id="{{ $user->id }}" data-type="user">
             <?php $website_url = session('website_url'); ?> {{ $website_url }}
@@ -57,7 +58,7 @@ $lastMessageBody = strlen($lastMessageBody) > 30 ? mb_substr($lastMessageBody, 0
             @endif
         </span>
         {{-- New messages counter --}}
-            {!! $unseenCounter > 0 ? "<b>".$unseenCounter."</b>" : '' !!}
+            <!-- {!! $unseenCounter > 0 ? "<b>".$unseenCounter."</b>" : '' !!} -->
         </td>
     </tr>
 </table>
