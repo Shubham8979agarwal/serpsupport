@@ -272,7 +272,7 @@ class MessagesController extends Controller
         ], 200);
     }*/
 
-    public function getContacts(Request $request)
+    /*public function getContacts(Request $request)
 {
     // Retrieve the website_url from the session
     $website_url = session('website_url');
@@ -321,7 +321,57 @@ class MessagesController extends Controller
         'last_page' => $users->lastPage() ?? 1,
     ], 200);
 }
+*/
 
+public function getContacts(Request $request)
+{
+    $website_url = session('website_url');
+
+    if (!$website_url) {
+        return Response::json([
+            'contacts' => '<p class="message-hint center-el"><span>Website URL not found in session.</span></p>',
+            'total' => 0,
+            'last_page' => 1,
+        ], 200);
+    }
+
+    $userId = Auth::user()->id;
+
+    // Query to get users who have exchanged messages with the authenticated user
+    // and match the website_url via the websites table
+    $users = Message::join('users', function ($join) {
+                $join->on('ch_messages.from_id', '=', 'users.id')
+                     ->orOn('ch_messages.to_id', '=', 'users.id');
+            })
+            ->join('websites', 'users.id', '=', 'websites.user_id')
+            ->where(function ($q) use ($userId) {
+                $q->where('ch_messages.from_id', '=', $userId)
+                  ->orWhere('ch_messages.to_id', '=', $userId);
+            })
+            ->where('users.id', '!=', $userId)
+            ->where('websites.website_url', $website_url)
+            ->select('users.*', DB::raw('MAX(ch_messages.created_at) as max_created_at'))
+            ->orderBy('max_created_at', 'desc')
+            ->groupBy('users.id')
+            ->paginate($request->per_page ?? $this->perPage);
+
+    $usersList = $users->items();
+
+    if (count($usersList) > 0) {
+        $contacts = '';
+        foreach ($usersList as $user) {
+            $contacts .= Chatify::getContactItem($user);
+        }
+    } else {
+        $contacts = '<p class="message-hint center-el"><span>Your contact list is empty.</span></p>';
+    }
+
+    return Response::json([
+        'contacts' => $contacts,
+        'total' => $users->total() ?? 0,
+        'last_page' => $users->lastPage() ?? 1,
+    ], 200);
+}
 
 
     /**
