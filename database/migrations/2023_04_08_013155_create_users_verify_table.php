@@ -15,7 +15,8 @@ return new class extends Migration
     {
         Schema::create('users_verify', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id')->nullable();
+            $table->uuid('user_id')->nullable();
+            //$table->integer('user_id')->nullable();
             $table->string('token')->nullable();
             $table->timestamps();
         });
