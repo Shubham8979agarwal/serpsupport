@@ -863,6 +863,7 @@ function setContactsLoading(loading = false) {
   }
   contactsLoading = loading;
 }
+
 function getContacts() {
   if (!contactsLoading && !noMoreContacts) {
     setContactsLoading(true);
