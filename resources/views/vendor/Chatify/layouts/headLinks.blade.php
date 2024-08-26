@@ -46,4 +46,9 @@
         height: 92%!important;
     }
 }
+.messenger-list-item td b{
+    font-size: 12px!important;
+    width: 16px!important;
+    height: 16px!important;
+}
 </style>
