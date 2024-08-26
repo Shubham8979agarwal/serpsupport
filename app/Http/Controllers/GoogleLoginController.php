@@ -15,6 +15,8 @@ use App\Models\Website;
 use App\Models\Backlink;
 use App\Models\Outlink;
 use App\Models\RejectedPair;
+use App\Models\ChMessage;
+use App\Models\ChFavorite;
 use Mail;
 use Illuminate\Support\Str;
 use DB;
@@ -22,7 +24,6 @@ use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Chatify\Facades\ChatifyMessenger as Chatify;
-#use Illuminate\Support\Str;
 
 
 class GoogleLoginController extends Controller
@@ -150,6 +151,29 @@ class GoogleLoginController extends Controller
                 ->where('website_url', $website_url)
                 ->update(['status' => $newStatus]);
 
+            $from_id = DB::table('outlinks')
+            ->where('id', $id)
+            ->select('from_user_id')
+            ->pluck('from_user_id')
+            ->first();
+
+            $to_id = DB::table('outlinks')
+            ->where('id', $id)
+            ->select('to_user_id')
+            ->pluck('to_user_id')
+            ->first();
+
+            $html = 'hi';
+
+            $sendtochat = [
+            'from_id' => $from_id,
+            'to_id' => $to_id,
+            'body' => $html,
+            'seen' => '0'
+            ];
+
+            $createinquiryinchat = ChMessage::create($sendtochat); 
+
             return back()->with('message_acceptedby_to_outlink_connection', 'Thank you for approving the connection');
         } else {
             // Fetch the backlink data
@@ -185,6 +209,27 @@ class GoogleLoginController extends Controller
                     ->where('forwhich_user_url', $forwhich_user_url)
                     ->where('website_url', $website_url)
                     ->update(['status' => $newStatus]);
+
+                $from_id = DB::table('backlinks')
+                ->where('id', $id)
+                ->select('from_user_id')
+                ->pluck('from_user_id')
+                ->first();
+
+                $to_id = DB::table('backlinks')
+                ->where('id', $id)
+                ->select('to_user_id')
+                ->pluck('to_user_id')
+                ->first();
+
+                $html = 'hi';
+
+                $sendtochat = [
+                'from_id' => $from_id,
+                'to_id' => $to_id,
+                'body' => $html,
+                'seen' => '0'
+                ];     
 
                 return back()->with('message_acceptedby_to_outlink_connection', 'Thank you for approving the connection');
             } else {
@@ -236,6 +281,27 @@ class GoogleLoginController extends Controller
                 ->where('website_url', $website_url)
                 ->update(['status' => $newStatus]);
 
+            $from_id = DB::table('outlinks')
+                ->where('id', $id)
+                ->select('from_user_id')
+                ->pluck('from_user_id')
+                ->first();
+
+            $to_id = DB::table('outlinks')
+                ->where('id', $id)
+                ->select('to_user_id')
+                ->pluck('to_user_id')
+                ->first();
+
+            $html = 'hi';    
+
+                $sendtochat = [
+                'from_id' => $from_id,
+                'to_id' => $to_id,
+                'body' => $html,
+                'seen' => '0'
+                ];     
+
             return back()->with('message_acceptedby_from_backlink_connection', 'Thank you for approving the connection');
         } else {
             // Fetch the backlink data
@@ -273,6 +339,27 @@ class GoogleLoginController extends Controller
                     ->where('forwhich_user_url', $forwhich_user_url)
                     ->where('website_url', $website_url)
                     ->update(['status' => $newStatus]);
+
+                $from_id = DB::table('backlinks')
+                ->where('id', $id)
+                ->select('from_user_id')
+                ->pluck('from_user_id')
+                ->first();
+
+                $to_id = DB::table('backlinks')
+                ->where('id', $id)
+                ->select('to_user_id')
+                ->pluck('to_user_id')
+                ->first();
+
+                $html = 'hi';
+
+                $sendtochat = [
+                'from_id' => $from_id,
+                'to_id' => $to_id,
+                'body' => $html,
+                'seen' => '0'
+                ];     
                 
                 return back()->with('message_acceptedby_from_backlink_connection', 'Thank you for approving the connection');
             } else {

@@ -58,7 +58,7 @@ $lastMessageBody = strlen($lastMessageBody) > 30 ? mb_substr($lastMessageBody, 0
             @endif
         </span>
         {{-- New messages counter --}}
-            <!-- {!! $unseenCounter > 0 ? "<b>".$unseenCounter."</b>" : '' !!} -->
+            {!! $unseenCounter > 0 ? "<b>".$unseenCounter."</b>" : '' !!}
         </td>
     </tr>
 </table>

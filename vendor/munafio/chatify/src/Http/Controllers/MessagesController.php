@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request as FacadesRequest;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
+
 class MessagesController extends Controller
 {
     protected $perPage = 30;
@@ -158,6 +160,7 @@ class MessagesController extends Controller
                     'old_name' => htmlentities(trim($attachment_title), ENT_QUOTES, 'UTF-8'),
                 ]) : null,
             ]);
+            Log::info($message);
             $messageData = Chatify::parseMessage($message);
             if (Auth::user()->id != $request['id']) {
                 Chatify::push("private-chatify.".$request['id'], 'messaging', [
