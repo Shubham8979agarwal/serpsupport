@@ -24,6 +24,7 @@ class Website extends Authenticatable
         'website_id',
         'website_niche',
         'website_url',
+        'chat_id',
         'website_description',
         'website_uploader_email'
     ];

@@ -51,4 +51,7 @@
     width: 16px!important;
     height: 16px!important;
 }
+.messenger-list-item td p{
+    font-size: 11px!important;
+}
 </style>

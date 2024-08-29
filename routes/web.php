@@ -62,7 +62,7 @@ Route::post('push-website', [GoogleLoginController::class, 'push_website'])->nam
 
 Route::get('delete-website/{id}', [GoogleLoginController::class, 'deletewebsite'])->name('delete-website');
 
-Route::post('chat/{id}', [GoogleLoginController::class, 'chat']);
+Route::get('chat/{id}', [GoogleLoginController::class, 'chat']);
 
 Route::get('acceptedby-to-outlink-connection/{id}/{forwhich_user_url}/{website_url}', [GoogleLoginController::class, 'acceptedby_to_outlink_connection'])->name('acceptedby-to-outlink-connection');
 

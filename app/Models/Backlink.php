@@ -24,6 +24,7 @@ class Backlink extends Authenticatable
         'website_id',
         'website_url',
         'website_niche',
+        'chat_id',
         'website_description',
         'acceptedby_from',
         'acceptedby_to',

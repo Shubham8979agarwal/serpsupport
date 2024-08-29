@@ -13,6 +13,10 @@ class ChMessage extends Model
         'to_id',
         'body',
         'attachment',
-        'seen'
+        'forwhich_user_url',
+        'website_url',
+        'myuniqueid',
+        'seen',
+        'chatarchieve'
     ];
 }

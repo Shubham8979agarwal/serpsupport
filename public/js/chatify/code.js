@@ -443,6 +443,8 @@ function IDinfo(id) {
  *-------------------------------------------------------------
  */
 function sendMessage() {
+//const forwhichUserUrl = 'some_value'; // Define this appropriately
+//const websiteUrl = 'some_value'; // Define this appropriately
   temporaryMsgId += 1;
   let tempID = `temp_${temporaryMsgId}`;
   let hasFile = !!$(".upload-attachment").val();
@@ -452,6 +454,8 @@ function sendMessage() {
     formData.append("id", getMessengerId());
     formData.append("temporaryMsgId", tempID);
     formData.append("_token", csrfToken);
+    //formData.append("forwhich_user_url", forwhichUserUrl); // Define forwhichUserUrl appropriately
+    //formData.append("website_url", websiteUrl); // Define websiteUrl appropriately
     $.ajax({
       url: $("#message-form").attr("action"),
       method: "POST",
@@ -488,6 +492,7 @@ function sendMessage() {
       success: (data) => {
         if (data.error > 0) {
           // message card error status
+          //console.log(data);
           errorMessageCard(tempID);
           console.error(data.error_msg);
         } else {
@@ -863,7 +868,6 @@ function setContactsLoading(loading = false) {
   }
   contactsLoading = loading;
 }
-
 function getContacts() {
   if (!contactsLoading && !noMoreContacts) {
     setContactsLoading(true);
@@ -893,6 +897,7 @@ function getContacts() {
     });
   }
 }
+
 
 /**
  *-------------------------------------------------------------

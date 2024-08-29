@@ -5,9 +5,9 @@
         <tr data-action="0">
             {{-- Avatar side --}}
             <td>
-            <div class="saved-messages avatar av-m">
-                <span class="far fa-bookmark"></span>
-            </div>
+                <div class="saved-messages avatar av-m">
+                    <span class="far fa-bookmark"></span>
+                </div>
             </td>
             {{-- center side --}}
             <td>
@@ -23,7 +23,11 @@
 <?php
 $lastMessageBody = mb_convert_encoding($lastMessage->body, 'UTF-8', 'UTF-8');
 $lastMessageBody = strlen($lastMessageBody) > 30 ? mb_substr($lastMessageBody, 0, 30, 'UTF-8').'..' : $lastMessageBody;
+// echo "<pre>";
+// print_r($lastMessage);
+// echo "</pre>";
 ?>
+<a href="/chat/{{$user->id}}">
 <table class="messenger-list-item" data-contact="{{ $user->id }}">
     <tr data-action="0">
         {{-- Avatar side --}}
@@ -31,37 +35,40 @@ $lastMessageBody = strlen($lastMessageBody) > 30 ? mb_substr($lastMessageBody, 0
             @if($user->active_status)
                 <span class="activeStatus"></span>
             @endif
-        <div class="avatar av-m"
-        style="background-image: url('{{ $user->avatar }}');">
-        </div>
+            <div class="avatar av-m"
+            style="background-image: url('{{ $user->avatar }}');">
+            </div>
         </td>
         {{-- center side --}}
-        
+        <!--  -->
         <td>
-        <p data-id="{{ $user->id }}" data-type="user">
-            <?php $website_url = session('website_url'); ?> {{ $website_url }}
-            <!-- <span class="contact-item-time" data-time="{{$lastMessage->created_at}}">{{ $lastMessage->timeAgo }}</span> --></p>
-        <span>
-            {{-- Last Message user indicator --}}
-            {!!
-                $lastMessage->from_id == Auth::user()->id
-                ? '<span class="lastMessageIndicator">You :</span>'
-                : ''
-            !!}
-            {{-- Last message body --}}
-            @if($lastMessage->attachment == null)
-            {!!
-                $lastMessageBody
-            !!}
-            @else
-            <span class="fas fa-file"></span> Attachment
-            @endif
-        </span>
-        {{-- New messages counter --}}
-            {!! $unseenCounter > 0 ? "<b>".$unseenCounter."</b>" : '' !!}
+        
+            <p>
+                {{ $lastMessage->forwhich_user_url }} <i class="fa fa-exchange"></i> {{ $lastMessage->website_url }}
+            </p>
+            
+            <span>
+                {{-- Last Message user indicator --}}
+                {!!
+                    $lastMessage->from_id == Auth::user()->id
+                    ? '<span class="lastMessageIndicator">You :</span>'
+                    : ''
+                !!}
+                {{-- Last message body --}}
+                @if($lastMessage->attachment == null)
+                {!!
+                    $lastMessageBody
+                !!}
+                @else
+                <span class="fas fa-file"></span> Attachment
+                @endif
+            </span>
+            {{-- New messages counter --}}
+                {!! $unseenCounter > 0 ? "<b>".$unseenCounter."</b>" : '' !!}
         </td>
     </tr>
 </table>
+</a>
 @endif
 
 {{-- -------------------- Search Item -------------------- --}}
@@ -88,5 +95,3 @@ $lastMessageBody = strlen($lastMessageBody) > 30 ? mb_substr($lastMessageBody, 0
 @if($get == 'sharedPhoto')
 <div class="shared-photo chat-image" style="background-image: url('{{ $image }}')"></div>
 @endif
-
-

@@ -212,6 +212,8 @@ class ChatifyMessenger
         $message->to_id = $data['to_id'];
         $message->body = $data['body'];
         $message->attachment = $data['attachment'];
+        $message->forwhich_user_url = $data['forwhich_user_url'];
+        $message->website_url = $data['website_url'];
         $message->save();
         return $message;
     }

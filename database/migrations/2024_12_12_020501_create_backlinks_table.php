@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('website_id')->nullable();
             $table->string('website_url')->nullable();
             $table->string('website_niche')->nullable();
+            $table->string('chat_id')->nullable();
             $table->string('website_description')->nullable();
             $table->string('acceptedby_from')->nullable();
             $table->string('acceptedby_to')->nullable();

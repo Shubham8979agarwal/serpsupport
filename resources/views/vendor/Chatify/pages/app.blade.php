@@ -1,5 +1,9 @@
 @include('frontend.dashboard.common.header')
 @include('Chatify::layouts.headLinks')
+<?php
+    // Capture the current URL
+    $currentUrl = url()->current();
+?>
 <div class="messenger">
     {{-- ----------------------Users/Groups lists side---------------------- --}}
     <div class="messenger-listView {{ !!$id ? 'conversation-active' : '' }}">
@@ -34,7 +38,8 @@
                
                {{-- Contact --}}
                <p class="messenger-title"><span>All Messages</span></p>
-               <div class="listOfContacts" style="width: 100%;height: calc(100% - 272px);position: relative;"></div>
+               <div class="listOfContacts" style="width: 100%;height: calc(100% - 272px);position: relative;">
+               </div>
            </div>
              {{-- ---------------- [ Search Tab ] ---------------- --}}
            <div class="messenger-tab search-tab app-scroll" data-view="search">
@@ -57,7 +62,81 @@
                     <a href="#" class="show-listView"><i class="fas fa-arrow-left"></i></a>
                     <div class="avatar av-s header-avatar" style="margin: 0px 10px; margin-top: -5px; margin-bottom: -5px;">
                     </div>
-                    <a href="{{url()->current()}}" class=""> <?php $website_url = session('website_url'); ?> {{ $website_url }} </a>
+                    <!-- <div class="messenger-messagingView"> -->
+
+                        <p>
+                            {{ $lastMessage->forwhich_user_url }} <i class="fa fa-exchange"></i> {{ $lastMessage->website_url }}
+                        </p>
+                        <!-- @if($get == 'users' && !!$lastMessage)
+                        @if($lastMessage->from_id==Auth::user()->id)
+                        <p>
+                            {{ $lastMessage->website_url }}
+                        </p>
+                        @elseif($lastMessage->to_id==Auth::user()->id)
+                        <p>
+                            {{ $lastMessage->forwhich_user_url }}
+                        </p>
+                        @endif
+                        @else
+                            <p>SERPsupport Messenger</p>
+                        @endif -->
+
+                        
+                    <!-- </div> -->
+                    <?php 
+                    /*$previousUrl = url()->previous();
+                    $parts = explode('/', $previousUrl);
+                    $segment = isset($parts[3]) ? $parts[3] : '';  // Check if the segment exists
+                    $currentUrl = url()->current();
+
+                    if (!empty($segment) && $segment == 'backlinks' && strpos($currentUrl, '_') === false) {
+                        $ls = request()->segment(count(request()->segments()));  
+                        $parts = explode('_', $ls);
+
+                        if (isset($parts[1])) {  // Check if the array key 1 exists
+                            $id = $parts[1];
+
+                            $getWebsiteName = DB::table('websites')
+                                ->where('user_id', $id)
+                                ->select('website_url')->pluck('website_url')
+                                ->first();
+
+                            if (is_null($getWebsiteName)) {
+                                return redirect('account-settings');  // Redirect if $getWebsiteName is null
+                            }
+
+                            echo '<a href="' . url()->current() . '" class="">' . $getWebsiteName . '</a>';
+                        } else {
+                            // Handle missing key (redirect or show an error)
+                            return redirect('account-settings')->with('error', 'Invalid URL structure.');
+                        }
+
+                    } elseif (!empty($segment) && $segment == 'outlinks' && strpos($currentUrl, '_') === false) {
+                        $currentUrl = url()->current();
+                        $ls = request()->segment(count(request()->segments()));  
+                        $parts = explode('_', $ls);
+
+                        if (isset($parts[0])) {  // Check if the array key 0 exists
+                            $id = $parts[0];
+
+                            $getWebsiteName = DB::table('websites')
+                                ->where('user_id', $id)
+                                ->select('website_url')->pluck('website_url')
+                                ->first();
+
+                            if (is_null($getWebsiteName)) {
+                                return redirect('account-settings');  // Redirect if $getWebsiteName is null
+                            }
+
+                            echo '<a href="' . url()->current() . '" class="">' . $getWebsiteName . '</a>';
+                        } else {
+                            // Handle missing key (redirect or show an error)
+                            return redirect('account-settings')->with('error', 'Invalid URL structure.');
+                        }
+                    }elseif(strpos($currentUrl, '_') !== false){
+                        echo "SERPsupport Messenger";
+                    }*/
+                    ?>
                 </div>
                 {{-- header buttons --}}
                 <nav class="m-header-right">

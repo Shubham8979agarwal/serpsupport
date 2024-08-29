@@ -111,7 +111,7 @@ class GoogleLoginController extends Controller
         }
     }
 
-    public function acceptedby_to_outlink_connection($id, $forwhich_user_url, $website_url)
+    /*public function acceptedby_to_outlink_connection($id, $forwhich_user_url, $website_url)
     {
         $id = decrypt($id);
         $forwhich_user_url = decrypt($forwhich_user_url);
@@ -165,15 +165,27 @@ class GoogleLoginController extends Controller
 
             $html = 'hi';
 
+            $getforwhich = DB::table('outlinks')
+            ->where('id', $id)
+            ->select('forwhich_user_url')
+            ->pluck('forwhich_user_url')
+            ->first();
+
+            $getwebsiteurl =  DB::table('outlinks')
+            ->where('id', $id)
+            ->select('website_url')
+            ->pluck('website_url')
+            ->first();
+
             $sendtochat = [
             'from_id' => $from_id,
             'to_id' => $to_id,
+            'forwhich_user_url' => $getforwhich,
+            'website_url' => $website_url,
             'body' => $html,
             'seen' => '0'
             ];
-
             $createinquiryinchat = ChMessage::create($sendtochat); 
-
             return back()->with('message_acceptedby_to_outlink_connection', 'Thank you for approving the connection');
         } else {
             // Fetch the backlink data
@@ -224,22 +236,173 @@ class GoogleLoginController extends Controller
 
                 $html = 'hi';
 
+                $getforwhich = DB::table('backlinks')
+                ->where('id', $id)
+                ->select('forwhich_user_url')
+                ->pluck('forwhich_user_url')
+                ->first();
+
+                $getwebsiteurl =  DB::table('backlinks')
+                ->where('id', $id)
+                ->select('website_url')
+                ->pluck('website_url')
+                ->first();
+
                 $sendtochat = [
                 'from_id' => $from_id,
                 'to_id' => $to_id,
+                'forwhich_user_url' => $getforwhich,
+                'website_url' => $website_url,
                 'body' => $html,
                 'seen' => '0'
-                ];     
-
+                ];
+                $createinquiryinchat = ChMessage::create($sendtochat);
                 return back()->with('message_acceptedby_to_outlink_connection', 'Thank you for approving the connection');
             } else {
                 return back()->with('error', 'Record not found in both outlinks and backlinks');
             }
         }
+    }*/
+
+    public function acceptedby_to_outlink_connection($id, $forwhich_user_url, $website_url)
+{
+    $id = decrypt($id);
+    $forwhich_user_url = decrypt($forwhich_user_url);
+    $website_url = decrypt($website_url);
+
+    // Fetch the outlink data
+    $outlink = DB::table('outlinks')
+        ->where('id', $id)
+        ->where('forwhich_user_url', $forwhich_user_url)
+        ->where('website_url', $website_url)
+        ->first();
+
+    if ($outlink) {
+        // Update the acceptedby_to field in the outlink
+        DB::table('outlinks')
+            ->where('id', $id)
+            ->where('forwhich_user_url', $forwhich_user_url)
+            ->where('website_url', $website_url)
+            ->update(['acceptedby_to' => 'yes']);
+
+        // Re-fetch the updated outlink record to check the new status
+        $outlink = DB::table('outlinks')
+            ->where('id', $id)
+            ->where('forwhich_user_url', $forwhich_user_url)
+            ->where('website_url', $website_url)
+            ->first();
+
+        // Determine the new status
+        $newStatus = (
+            $outlink->acceptedby_from == 'yes' && $outlink->acceptedby_to == 'yes'
+        ) ? 'accepted' : 'pending';
+
+        // Update the outlink record with the new status
+        DB::table('outlinks')
+            ->where('id', $id)
+            ->where('forwhich_user_url', $forwhich_user_url)
+            ->where('website_url', $website_url)
+            ->update(['status' => $newStatus]);
+
+        // If the status is 'accepted', create a record in the ch_messages table
+        if ($newStatus == 'accepted') {
+            $from_id = $outlink->from_user_id;
+            $to_id = $outlink->to_user_id;
+
+            // Generate chat_id by combining $from_id and $to_id
+            $chat_id = $from_id . '_' . $to_id;
+            
+            // Update the chat_id in the websites table
+            DB::table('outlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
+
+            $html = 'hi';
+
+            $sendtochat = [
+                'from_id' => $from_id,
+                'to_id' => $to_id,
+                'forwhich_user_url' => $forwhich_user_url,
+                'website_url' => $website_url,
+                'myuniqueid' => $from_id."_".$to_id."_@@!!",
+                'body' => $html,
+                'seen' => '0'
+            ];
+
+            ChMessage::create($sendtochat);
+        }
+
+        return back()->with('message_acceptedby_to_outlink_connection', 'Thank you for approving the connection');
+    } else {
+        // Handle backlinks similarly as done for outlinks
+        // Fetch the backlink data
+        $backlink = DB::table('backlinks')
+            ->where('id', $id)
+            ->where('forwhich_user_url', $forwhich_user_url)
+            ->where('website_url', $website_url)
+            ->first();
+
+        if ($backlink) {
+            // Update the acceptedby_to field in the backlink
+            DB::table('backlinks')
+                ->where('id', $id)
+                ->where('forwhich_user_url', $forwhich_user_url)
+                ->where('website_url', $website_url)
+                ->update(['acceptedby_to' => 'yes']);
+
+            // Re-fetch the updated backlink record to check the new status
+            $backlink = DB::table('backlinks')
+                ->where('id', $id)
+                ->where('forwhich_user_url', $forwhich_user_url)
+                ->where('website_url', $website_url)
+                ->first();
+
+            // Determine the new status
+            $newStatus = (
+                $backlink->acceptedby_from == 'yes' && $backlink->acceptedby_to == 'yes'
+            ) ? 'accepted' : 'pending';
+
+            // Update the backlink record with the new status
+            DB::table('backlinks')
+                ->where('id', $id)
+                ->where('forwhich_user_url', $forwhich_user_url)
+                ->where('website_url', $website_url)
+                ->update(['status' => $newStatus]);
+
+            // If the status is 'accepted', create a record in the ch_messages table
+            if ($newStatus == 'accepted') {
+                $from_id = $backlink->from_user_id;
+                $to_id = $backlink->to_user_id;
+
+                // Generate chat_id by combining $from_id and $to_id
+                $chat_id = $from_id . '_' . $to_id;
+            
+                // Update the chat_id in the websites table
+                DB::table('backlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
+
+                $html = 'hi';
+
+                $sendtochat = [
+                    'from_id' => $from_id,
+                    'to_id' => $to_id,
+                    'forwhich_user_url' => $forwhich_user_url,
+                    'website_url' => $website_url,
+                    'myuniqueid' => $from_id."_".$to_id."_@@!!",
+                    'body' => $html,
+                    'seen' => '0'
+                ];
+
+                ChMessage::create($sendtochat);
+            }
+
+            return back()->with('message_acceptedby_to_outlink_connection', 'Thank you for approving the connection');
+        } else {
+            return back()->with('error', 'Record not found in both outlinks and backlinks');
+        }
     }
+}
 
 
-    public function acceptedby_from_backlink_connection($id, $forwhich_user_url, $website_url)
+
+    /*public function acceptedby_from_backlink_connection($id, $forwhich_user_url, $website_url)
     {
         $id = decrypt($id);
         $forwhich_user_url = decrypt($forwhich_user_url);
@@ -293,15 +456,29 @@ class GoogleLoginController extends Controller
                 ->pluck('to_user_id')
                 ->first();
 
-            $html = 'hi';    
+            $html = 'hi';
 
-                $sendtochat = [
-                'from_id' => $from_id,
-                'to_id' => $to_id,
-                'body' => $html,
-                'seen' => '0'
-                ];     
+            $getforwhich = DB::table('outlinks')
+            ->where('id', $id)
+            ->select('forwhich_user_url')
+            ->pluck('forwhich_user_url')
+            ->first();
 
+            $getwebsiteurl =  DB::table('outlinks')
+            ->where('id', $id)
+            ->select('website_url')
+            ->pluck('website_url')
+            ->first();
+
+            $sendtochat = [
+            'from_id' => $from_id,
+            'to_id' => $to_id,
+            'forwhich_user_url' => $getforwhich,
+            'website_url' => $website_url,
+            'body' => $html,
+            'seen' => '0'
+            ];    
+            $createinquiryinchat = ChMessage::create($sendtochat);
             return back()->with('message_acceptedby_from_backlink_connection', 'Thank you for approving the connection');
         } else {
             // Fetch the backlink data
@@ -354,19 +531,170 @@ class GoogleLoginController extends Controller
 
                 $html = 'hi';
 
+                $getforwhich = DB::table('backlinks')
+                ->where('id', $id)
+                ->select('forwhich_user_url')
+                ->pluck('forwhich_user_url')
+                ->first();
+
+                $getwebsiteurl =  DB::table('backlinks')
+                ->where('id', $id)
+                ->select('website_url')
+                ->pluck('website_url')
+                ->first();
+
                 $sendtochat = [
                 'from_id' => $from_id,
                 'to_id' => $to_id,
+                'forwhich_user_url' => $getforwhich,
+                'website_url' => $website_url,
                 'body' => $html,
                 'seen' => '0'
                 ];     
-                
+                $createinquiryinchat = ChMessage::create($sendtochat);
                 return back()->with('message_acceptedby_from_backlink_connection', 'Thank you for approving the connection');
             } else {
                 return back()->with('error', 'Record not found in both outlinks and backlinks');
             }
         }
+    }*/
+
+    public function acceptedby_from_backlink_connection($id, $forwhich_user_url, $website_url)
+{
+    $id = decrypt($id);
+    $forwhich_user_url = decrypt($forwhich_user_url);
+    $website_url = decrypt($website_url);
+
+    // Fetch the outlink data
+    $outlink = DB::table('outlinks')
+        ->where('id', $id)
+        ->where('forwhich_user_url', $forwhich_user_url)
+        ->where('website_url', $website_url)
+        ->first();
+
+    if ($outlink) {
+        // Update the acceptedby_from field in the outlink
+        DB::table('outlinks')
+            ->where('id', $id)
+            ->where('forwhich_user_url', $forwhich_user_url)
+            ->where('website_url', $website_url)
+            ->update(['acceptedby_from' => 'yes']);
+
+        // Re-fetch the updated outlink record to check the new status
+        $outlink = DB::table('outlinks')
+            ->where('id', $id)
+            ->where('forwhich_user_url', $forwhich_user_url)
+            ->where('website_url', $website_url)
+            ->first();
+
+        // Determine the new status
+        $newStatus = (
+            $outlink->acceptedby_from == 'yes' && $outlink->acceptedby_to == 'yes'
+        ) ? 'accepted' : 'pending';
+
+        // Update the outlink record with the new status
+        DB::table('outlinks')
+            ->where('id', $id)
+            ->where('forwhich_user_url', $forwhich_user_url)
+            ->where('website_url', $website_url)
+            ->update(['status' => $newStatus]);
+
+        // If the status is 'accepted', create a record in the ch_messages table
+        if ($newStatus == 'accepted') {
+            $from_id = $outlink->from_user_id;
+            $to_id = $outlink->to_user_id;
+
+            // Generate chat_id by combining $from_id and $to_id
+            $chat_id = $from_id . '_' . $to_id;
+
+            // Update the chat_id in the websites table
+            DB::table('outlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
+
+            $html = 'hi';
+
+            $sendtochat = [
+                'from_id' => $from_id,
+                'to_id' => $to_id,
+                'forwhich_user_url' => $forwhich_user_url,
+                'website_url' => $website_url,
+                'myuniqueid' => $from_id."_".$to_id."_@@!!",
+                'body' => $html,
+                'seen' => '0'
+            ];
+
+            ChMessage::create($sendtochat);
+        }
+
+        return back()->with('message_acceptedby_from_backlink_connection', 'Thank you for approving the connection');
+    } else {
+        // Handle backlinks similarly as done for outlinks
+        // Fetch the backlink data
+        $backlink = DB::table('backlinks')
+            ->where('id', $id)
+            ->where('forwhich_user_url', $forwhich_user_url)
+            ->where('website_url', $website_url)
+            ->first();
+
+        if ($backlink) {
+            // Update the acceptedby_from field in the backlink
+            DB::table('backlinks')
+                ->where('id', $id)
+                ->where('forwhich_user_url', $forwhich_user_url)
+                ->where('website_url', $website_url)
+                ->update(['acceptedby_from' => 'yes']);
+
+            // Re-fetch the updated backlink record to check the new status
+            $backlink = DB::table('backlinks')
+                ->where('id', $id)
+                ->where('forwhich_user_url', $forwhich_user_url)
+                ->where('website_url', $website_url)
+                ->first();
+
+            // Determine the new status
+            $newStatus = (
+                $backlink->acceptedby_from == 'yes' && $backlink->acceptedby_to == 'yes'
+            ) ? 'accepted' : 'pending';
+
+            // Update the backlink record with the new status
+            DB::table('backlinks')
+                ->where('id', $id)
+                ->where('forwhich_user_url', $forwhich_user_url)
+                ->where('website_url', $website_url)
+                ->update(['status' => $newStatus]);
+
+            // If the status is 'accepted', create a record in the ch_messages table
+            if ($newStatus == 'accepted') {
+                $from_id = $backlink->from_user_id;
+                $to_id = $backlink->to_user_id;
+
+                // Generate chat_id by combining $from_id and $to_id
+                $chat_id = $from_id . '_' . $to_id;
+            
+                // Update the chat_id in the websites table
+                DB::table('backlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
+
+                $html = 'hi';
+
+                $sendtochat = [
+                    'from_id' => $from_id,
+                    'to_id' => $to_id,
+                    'forwhich_user_url' => $forwhich_user_url,
+                    'website_url' => $website_url,
+                    'myuniqueid' => $from_id."_".$to_id."_@@!!",
+                    'body' => $html,
+                    'seen' => '0'
+                ];
+
+                ChMessage::create($sendtochat);
+            }
+
+            return back()->with('message_acceptedby_from_backlink_connection', 'Thank you for approving the connection');
+        } else {
+            return back()->with('error', 'Record not found in both outlinks and backlinks');
+        }
     }
+}
+
 
     public function push_website(Request $request)
     {
@@ -676,22 +1004,59 @@ class GoogleLoginController extends Controller
         }
     }
 
-    public function chat(Request $request){
-        $data = $request->validate([
-            'website_url' => 'required',
-        ]);
-        $website_url = $data['website_url'];
-        // Store in session
-        session(['website_url' => $website_url]);
+    /*public function chat(Request $request, $id){
+        
         $messenger_color = Auth::user()->messenger_color;
         return view('Chatify::pages.app', [
             'id' => $id ?? 0,
             'messengerColor' => $messenger_color ? $messenger_color : Chatify::getFallbackColor(),
             'dark_mode' => Auth::user()->dark_mode < 1 ? 'light' : 'dark',
         ]);
+    }*/
+
+    public function chat(Request $request, $id)
+    {
+        $currentUrl = url()->current(); // Get the current URL
+        $get = 'users'; // You can modify this based on your logic
+        $user = Auth::user(); // Get the authenticated user
+        
+        // Fetch the last message between the authenticated user and the user with the given $id
+        $lastMessage = \DB::table('ch_messages')
+            ->where(function($query) use ($user, $id) {
+                $query->where('from_id', $user->id)
+                      ->where('to_id', $id);
+            })
+            ->orWhere(function($query) use ($user, $id) {
+                $query->where('from_id', $id)
+                      ->where('to_id', $user->id);
+            })
+            ->latest()
+            ->first(); // Retrieve the latest message
+
+        $messenger_color = $user->messenger_color;
+
+        // Calculate $lastMessageBody if $lastMessage is not null
+        if ($lastMessage) {
+            $lastMessageBody = mb_convert_encoding($lastMessage->body, 'UTF-8', 'UTF-8');
+            $lastMessageBody = strlen($lastMessageBody) > 30 ? mb_substr($lastMessageBody, 0, 30, 'UTF-8').'..' : $lastMessageBody;
+        } else {
+            $lastMessageBody = null;
+        }
+
+        return view('Chatify::pages.app', [
+            'id' => $id ?? 0,
+            'currentUrl' => $currentUrl, // Pass current URL to the view
+            'get' => $get,
+            'user' => $user,
+            'lastMessage' => $lastMessage,
+            'lastMessageBody' => $lastMessageBody, // Pass lastMessageBody to the view
+            'messengerColor' => $messenger_color ? $messenger_color : Chatify::getFallbackColor(),
+            'dark_mode' => $user->dark_mode < 1 ? 'light' : 'dark',
+        ]);
     }
 
-    public function signOut() 
+
+   public function signOut() 
     {
         Session::flush();
         Auth::logout();

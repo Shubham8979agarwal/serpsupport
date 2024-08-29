@@ -14,8 +14,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request as FacadesRequest;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Log;
-
 class MessagesController extends Controller
 {
     protected $perPage = 30;
@@ -151,21 +149,40 @@ class MessagesController extends Controller
         }
 
         if (!$error->status) {
+
+            $getdata = DB::table('ch_messages')
+            ->where(function($query) use ($request) {
+                $query->where('from_id', Auth::user()->id)
+                      ->where('to_id', $request['id']);
+            })
+            ->orWhere(function($query) use ($request) {
+                $query->where('from_id', $request['id'])
+                      ->where('to_id', Auth::user()->id);
+            })
+            ->where(function($query) use ($request) {
+                $query->where('myuniqueid', Auth::user()->id . "_" . $request['id'] . "_@@!!")
+                      ->orWhere('myuniqueid', $request['id'] . "_" . Auth::user()->id . "_@@!!");
+            })
+            ->first();
+
             $message = Chatify::newMessage([
                 'from_id' => Auth::user()->id,
                 'to_id' => $request['id'],
+                'forwhich_user_url' =>$getdata->forwhich_user_url,
+                'website_url' => $getdata->website_url,
                 'body' => htmlentities(trim($request['message']), ENT_QUOTES, 'UTF-8'),
                 'attachment' => ($attachment) ? json_encode((object)[
                     'new_name' => $attachment,
                     'old_name' => htmlentities(trim($attachment_title), ENT_QUOTES, 'UTF-8'),
                 ]) : null,
             ]);
-            Log::info($message);
             $messageData = Chatify::parseMessage($message);
             if (Auth::user()->id != $request['id']) {
                 Chatify::push("private-chatify.".$request['id'], 'messaging', [
                     'from_id' => Auth::user()->id,
                     'to_id' => $request['id'],
+                    'forwhich_user_url' =>$getdata->forwhich_user_url,
+                    'website_url' => $getdata->website_url,
                     'message' => Chatify::messageCard($messageData, true)
                 ]);
             }
@@ -274,6 +291,47 @@ class MessagesController extends Controller
             'last_page' => $users->lastPage() ?? 1,
         ], 200);
     }
+
+/*public function getContacts(Request $request)
+{
+    // Fetch the most recent message for the authenticated user
+    $lastMessage = Message::where(function ($query) {
+        $query->where('from_id', Auth::user()->id)
+              ->orWhere('to_id', Auth::user()->id);
+    })
+    ->orderBy('created_at', 'desc')
+    ->first();
+
+    if ($lastMessage) {
+        // Determine the contact ID (the other user in the conversation)
+        $contactId = $lastMessage->from_id == Auth::user()->id ? $lastMessage->to_id : $lastMessage->from_id;
+
+        // Retrieve the contact's user details
+        $user = User::where('id', $contactId)->first();
+
+        // Render the contact item
+        if ($user) {
+            $contacts = Chatify::getContactItem($user, $lastMessage);
+        } else {
+            $contacts = '<p class="message-hint center-el"><span>Your contact list is empty</span></p>';
+        }
+
+        return Response::json([
+            'contacts' => $contacts,
+            'total' => 1,
+            'last_page' => 1,
+        ], 200);
+    } else {
+        // If there's no message, return an empty contact list
+        return Response::json([
+            'contacts' => '<p class="message-hint center-el"><span>Your contact list is empty</span></p>',
+            'total' => 0,
+            'last_page' => 1,
+        ], 200);
+    }
+}*/
+
+
 
     /**
      * Update user's list item data
