@@ -84,8 +84,11 @@ input::placeholder {
 
 
 .half .bg {
-  background-size: cover;
-  background-position: center; }
+  margin: 25px 50px 0px 0px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center; 
+}
 
 .half a {
   color: #888;

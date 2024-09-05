@@ -39,6 +39,14 @@ class LinkService
             $fromUserId = $pair[0];
             $toUserId = $pair[1];
 
+            // Skip rejected pairs
+            if (DB::table('rejected_pairs')
+                ->where('from_user_id', $fromUserId)
+                ->where('to_user_id', $toUserId)
+                ->exists()) {
+                continue;
+            }
+
             // Ensure valid pairings according to the selected pattern
             if (($type === 'outlinks' && abs(array_search($fromUserId, $users) - array_search($toUserId, $users)) !== 1) ||
                 ($type === 'backlinks' && abs(array_search($fromUserId, $users) - array_search($toUserId, $users)) !== 2)) {
@@ -79,6 +87,19 @@ class LinkService
             DB::beginTransaction();
             try {
                 DB::table($type)->insert($inserts);
+
+                // Insert into submitlinks
+                foreach ($inserts as $insert) {
+                    $chatId = "{$insert['from_user_id']}_{$insert['to_user_id']}";
+
+                    DB::table('submitlinks')->insert([
+                        'connection_type' => $type,
+                        'chat_id' => $chatId,  // Generated chat_id as a combination of from_user_id and to_user_id
+                        'acceptedby_to' => $insert['to_user_id'],
+                        'acceptedby_from' => $insert['from_user_id'],
+                    ]);
+                }
+
                 DB::commit();
             } catch (\Exception $e) {
                 DB::rollback();
@@ -86,6 +107,7 @@ class LinkService
             }
         }
     }
+
 
     private function generatePairs($type, $users, $maxIndex)
     {

@@ -19,13 +19,17 @@
 @endif
 
 {{-- -------------------- Contact list -------------------- --}}
-@if($get == 'users' && !!$lastMessage)
+<?php 
+$makeuniqueid = $lastMessage->from_id."_".$lastMessage->to_id."_@@!!";
+$getchatarchieve = DB::table('ch_messages')->where('myuniqueid', $makeuniqueid)->value('chatarchieve');
+?>
+@if($get == 'users' && !!$lastMessage && $getchatarchieve!='yes')
 <?php
 $lastMessageBody = mb_convert_encoding($lastMessage->body, 'UTF-8', 'UTF-8');
 $lastMessageBody = strlen($lastMessageBody) > 30 ? mb_substr($lastMessageBody, 0, 30, 'UTF-8').'..' : $lastMessageBody;
-// echo "<pre>";
-// print_r($lastMessage);
-// echo "</pre>";
+echo "<pre>";
+print_r($lastMessage->chatarchieve);
+echo "</pre>";
 ?>
 <a href="/chat/{{$user->id}}">
 <table class="messenger-list-item" data-contact="{{ $user->id }}">
@@ -70,7 +74,6 @@ $lastMessageBody = strlen($lastMessageBody) > 30 ? mb_substr($lastMessageBody, 0
 </table>
 </a>
 @endif
-
 {{-- -------------------- Search Item -------------------- --}}
 @if($get == 'search_item')
 <table class="messenger-list-item" data-contact="{{ $user->id }}">

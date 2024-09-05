@@ -1,3 +1,8 @@
+<?php 
+$makeuniqueid = $lastMessage->from_id."_".$lastMessage->to_id."_@@!!";
+$getchatarchieve = DB::table('ch_messages')->where('myuniqueid', $makeuniqueid)->value('chatarchieve');
+?>
+@if($getchatarchieve!='yes')
 <div class="messenger-sendCard">
     <form id="message-form" method="POST" action="{{ route('send.message') }}" enctype="multipart/form-data">
         @csrf
@@ -7,3 +12,8 @@
         <button disabled='disabled' class="send-button"><span class="fas fa-paper-plane"></span></button>
     </form>
 </div>
+@else
+<div class="alert alert-success" style="margin: 20px;">
+   This chat has been archieved ...
+</div>
+@endif

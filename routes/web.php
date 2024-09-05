@@ -52,23 +52,17 @@ Route::get('/create-backlinks', [GoogleLoginController::class, 'createbacklinks'
 
 Route::get('/backlinks/{forwhich_user_url}', [GoogleLoginController::class, 'backlinks'])->name('backlinks');
 
-//Route::get('/backlinks', [GoogleLoginController::class, 'backlinks'])->name('backlinks');
-
 Route::get('/outlinks/{forwhich_user_url}', [GoogleLoginController::class, 'outlinks'])->name('outlinks');
 
-//Route::get('/outlinks', [GoogleLoginController::class, 'outlinks'])->name('outlinks');
-
 Route::post('push-website', [GoogleLoginController::class, 'push_website'])->name('push-website');
+
+Route::post('submitlinkdetails', [GoogleLoginController::class, 'submitlinkdetails'])->name('submitlinkdetails');
 
 Route::get('delete-website/{id}', [GoogleLoginController::class, 'deletewebsite'])->name('delete-website');
 
 Route::get('chat/{id}', [GoogleLoginController::class, 'chat']);
 
 Route::get('acceptedby-to-outlink-connection/{id}/{forwhich_user_url}/{website_url}', [GoogleLoginController::class, 'acceptedby_to_outlink_connection'])->name('acceptedby-to-outlink-connection');
-
-#Route::get('acceptedby-from-outlink-connection/{id}', [GoogleLoginController::class, 'acceptedby_from_outlink_connection'])->name('acceptedby-from-outlink-connection');
-
-#Route::get('acceptedby-to-backlink-connection/{id}/{forwhich_user_url}/{website_url}', [GoogleLoginController::class, 'acceptedby_to_backlink_connection'])->name('acceptedby-to-backlink-connection');
 
 Route::get('acceptedby-from-backlink-connection/{id}/{forwhich_user_url}/{website_url}', [GoogleLoginController::class, 'acceptedby_from_backlink_connection'])->name('acceptedby-from-backlink-connection');
 
