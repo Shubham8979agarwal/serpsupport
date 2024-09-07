@@ -66,6 +66,13 @@ class GoogleLoginController extends Controller
         return view('frontend.dashboard.accountsettings',$data);
     }
 
+    public function archivedchat_and_linkdetails()
+    {
+        $data['data'] = Auth::user();
+        $data['linkdetails'] = DB::table('submitlinks')->where('acceptedby_to',Auth::user()->id)->orWhere('acceptedby_from', Auth::user()->id)->where('chat_status','closed')->get();
+        return view('frontend.dashboard.archivedchat_and_linkdetails',$data);
+    }
+
     public function addwebsite()
     {
         $data['data'] = Auth::user();

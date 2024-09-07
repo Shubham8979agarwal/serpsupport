@@ -65,6 +65,12 @@
          .changebackground span:before{
          background: #000!important;
          }
+         .messages-notif-box .notif-center a .notif-content, .notif-box .notif-center a .notif-content{
+           padding: 10px 15px 10px 15px!important; 
+         }
+         .notif-content {
+            padding: 5px!important;
+         }
       </style>
    </head>
    <body>
@@ -202,52 +208,74 @@
             <div class="container-fluid">
                <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
                   <li class="nav-item topbar-icon dropdown hidden-caret">
-                     <a
-                        class="nav-link dropdown-toggle"
-                        href="#"
-                        id="notifDropdown"
-                        role="button"
-                        data-bs-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                        >
-                     <i class="fa fa-bell"></i>
-                     <span class="notification">1</span>
+                     <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-bell"></i>
+
+                        <?php
+                        // Get the authenticated user's ID
+                        $userId = Auth::id();
+
+                        // Count the number of unread messages (seen = 0) where the logged-in user is the recipient (to_id)
+                        $unreadCount = DB::table('ch_messages')
+                           ->where('to_id', $userId)
+                           ->where('seen', 0)
+                           ->count();
+                        ?>
+
+                        @if($unreadCount > 0)
+                           <!-- Display the number of unread messages -->
+                           <span class="notification">{{ $unreadCount }}</span>
+                        @endif
                      </a>
-                     <ul
-                        class="dropdown-menu notif-box animated fadeIn"
-                        aria-labelledby="notifDropdown"
-                        >
+
+                     <ul class="dropdown-menu notif-box animated fadeIn" aria-labelledby="notifDropdown">
                         <li>
                            <div class="dropdown-title">
-                              You have new notifications
+                              You have {{ $unreadCount }} new notification{{ $unreadCount != 1 ? 's' : '' }}
                            </div>
                         </li>
                         <li>
                            <div class="notif-scroll scrollbar-outer">
                               <div class="notif-center">
-                                 <a href="#">
-                                    <div class="notif-img">
-                                       <img
-                                          src="{{ url('dashboard_assets/img/profile2.jpg') }}"
-                                          alt="Img Profile"
-                                          />
-                                    </div>
+                                 <?php
+                                 // Fetch the unseen messages for the user, limiting the result to 5
+                                 $unseenMessages = DB::table('ch_messages')
+                                    ->where('to_id', $userId)
+                                    ->where('seen', 0)
+                                    ->orderBy('created_at', 'desc')
+                                    ->limit(5)  // Limit to 5 notifications
+                                    ->get();
+                                 ?>
+
+                                 @forelse($unseenMessages as $message)
+                                    <?php
+                                    // Get the sender's name (assuming there is a 'users' table)
+                                    $senderName = DB::table('users')
+                                       ->where('id', $message->from_id)
+                                       ->pluck('name')
+                                       ->first();
+                                    ?>
+                                    <a href="/chat/{{$message->from_id}}">
+                                       <div class="notif-content">
+                                          <span class="block">
+                                             Someone sent you a message
+                                          </span>
+                                          <span class="time">
+                                             {{ \Carbon\Carbon::parse($message->created_at)->diffForHumans() }}
+                                          </span>
+                                       </div>
+                                    </a>
+                                 @empty
                                     <div class="notif-content">
-                                       <span class="block">
-                                       Reza send messages to you
-                                       </span>
-                                       <span class="time">12 minutes ago</span>
+                                       <span class="block">No new notifications</span>
                                     </div>
-                                 </a>
+                                 @endforelse
                               </div>
                            </div>
                         </li>
-                        <li>
-                           <a class="see-all" href="javascript:void(0);"
-                              >See all notifications<i class="fa fa-angle-right"></i>
-                           </a>
-                        </li>
+                        <!-- <li class="dropdown-footer">
+                           <a href="#">View All Notifications</a>
+                        </li> -->
                      </ul>
                   </li>
                   <li class="nav-item topbar-user dropdown hidden-caret">
@@ -264,6 +292,8 @@
                         <div class="dropdown-user-scroll scrollbar-outer">
                            <li>
                               <a class="dropdown-item" href="{{ route('account-settings') }}">Account Setting</a>
+                              <div class="dropdown-divider"></div>
+                              <a class="dropdown-item" href="{{ route('archivedchat-and-linkdetails') }}">Archived Chat & Link Details</a>
                               <div class="dropdown-divider"></div>
                               <a class="dropdown-item" href="{{ route('signout') }}">Signout</a>
                            </li>

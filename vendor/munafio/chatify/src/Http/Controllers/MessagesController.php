@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request as FacadesRequest;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 class MessagesController extends Controller
 {
     protected $perPage = 30;
@@ -245,6 +246,7 @@ class MessagesController extends Controller
     {
         // make as seen
         $seen = Chatify::makeSeen($request['id']);
+        //Log::info('ID: ' . $request['id']);
         // send the response
         return Response::json([
             'status' => $seen,

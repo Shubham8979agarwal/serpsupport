@@ -60,7 +60,9 @@ Route::post('submitlinkdetails', [GoogleLoginController::class, 'submitlinkdetai
 
 Route::get('delete-website/{id}', [GoogleLoginController::class, 'deletewebsite'])->name('delete-website');
 
-Route::get('chat/{id}', [GoogleLoginController::class, 'chat']);
+Route::get('chat/{id}', [GoogleLoginController::class, 'chat'])->name('chat');
+
+Route::get('/chat', function () {return redirect()->route('addwebsite')->with('error', 'Invalid chat request.');});
 
 Route::get('acceptedby-to-outlink-connection/{id}/{forwhich_user_url}/{website_url}', [GoogleLoginController::class, 'acceptedby_to_outlink_connection'])->name('acceptedby-to-outlink-connection');
 
@@ -68,7 +70,9 @@ Route::get('acceptedby-from-backlink-connection/{id}/{forwhich_user_url}/{websit
 
 Route::get('reject/{forwhich_user_url}/{website_url}', [GoogleLoginController::class, 'rejectPair'])->name('reject');
 
-Route::get('/weekly-update', [WebsiteController::class, 'weeklyUpdate']);
+Route::get('/archivedchat-and-linkdetails', [GoogleLoginController::class, 'archivedchat_and_linkdetails'])->name('archivedchat-and-linkdetails');;
+
+Route::get('/weekly-update', [GoogleLoginController::class, 'weeklyUpdate']);
 
 Route::get('signout', [GoogleLoginController::class, 'signout'])->name('signout');
 });

@@ -1,6 +1,12 @@
 @include('frontend.dashboard.common.header')
 <div class="container">
    <div class="page-inner">
+      @if (session('error'))
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+         <i class="fa fa-warning"></i> {{ session('error') }}
+         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      @endif
       <div class="page-header">
          <div class="col-md-12">
             <div class="card mt-4">
