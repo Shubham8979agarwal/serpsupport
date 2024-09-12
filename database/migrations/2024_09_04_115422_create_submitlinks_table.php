@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('chat_id')->nullable();
             $table->string('typeoflink')->nullable();
             $table->string('outlink_on')->nullable();
-            $table->text('backlink_on')->nullable();
+            $table->text('backlink_to')->nullable();
             $table->string('anchor_text')->nullable();
             $table->string('outlink_placed_on_your_website')->nullable();
             $table->string('acceptedby_to')->nullable();

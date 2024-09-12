@@ -3,6 +3,7 @@
       $currentUrl = url()->current();
       $ls = request()->segment(count(request()->segments()));
       $lastSegment = decryptData($ls);
+      //dd($outlink_data);
 ?>
 @if(count($outlink_data)>0)
 <div class="container">
@@ -48,89 +49,90 @@
                         </tr>
                      </thead>
                      <tbody>
-                        <?php $i=0; ?>
+                       <?php $i=0; ?>
                        @foreach ($outlink_data as $mywebsite)
-                        <tr>
-                           <td>
-                              @if($mywebsite->website_url==$lastSegment)
-                              {{ $mywebsite->forwhich_user_url }}
-                              @else
-                              {{ $mywebsite->website_url }}
-                              @endif
-                              
-                           </td>
-                           <td>
-                              @if($mywebsite->website_url==$lastSegment)
-                              <?php 
-                                $getniche = DB::table('websites')->where('website_url', $mywebsite->forwhich_user_url)->select('website_niche')->pluck('website_niche')->first();
-                              ?>
-                              {{ $getniche }}
-                              @else
-                              <?php 
-                                $getniche = DB::table('websites')->where('website_url', $mywebsite->website_url)->select('website_niche')->pluck('website_niche')->first();
-                              ?>
-                              {{ $getniche }}
-                              @endif
-                           </td>
-                           <td>
-                              @if($mywebsite->website_url==$lastSegment)
-                              <?php 
-                                $get_website_description = DB::table('websites')->where('website_url', $mywebsite->forwhich_user_url)->select('website_description')->pluck('website_description')->first();
-                              ?>
-                              <p> 
-                                <a data-bs-toggle="collapse" href="#collapseExample<?php $i=$i+1; echo $i; ?>" role="button" aria-expanded="false" aria-controls="collapseExample<?php echo $i; ?>">
-                                  Show/Hide
-                                </a>
-                              </p>
-                              <div class="collapse" id="collapseExample<?php echo $i; ?>">
-                                <div class="card card-body">
-                                  {{ $get_website_description }}
-                                </div>
-                              </div>
-                              @else
-                              <?php 
-                                $get_website_description = DB::table('websites')->where('website_url', $mywebsite->website_url)->select('website_description')->pluck('website_description')->first();
-                              ?>
-                              <p> 
-                                <a data-bs-toggle="collapse" href="#collapseExample<?php $i=$i+1; echo $i; ?>" role="button" aria-expanded="false" aria-controls="collapseExample<?php echo $i; ?>">
-                                  Show/Hide
-                                </a>
-                              </p>
-                              <div class="collapse" id="collapseExample<?php echo $i; ?>">
-                                <div class="card card-body">
-                                  {{ $get_website_description }}
-                                </div>
-                              </div>
-                              @endif
-                           </td>
-                           <td>
+                       @if($mywebsite->chat_status !== 'closed')
+                           <tr>
+                              <td>
+                                 @if($mywebsite->website_url==$lastSegment)
+                                 {{ $mywebsite->forwhich_user_url }}
+                                 @else
+                                 {{ $mywebsite->website_url }}
+                                 @endif
+                              </td>
+                              <td>
+                                 @if($mywebsite->website_url==$lastSegment)
+                                 <?php 
+                                   $getniche = DB::table('websites')->where('website_url', $mywebsite->forwhich_user_url)->select('website_niche')->pluck('website_niche')->first();
+                                 ?>
+                                 {{ $getniche }}
+                                 @else
+                                 <?php 
+                                   $getniche = DB::table('websites')->where('website_url', $mywebsite->website_url)->select('website_niche')->pluck('website_niche')->first();
+                                 ?>
+                                 {{ $getniche }}
+                                 @endif
+                              </td>
+                              <td>
+                                 @if($mywebsite->website_url==$lastSegment)
+                                 <?php 
+                                   $get_website_description = DB::table('websites')->where('website_url', $mywebsite->forwhich_user_url)->select('website_description')->pluck('website_description')->first();
+                                 ?>
+                                 <p> 
+                                   <a data-bs-toggle="collapse" href="#collapseExample<?php $i=$i+1; echo $i; ?>" role="button" aria-expanded="false" aria-controls="collapseExample<?php echo $i; ?>">
+                                     Show/Hide
+                                   </a>
+                                 </p>
+                                 <div class="collapse" id="collapseExample<?php echo $i; ?>">
+                                   <div class="card card-body">
+                                     {{ $get_website_description }}
+                                   </div>
+                                 </div>
+                                 @else
+                                 <?php 
+                                   $get_website_description = DB::table('websites')->where('website_url', $mywebsite->website_url)->select('website_description')->pluck('website_description')->first();
+                                 ?>
+                                 <p> 
+                                   <a data-bs-toggle="collapse" href="#collapseExample<?php $i=$i+1; echo $i; ?>" role="button" aria-expanded="false" aria-controls="collapseExample<?php echo $i; ?>">
+                                     Show/Hide
+                                   </a>
+                                 </p>
+                                 <div class="collapse" id="collapseExample<?php echo $i; ?>">
+                                   <div class="card card-body">
+                                     {{ $get_website_description }}
+                                   </div>
+                                 </div>
+                                 @endif
+                              </td>
+                              <td>
 
-                              @if($mywebsite->status=="" || ($mywebsite->acceptedby_to=="" && $mywebsite->status=="pending"))
-                              <a onclick="return confirm('Are you sure?')" href="/acceptedby-to-outlink-connection/{{ encrypt($mywebsite->id)}}/{{encrypt($mywebsite->forwhich_user_url)}}/{{encrypt($mywebsite->website_url)}}" class="btn btn-success">Accept</a> | <a onclick="return confirm('Are you sure?')" href="/reject/{{encrypt($mywebsite->forwhich_user_url)}}/{{encrypt($mywebsite->website_url)}}" class="btn btn-danger">Reject</a>
+                                 @if($mywebsite->status=="" || ($mywebsite->acceptedby_to=="" && $mywebsite->status=="pending"))
+                                 <a onclick="return confirm('Are you sure?')" href="/acceptedby-to-outlink-connection/{{ encrypt($mywebsite->id)}}/{{encrypt($mywebsite->forwhich_user_url)}}/{{encrypt($mywebsite->website_url)}}" class="btn btn-success">Accept</a> | <a onclick="return confirm('Are you sure?')" href="/reject/{{encrypt($mywebsite->forwhich_user_url)}}/{{encrypt($mywebsite->website_url)}}" class="btn btn-danger">Reject</a>
 
-                              @elseif($mywebsite->status=="pending")
-                              <a href="#" class="btn btn-warning">Waiting for Approval</a>
+                                 @elseif($mywebsite->status=="pending")
+                                 <a href="#" class="btn btn-warning">Waiting for Approval</a>
 
-                              @elseif($mywebsite->status=="accepted")
-                              
-                              @if($mywebsite->website_url==$lastSegment)
-                              <?php 
-                                $getid = DB::table('websites')->where('website_url', $mywebsite->forwhich_user_url)->select('user_id')->pluck('user_id')->first();
-                              ?>
-                              <a href="{{ route('chat', ['id' => $getid]) }}" class="btn btn-success">Go to chat</a>
-                              @else
-                              <?php 
-                                $getid = DB::table('websites')->where('website_url', $mywebsite->website_url)->select('user_id')->pluck('user_id')->first();
-                              ?>
-                              <a href="{{ route('chat', ['id' => $getid]) }}" class="btn btn-success">Go to chat</a>
-                              @endif
+                                 @elseif($mywebsite->status=="accepted")
+                                 
+                                 @if($mywebsite->website_url==$lastSegment)
+                                 <?php 
+                                   $getid = DB::table('websites')->where('website_url', $mywebsite->forwhich_user_url)->select('user_id')->pluck('user_id')->first();
+                                 ?>
+                                 <a href="{{ route('chat', ['id' => $getid]) }}" class="btn btn-success">Go to chat</a>
+                                 @else
+                                 <?php 
+                                   $getid = DB::table('websites')->where('website_url', $mywebsite->website_url)->select('user_id')->pluck('user_id')->first();
+                                 ?>
+                                 <a href="{{ route('chat', ['id' => $getid]) }}" class="btn btn-success">Go to chat</a>
+                                 @endif
 
-                              @elseif($mywebsite->status=="rejected")
-                              <a href="#" class="btn btn-danger">Rejected</a>
-                              @endif
+                                 @elseif($mywebsite->status=="rejected")
+                                 <a href="#" class="btn btn-danger">Rejected</a>
+                                 @endif
 
-                           </td>
-                        </tr>
+                              </td>
+                           </tr>
+                        @endif
                         @endforeach 
                      </tbody>
                      <tfoot>

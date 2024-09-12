@@ -88,7 +88,6 @@ class LinkService
             try {
                 DB::table($type)->insert($inserts);
 
-                // Insert into submitlinks
                 foreach ($inserts as $insert) {
                     $chatId = "{$insert['from_user_id']}_{$insert['to_user_id']}";
 
@@ -97,9 +96,13 @@ class LinkService
                         'chat_id' => $chatId,  // Generated chat_id as a combination of from_user_id and to_user_id
                         'acceptedby_to' => $insert['to_user_id'],
                         'acceptedby_from' => $insert['from_user_id'],
+                        
+                        // Add 'outlink_on' and 'backlink_to' fields
+                        'outlink_on' => $insert['website_url'],   // You can modify this to point to the actual value for 'outlink_on'
+                        'backlink_to' => $insert['forwhich_user_url'],   // Modify this as needed based on where 'backlink_to' should point
                     ]);
                 }
-
+                
                 DB::commit();
             } catch (\Exception $e) {
                 DB::rollback();

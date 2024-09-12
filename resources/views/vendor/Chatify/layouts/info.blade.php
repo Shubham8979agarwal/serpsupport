@@ -3,13 +3,11 @@
 $currentUrl = url()->current();
 $lastSegment = request()->segment(count(request()->segments()));
 $chat_id = $lastSegment . "_" . Auth::user()->id;
-$acceptedby_to = DB::table('submitlinks')
-    ->where('chat_id', $chat_id)
-    ->value('acceptedby_to');
-$chat_status = DB::table('submitlinks')
-    ->where('chat_id', $chat_id)
-    ->value('chat_status');    
-?>
+//$connection_type = DB::table('submitlinks')->where('chat_id', $chat_id)->value('connection_type');
+$acceptedby_to = DB::table('submitlinks')->where('chat_id', $chat_id)->value('acceptedby_to');
+$get_backlinkto = DB::table('submitlinks')->where('chat_id', $chat_id)->value('backlink_to');
+$get_outlinkon = DB::table('submitlinks')->where('chat_id', $chat_id)->value('outlink_on');    
+$chat_status = DB::table('submitlinks')->where('chat_id', $chat_id)->value('chat_status');?>
 <div class="avatar av-l chatify-d-flex"></div>
 <!-- <p class="info-name">{{ config('chatify.name') }}</p> -->
 <p></p>
@@ -18,9 +16,16 @@ $chat_status = DB::table('submitlinks')
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
    <div class="container">
       <!-- Button to Open the Modal -->
-      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModal">
+      <button type="button" class="btn btn-success mb-3" data-toggle="modal" data-target="#myModal">
       Submit Link Details
       </button>
+      @if (session('error'))
+          <div class="alert alert-danger">
+             {{ session('error') }}
+             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+          </div>
+       @endif
       <!-- The Modal -->
       <div class="modal fade" id="myModal">
          <div class="modal-dialog">
@@ -50,17 +55,17 @@ $chat_status = DB::table('submitlinks')
                   <div class="form-group row">
                      <label for="inputEmail3" class="col-sm-2 col-form-label">Outlink on:</label>
                      <div class="col-sm-10">
-                        <input type="text" class="form-control" name="outlink_on" placeholder="Add URL here" autocomplete="off" value="{{ old('outlink_on') }}">
+                        <input type="text" class="form-control" name="outlink_on" placeholder="Add URL here" autocomplete="off" value="{{ $get_outlinkon }}">
                         @error('outlink_on')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
                      </div>
                   </div>
                   <div class="form-group row">
-                     <label for="inputPassword3" class="col-sm-2 col-form-label">Backlink on: </label>
+                     <label for="inputPassword3" class="col-sm-2 col-form-label">Backlink to: </label>
                      <div class="col-sm-10">
-                        <input type="text" class="form-control" name="backlink_on" placeholder="Add URL here" autocomplete="off" value="{{ old('backlink_on') }}">
-                        @error('backlink_on')
+                        <input type="text" class="form-control" name="backlink_to" placeholder="Add URL here" autocomplete="off" value="{{ $get_backlinkto }}">
+                        @error('backlink_to')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
                      </div>
@@ -104,6 +109,7 @@ $chat_status = DB::table('submitlinks')
 <div class="alert alert-success" style="margin: 20px;">
    Link Details Submitted Successfully
 </div>
+@endif
 <script>
     document.querySelectorAll('.link-checkbox').forEach(checkbox => {
         checkbox.addEventListener('change', function() {
@@ -128,7 +134,6 @@ $chat_status = DB::table('submitlinks')
         });
     });
 </script>
-@endif
 {{-- shared photos --}}
 <!-- <div class="messenger-infoView-shared">
    <p class="messenger-title"><span>Shared Photos</span></p>

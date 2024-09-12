@@ -54,6 +54,7 @@
                      <tbody>
                         <?php $i=0; ?>
                        @foreach ($backlink_data as $mywebsite)
+                       @if($mywebsite->chat_status !== 'closed')
                         <tr>
                            <td>
                               @if($mywebsite->website_url==$lastSegment)
@@ -138,6 +139,7 @@
 
                            </td>
                         </tr>
+                        @endif
                         @endforeach
                      </tbody>
                      <tfoot>

@@ -21,7 +21,7 @@ class Submitlink extends Authenticatable
         'chat_id',
         'typeoflink',
         'outlink_on',
-        'backlink_on',
+        'backlink_to',
         'anchor_text',
         'outlink_placed_on_your_website',
         'acceptedby_to',

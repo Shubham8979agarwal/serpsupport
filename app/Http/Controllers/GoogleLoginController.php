@@ -34,6 +34,8 @@ class GoogleLoginController extends Controller
     public function __construct(LinkService $linkService)
    {
         $this->middleware('disable_back_btn');
+        /*$this->middleware('openChatCountOutlinks');
+        $this->middleware('openChatCountBacklinks');*/
         $this->linkService = $linkService;
         #$this->middleware('auth');
    }
@@ -69,8 +71,15 @@ class GoogleLoginController extends Controller
     public function archivedchat_and_linkdetails()
     {
         $data['data'] = Auth::user();
-        $data['linkdetails'] = DB::table('submitlinks')->where('acceptedby_to',Auth::user()->id)->orWhere('acceptedby_from', Auth::user()->id)->where('chat_status','closed')->get();
-        return view('frontend.dashboard.archivedchat_and_linkdetails',$data);
+        $data['linkdetails'] = DB::table('submitlinks')
+    ->where(function($query) {
+        $query->where('acceptedby_to', Auth::user()->id)
+              ->orWhere('acceptedby_from', Auth::user()->id);
+    })
+    ->where('chat_status', 'closed')
+    ->get();
+
+    return view('frontend.dashboard.archivedchat_and_linkdetails',$data);
     }
 
     public function addwebsite()
@@ -383,7 +392,6 @@ class GoogleLoginController extends Controller
         }
     }
 
-
     public function push_website(Request $request)
     {
         // Validate the incoming request data
@@ -538,7 +546,7 @@ class GoogleLoginController extends Controller
         // Assign the unique and filtered data to outlink_data
         $data['outlink_data'] = $unique_outlink_data;
 
-        // dd($data['outlink_data']);
+        //dd($data['outlink_data']);
         return view('frontend.dashboard.outlinks', $data);
     }
 
@@ -697,6 +705,7 @@ class GoogleLoginController extends Controller
         }
     }
 
+    
     public function chat(Request $request, $id)
     {
         $currentUrl = url()->current(); // Get the current URL
@@ -738,26 +747,113 @@ class GoogleLoginController extends Controller
         ]);
     }
 
-  public function submitlinkdetails(Request $request)
-  {
-      $data = $request->validate([
+    /*public function submitlinkdetails(Request $request)
+    {
+        // Validate the incoming request data
+        $data = $request->validate([
             'typeoflink' => 'required',
             'outlink_on' => 'required',
-            'backlink_on' => 'required',
+            'backlink_to' => 'required',
             'anchor_text' => 'required',
             'outlink_placed_on_your_website' => 'required',
             'chat_id' => 'required'
         ]);
 
-      $data['chat_status'] = "closed";
-      DB::table('submitlinks')->where('chat_id', $data['chat_id'])->update($data);
-      $myuniqueid = $data['chat_id']."_@@!!";
-      DB::table('ch_messages')->where('myuniqueid',$myuniqueid)->update(['chatarchieve' => 'yes']);
-      
-      return back();    
-   }  
+        // Retrieve the matching record from 'submitlinks' based on 'chat_id'
+        $submitlink = DB::table('submitlinks')
+            ->where('chat_id', $data['chat_id'])
+            ->first();
 
-   public function signOut() 
+        // Check if 'outlink_on' and 'backlink_to' in request match the database record
+        if (!$submitlink || $submitlink->outlink_on !== $data['outlink_on'] || $submitlink->backlink_to !== $data['backlink_to']) {
+            // Redirect back with an error message if there's a mismatch
+            return back()->with('error', 'The provided outlink or backlink does not match our records.');
+        }
+
+        // If everything matches, proceed with the update
+        $data['chat_status'] = "closed";
+
+        // Update the 'submitlinks' table
+        DB::table('submitlinks')
+            ->where('chat_id', $data['chat_id'])
+            ->update($data);
+
+        // Update 'ch_messages' table to archive the chat
+        $myuniqueid = $data['chat_id'] . "_@@!!";
+        DB::table('ch_messages')
+            ->where('myuniqueid', $myuniqueid)
+            ->update(['chatarchieve' => 'yes']);
+
+        // Return back with success
+        return back()->with('success', 'Link details updated successfully.');
+    }*/
+
+    public function submitlinkdetails(Request $request)
+    {
+        // Validate the incoming request data
+        $data = $request->validate([
+            'typeoflink' => 'required',
+            'outlink_on' => 'required',
+            'backlink_to' => 'required',
+            'anchor_text' => 'required',
+            'outlink_placed_on_your_website' => 'required',
+            'chat_id' => 'required'
+        ]);
+
+        // Retrieve the matching record from 'submitlinks' based on 'chat_id'
+        $submitlink = DB::table('submitlinks')
+            ->where('chat_id', $data['chat_id'])
+            ->first();
+
+        // Check if 'outlink_on' and 'backlink_to' in request match the database record
+        if (!$submitlink || $submitlink->outlink_on !== $data['outlink_on'] || $submitlink->backlink_to !== $data['backlink_to']) {
+            // Redirect back with an error message if there's a mismatch
+            return back()->with('error', 'The provided outlink or backlink does not match our records.');
+        }
+
+        // If everything matches, proceed with the update
+        $data['chat_status'] = "closed";
+
+        // Update the 'submitlinks' table
+        DB::table('submitlinks')
+            ->where('chat_id', $data['chat_id'])
+            ->update($data);
+
+        // Update 'ch_messages' table to archive the chat
+        $myuniqueid = $data['chat_id'] . "_@@!!";
+        DB::table('ch_messages')
+            ->where('myuniqueid', $myuniqueid)
+            ->update(['chatarchieve' => 'yes']);
+
+        // Check if chat_id exists in 'backlinks' table
+        $backlinkExists = DB::table('backlinks')
+            ->where('chat_id', $data['chat_id'])
+            ->exists();
+
+        // Check if chat_id exists in 'outlinks' table
+        $outlinkExists = DB::table('outlinks')
+            ->where('chat_id', $data['chat_id'])
+            ->exists();
+
+        // Update 'chat_status' to 'closed' in 'backlinks' if chat_id is found there
+        if ($backlinkExists) {
+            DB::table('backlinks')
+                ->where('chat_id', $data['chat_id'])
+                ->update(['chat_status' => 'closed']);
+        }
+
+        // Update 'chat_status' to 'closed' in 'outlinks' if chat_id is found there
+        if ($outlinkExists) {
+            DB::table('outlinks')
+                ->where('chat_id', $data['chat_id'])
+                ->update(['chat_status' => 'closed']);
+        }
+
+        // Return back with success
+        return back()->with('success', 'Link details updated successfully.');
+    }
+
+    public function signOut() 
     {
         Session::flush();
         Auth::logout();

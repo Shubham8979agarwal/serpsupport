@@ -114,28 +114,20 @@
                         
                         // Fetch the counts of unseen backlinks
                         $unread_outlink_count = DB::table('outlinks')
-                            ->where('website_url', $websites->website_url)
-                            ->where('seenby_ol_user', 0)
-                            ->count();
-                        
+                            ->where('website_url', $websites->website_url)->where('chat_status',"=",NULL)->count();
+                            
                         $unread_backlink_count = DB::table('backlinks')
-                            ->where('forwhich_user_url', $websites->website_url)
-                            ->where('seenby_ol_user', 0)
-                            ->count();
+                            ->where('forwhich_user_url', $websites->website_url)->where('chat_status',"=",NULL)->count();
                         
                         $backlink_count = $unread_outlink_count + $unread_backlink_count  ;
                         
                         // Fetch the counts of unseen outlinks
                         $unread_outlink_count_oc = DB::table('outlinks')
-                            ->where('forwhich_user_url', $websites->website_url)
-                            ->where('seenby_ol_user', 0)
-                            ->count();
+                            ->where('forwhich_user_url', $websites->website_url)->where('chat_status',"=",NULL)->count();
+                          
                         $unread_backlink_count_bc = DB::table('backlinks')
-                            ->where('website_url', $websites->website_url)
-                            ->where('seenby_ol_user', 0)
-                            ->count();
+                            ->where('website_url', $websites->website_url)->where('chat_status',"=",NULL)->count();
                         $outlink_count =  $unread_outlink_count_oc + $unread_backlink_count_bc;
-                        
                         ?>
                      <li class="nav-item @if($isActive) active submenu @endif" id="item{{ $websiteId }}">
                         <a data-bs-toggle="collapse" href="#{{ $submenuId }}">
@@ -150,7 +142,7 @@
                                  <span class="sub-item">
                                  Backlinks
                                  <span class='flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20'>
-                                 {{ $backlink_count }} 
+                                 {{ $backlink_count }}
                                  </span>
                                  </span>
                                  </a>
@@ -160,7 +152,7 @@
                                  <span class="sub-item">
                                  Outlinks
                                  <span class='flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20'>
-                                 {{ $outlink_count }} 
+                                 {{ $outlink_count }}
                                  </span>
                                  </span>
                                  </a>
@@ -208,8 +200,8 @@
             <div class="container-fluid">
                <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
                   <li class="nav-item topbar-icon dropdown hidden-caret">
-                     <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa fa-bell"></i>
+                     <a class="nav-link dropdown-toggle" href="#" id="messageDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-envelope"></i>
 
                         <?php
                         // Get the authenticated user's ID
@@ -228,10 +220,10 @@
                         @endif
                      </a>
 
-                     <ul class="dropdown-menu notif-box animated fadeIn" aria-labelledby="notifDropdown">
+                     <ul class="dropdown-menu notif-box animated fadeIn" aria-labelledby="messageDropdown">
                         <li>
                            <div class="dropdown-title">
-                              You have {{ $unreadCount }} new notification{{ $unreadCount != 1 ? 's' : '' }}
+                              You have {{ $unreadCount }} new message{{ $unreadCount != 1 ? 's' : '' }}
                            </div>
                         </li>
                         <li>
@@ -267,7 +259,7 @@
                                     </a>
                                  @empty
                                     <div class="notif-content">
-                                       <span class="block">No new notifications</span>
+                                       <span class="block">No new messages</span>
                                     </div>
                                  @endforelse
                               </div>
@@ -278,6 +270,79 @@
                         </li> -->
                      </ul>
                   </li>
+
+                  <!-- <li class="nav-item topbar-icon dropdown hidden-caret">
+                     <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-bell"></i>
+
+                        <?php
+                        
+                        $userId = Auth::id();
+
+                        
+                        $unreadCount = DB::table('ch_messages')
+                           ->where('to_id', $userId)
+                           ->where('seen', 0)
+                           ->count();
+                        ?>
+
+                        @if($unreadCount > 0)
+                           
+                           <span class="notification">{{ $unreadCount }}</span>
+                        @endif
+                     </a>
+
+                     <ul class="dropdown-menu notif-box animated fadeIn" aria-labelledby="notifDropdown">
+                        <li>
+                           <div class="dropdown-title">
+                              You have {{ $unreadCount }} new notification{{ $unreadCount != 1 ? 's' : '' }}
+                           </div>
+                        </li>
+                        <li>
+                           <div class="notif-scroll scrollbar-outer">
+                              <div class="notif-center">
+                                 <?php
+                                 
+                                 $unseenMessages = DB::table('ch_messages')
+                                    ->where('to_id', $userId)
+                                    ->where('seen', 0)
+                                    ->orderBy('created_at', 'desc')
+                                    ->limit(5)  // Limit to 5 notifications
+                                    ->get();
+                                 ?>
+
+                                 @forelse($unseenMessages as $message)
+                                    <?php
+                                    
+                                    $senderName = DB::table('users')
+                                       ->where('id', $message->from_id)
+                                       ->pluck('name')
+                                       ->first();
+                                    ?>
+                                    <a href="/chat/{{$message->from_id}}">
+                                       <div class="notif-content">
+                                          <span class="block">
+                                             Someone sent you a message
+                                          </span>
+                                          <span class="time">
+                                             {{ \Carbon\Carbon::parse($message->created_at)->diffForHumans() }}
+                                          </span>
+                                       </div>
+                                    </a>
+                                 @empty
+                                    <div class="notif-content">
+                                       <span class="block">No new notifications</span>
+                                    </div>
+                                 @endforelse
+                              </div>
+                           </div>
+                        </li>
+                        <li class="dropdown-footer">
+                           <a href="#">View All Notifications</a>
+                        </li>
+                     </ul>
+                  </li> -->
+
                   <li class="nav-item topbar-user dropdown hidden-caret">
                      <a
                         class="dropdown-toggle profile-pic"

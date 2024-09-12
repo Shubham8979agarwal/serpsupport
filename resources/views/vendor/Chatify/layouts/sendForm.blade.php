@@ -14,6 +14,6 @@ $getchatarchieve = DB::table('ch_messages')->where('myuniqueid', $makeuniqueid)-
 </div>
 @else
 <div class="alert alert-success" style="margin: 20px;">
-   This chat has been archieved ...
+   This chat has been archived ...
 </div>
 @endif
