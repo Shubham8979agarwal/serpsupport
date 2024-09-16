@@ -13,16 +13,23 @@
             </div>
             @endif
          </div>
+         <?php 
+         $websiteCount = DB::table('websites')->where('user_id', Auth::user()->id)->count();
+         ?>
+         @if($websiteCount >= 1)
+         <p></p>
+         @else
          <div class="ms-md-auto py-2 py-md-0">
             <a href="{{ route('addwebsite') }}" class="btn btn-primary btn-round"><i class="fa fa-plus"></i> Add Website</a>
          </div>
+         @endif
       </div>
       <div class="row">
          <div class="col-md-12">
             <div class="card card-round">
                <div class="card-header">
                   <div class="card-head-row card-tools-still-right">
-                     <div class="card-title">Your Websites(10 Max)</div>
+                     <div class="card-title">Your Websites(1 Max)</div>
                   </div>
                </div>
                <div class="card-body p-4">

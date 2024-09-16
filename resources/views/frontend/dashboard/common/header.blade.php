@@ -89,8 +89,8 @@
          <div class="sidebar-wrapper scrollbar scrollbar-inner">
             <div class="sidebar-content">
                <ul class="nav nav-secondary">
-                  <li class="nav-item">
-                     <a href="#">
+                  <li class="nav-item @if(Route::currentRouteName() == 'dashboard') active @endif">
+                     <a href="{{ route('dashboard') }}">
                         <i class="fas fa-home"></i>
                         <p>Dashboard</p>
                      </a>

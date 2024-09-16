@@ -43,6 +43,7 @@ Route::post('reset-password', [ForgotPasswordController::class, 'submitResetPass
 Route::group(['middleware' => 'disable_back_btn'], function () {
 Route::group(['middleware' => ['auth']], function()
 { 
+Route::get('/dashboard', [GoogleLoginController::class, 'dashboard'])->name('dashboard');    
 Route::get('/account-settings', [GoogleLoginController::class, 'accountsettings'])->name('account-settings');
 Route::get('/addwebsite', [GoogleLoginController::class, 'addwebsite'])->name('addwebsite');
 
