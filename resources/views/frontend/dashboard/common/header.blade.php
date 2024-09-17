@@ -269,6 +269,43 @@
                            </li> -->
                      </ul>
                   </li>
+                  <?php
+                         // Check if websites data is available
+                         $getwebsites = DB::table('websites')->where('website_uploader_email', Auth::user()->email)->get();
+                         
+                         $backlink_count = 0;
+                         $outlink_count = 0;
+
+                         // Loop through the websites to calculate backlink and outlink counts
+                         if (count($getwebsites) > 0) {
+                             foreach ($getwebsites as $websites) {
+                                 $unread_outlink_count = DB::table('outlinks')
+                                     ->where('website_url', $websites->website_url)
+                                     ->where('chat_status', '=', NULL)
+                                     ->count();
+                                     
+                                 $unread_backlink_count = DB::table('backlinks')
+                                     ->where('forwhich_user_url', $websites->website_url)
+                                     ->where('chat_status', '=', NULL)
+                                     ->count();
+                                     
+                                 $backlink_count += $unread_outlink_count + $unread_backlink_count;
+
+                                 $unread_outlink_count_oc = DB::table('outlinks')
+                                     ->where('forwhich_user_url', $websites->website_url)
+                                     ->where('chat_status', '=', NULL)
+                                     ->count();
+                                     
+                                 $unread_backlink_count_bc = DB::table('backlinks')
+                                     ->where('website_url', $websites->website_url)
+                                     ->where('chat_status', '=', NULL)
+                                     ->count();
+
+                                 $outlink_count += $unread_outlink_count_oc + $unread_backlink_count_bc;
+                             }
+                         }
+                     ?>
+
                   <!-- Backlinks and Outlinks Notification -->
                   <li class="nav-item topbar-icon dropdown hidden-caret">
                      <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
