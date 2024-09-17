@@ -29,7 +29,7 @@
             <div class="card card-round">
                <div class="card-header">
                   <div class="card-head-row card-tools-still-right">
-                     <div class="card-title">Your Websites(1 Max)</div>
+                     <div class="card-title">Your Website(s)</div>
                   </div>
                </div>
                <div class="card-body p-4">
