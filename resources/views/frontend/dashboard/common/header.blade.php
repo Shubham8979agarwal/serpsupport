@@ -66,10 +66,13 @@
          background: #000!important;
          }
          .messages-notif-box .notif-center a .notif-content, .notif-box .notif-center a .notif-content{
-           padding: 10px 15px 10px 15px!important; 
+         padding: 10px 15px 10px 15px!important; 
          }
          .notif-content {
-            padding: 5px!important;
+         padding: 5px!important;
+         }
+         .activeStatus{
+         z-index: 9!important;
          }
       </style>
    </head>
@@ -202,24 +205,21 @@
                   <li class="nav-item topbar-icon dropdown hidden-caret">
                      <a class="nav-link dropdown-toggle" href="#" id="messageDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fa fa-envelope"></i>
-
                         <?php
-                        // Get the authenticated user's ID
-                        $userId = Auth::id();
-
-                        // Count the number of unread messages (seen = 0) where the logged-in user is the recipient (to_id)
-                        $unreadCount = DB::table('ch_messages')
-                           ->where('to_id', $userId)
-                           ->where('seen', 0)
-                           ->count();
-                        ?>
-
+                           // Get the authenticated user's ID
+                           $userId = Auth::id();
+                           
+                           // Count the number of unread messages (seen = 0) where the logged-in user is the recipient (to_id)
+                           $unreadCount = DB::table('ch_messages')
+                              ->where('to_id', $userId)
+                              ->where('seen', 0)
+                              ->count();
+                           ?>
                         @if($unreadCount > 0)
-                           <!-- Display the number of unread messages -->
-                           <span class="notification">{{ $unreadCount }}</span>
+                        <!-- Display the number of unread messages -->
+                        <span class="notification">{{ $unreadCount }}</span>
                         @endif
                      </a>
-
                      <ul class="dropdown-menu notif-box animated fadeIn" aria-labelledby="messageDropdown">
                         <li>
                            <div class="dropdown-title">
@@ -230,119 +230,80 @@
                            <div class="notif-scroll scrollbar-outer">
                               <div class="notif-center">
                                  <?php
-                                 // Fetch the unseen messages for the user, limiting the result to 5
-                                 $unseenMessages = DB::table('ch_messages')
-                                    ->where('to_id', $userId)
-                                    ->where('seen', 0)
-                                    ->orderBy('created_at', 'desc')
-                                    ->limit(5)  // Limit to 5 notifications
-                                    ->get();
-                                 ?>
-
+                                    // Fetch the unseen messages for the user, limiting the result to 5
+                                    $unseenMessages = DB::table('ch_messages')
+                                       ->where('to_id', $userId)
+                                       ->where('seen', 0)
+                                       ->orderBy('created_at', 'desc')
+                                       ->limit(5)  // Limit to 5 notifications
+                                       ->get();
+                                    ?>
                                  @forelse($unseenMessages as $message)
-                                    <?php
+                                 <?php
                                     // Get the sender's name (assuming there is a 'users' table)
                                     $senderName = DB::table('users')
                                        ->where('id', $message->from_id)
                                        ->pluck('name')
                                        ->first();
                                     ?>
-                                    <a href="/chat/{{$message->from_id}}">
-                                       <div class="notif-content">
-                                          <span class="block">
-                                             Someone sent you a message
-                                          </span>
-                                          <span class="time">
-                                             {{ \Carbon\Carbon::parse($message->created_at)->diffForHumans() }}
-                                          </span>
-                                       </div>
-                                    </a>
-                                 @empty
+                                 <a href="/chat/{{$message->from_id}}">
                                     <div class="notif-content">
-                                       <span class="block">No new messages</span>
+                                       <span class="block">
+                                       Someone sent you a message
+                                       </span>
+                                       <span class="time">
+                                       {{ \Carbon\Carbon::parse($message->created_at)->diffForHumans() }}
+                                       </span>
                                     </div>
+                                 </a>
+                                 @empty
+                                 <div class="notif-content">
+                                    <span class="block">No new messages</span>
+                                 </div>
                                  @endforelse
                               </div>
                            </div>
                         </li>
                         <!-- <li class="dropdown-footer">
                            <a href="#">View All Notifications</a>
-                        </li> -->
+                           </li> -->
                      </ul>
                   </li>
-
-                  <!-- <li class="nav-item topbar-icon dropdown hidden-caret">
+                  <!-- Backlinks and Outlinks Notification -->
+                  <li class="nav-item topbar-icon dropdown hidden-caret">
                      <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fa fa-bell"></i>
-
-                        <?php
-                        
-                        $userId = Auth::id();
-
-                        
-                        $unreadCount = DB::table('ch_messages')
-                           ->where('to_id', $userId)
-                           ->where('seen', 0)
-                           ->count();
-                        ?>
-
-                        @if($unreadCount > 0)
-                           
-                           <span class="notification">{{ $unreadCount }}</span>
+                        <!-- Assuming backlink_count or outlink_count has a value -->
+                        @if($backlink_count > 0 || $outlink_count > 0)
+                        <span class="notification">{{ $backlink_count + $outlink_count }}</span>
                         @endif
                      </a>
-
                      <ul class="dropdown-menu notif-box animated fadeIn" aria-labelledby="notifDropdown">
                         <li>
                            <div class="dropdown-title">
-                              You have {{ $unreadCount }} new notification{{ $unreadCount != 1 ? 's' : '' }}
+                              Backlink & Outlink Notifications
                            </div>
                         </li>
                         <li>
                            <div class="notif-scroll scrollbar-outer">
                               <div class="notif-center">
-                                 <?php
-                                 
-                                 $unseenMessages = DB::table('ch_messages')
-                                    ->where('to_id', $userId)
-                                    ->where('seen', 0)
-                                    ->orderBy('created_at', 'desc')
-                                    ->limit(5)  // Limit to 5 notifications
-                                    ->get();
-                                 ?>
-
-                                 @forelse($unseenMessages as $message)
-                                    <?php
-                                    
-                                    $senderName = DB::table('users')
-                                       ->where('id', $message->from_id)
-                                       ->pluck('name')
-                                       ->first();
-                                    ?>
-                                    <a href="/chat/{{$message->from_id}}">
-                                       <div class="notif-content">
-                                          <span class="block">
-                                             Someone sent you a message
-                                          </span>
-                                          <span class="time">
-                                             {{ \Carbon\Carbon::parse($message->created_at)->diffForHumans() }}
-                                          </span>
-                                       </div>
-                                    </a>
-                                 @empty
-                                    <div class="notif-content">
-                                       <span class="block">No new notifications</span>
-                                    </div>
-                                 @endforelse
+                                 <!-- Display Backlink Notification -->
+                                 <!-- <a href="#"> -->
+                                 <div class="notif-content">
+                                    <span class="block">Received {{ $backlink_count }} Backlink(s)</span>
+                                 </div>
+                                 <!-- </a> -->
+                                 <!-- Display Outlink Notification -->
+                                 <!-- <a href="#"> -->
+                                 <div class="notif-content">
+                                    <span class="block">Received {{ $outlink_count }} Outlink(s)</span>
+                                 </div>
+                                 <!-- </a> -->
                               </div>
                            </div>
                         </li>
-                        <li class="dropdown-footer">
-                           <a href="#">View All Notifications</a>
-                        </li>
                      </ul>
-                  </li> -->
-
+                  </li>
                   <li class="nav-item topbar-user dropdown hidden-caret">
                      <a
                         class="dropdown-toggle profile-pic"
