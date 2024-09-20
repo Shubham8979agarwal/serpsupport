@@ -350,13 +350,32 @@
                                  </div>
                                  <!-- </a> -->
                                  <?php
-                                 // Fetch notifications for the authenticated user
-                                $notifications = DB::table('notifications')
-                                ->where('forwhich_user_url', $websites->website_url)->orwhere('website_url',$websites->website_url)
-                                ->where('seen', false)
-                                ->orderBy('created_at', 'desc')
-                                ->get();
-                                 ?>
+                                   // Loop through the websites to calculate backlink, outlink, and notifications counts
+                                   if (count($getwebsites) > 0) {
+                                     foreach ($getwebsites as $websites) {
+                                       // Existing backlink and outlink count logic
+                                       $unread_outlink_count = DB::table('outlinks')
+                                           ->where('website_url', $websites->website_url)
+                                           ->where('chat_status', '=', NULL)
+                                           ->count();
+
+                                       $unread_backlink_count = DB::table('backlinks')
+                                           ->where('forwhich_user_url', $websites->website_url)
+                                           ->where('chat_status', '=', NULL)
+                                           ->count();
+
+                                       $backlink_count += $unread_outlink_count + $unread_backlink_count;
+
+                                       // Fetch notifications for the authenticated user and current website
+                                       $notifications = DB::table('notifications')
+                                           ->where(function ($query) use ($websites) {
+                                               $query->where('forwhich_user_url', $websites->website_url)
+                                                     ->orWhere('website_url', $websites->website_url);
+                                           })
+                                           ->where('seen', false)
+                                           ->orderBy('created_at', 'desc')
+                                           ->get();
+                                 ?>    
                                  @if(count($notifications)>0)
                                  @foreach($notifications as $notification)
                                  <div class="notif-content">
