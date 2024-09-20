@@ -317,14 +317,18 @@
                                 ->count(); 
 
                                 $notifications = array_merge($notifications, DB::table('notifications')
-                                 ->where(function ($query) use ($websites) {
-                                     $query->whereRaw("SUBSTRING(forwhich_user_url FROM '^(https?://)?([^/]+)') = ?", [$websites->website_url])
-                                           ->orWhereRaw("SUBSTRING(website_url FROM '^(https?://)?([^/]+)') = ?", [$websites->website_url]);
-                                 })
-                                 ->where('seen', false)
-                                 ->orderBy('created_at', 'desc')
-                                 ->get()
-                                 ->toArray());   
+                                  ->where(function ($query) use ($websites) {
+                                      $domain = parse_url($websites->website_url, PHP_URL_HOST) ?: $websites->website_url;
+
+                                      $query->where('forwhich_user_url', 'LIKE', "$domain%")
+                                            ->orWhere('website_url', 'LIKE', "$domain%");
+                                  })
+                                  ->where('seen', false)
+                                  ->orderBy('created_at', 'desc')
+                                  ->get()
+                                  ->toArray());
+                                
+                                 //dd($notifications);   
 
                                  $outlink_count += $unread_outlink_count_oc + $unread_backlink_count_bc;
                              }
