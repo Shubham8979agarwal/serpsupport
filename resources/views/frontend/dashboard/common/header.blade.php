@@ -276,6 +276,8 @@
                      </ul>
                   </li>
                   <?php
+
+                         $notifications = [];
                          // Check if websites data is available
                          $getwebsites = DB::table('websites')->where('website_uploader_email', Auth::user()->email)->get();  
                          
@@ -312,7 +314,17 @@
                                 ->where('forwhich_user_url', $websites->website_url)->orwhere('website_url',$websites->website_url)
                                 ->where('seen', false)
                                 ->orderBy('created_at', 'desc')
-                                ->count();    
+                                ->count(); 
+
+                                $notifications = array_merge($notifications, DB::table('notifications')
+                                 ->where(function ($query) use ($websites) {
+                                     $query->where('forwhich_user_url', $websites->website_url)
+                                           ->orWhere('website_url', $websites->website_url);
+                                 })
+                                 ->where('seen', false)
+                                 ->orderBy('created_at', 'desc')
+                                 ->get()
+                                 ->toArray());   
 
                                  $outlink_count += $unread_outlink_count_oc + $unread_backlink_count_bc;
                              }
@@ -348,42 +360,14 @@
                                  <div class="notif-content">
                                     <span class="block">Received {{ $outlink_count }} Outlink(s)</span>
                                  </div>
-                                 <!-- </a> -->
-                                 <?php
-                                   // Loop through the websites to calculate backlink, outlink, and notifications counts
-                                   if (count($getwebsites) > 0) {
-                                     foreach ($getwebsites as $websites) {
-                                       // Existing backlink and outlink count logic
-                                       $unread_outlink_count = DB::table('outlinks')
-                                           ->where('website_url', $websites->website_url)
-                                           ->where('chat_status', '=', NULL)
-                                           ->count();
-
-                                       $unread_backlink_count = DB::table('backlinks')
-                                           ->where('forwhich_user_url', $websites->website_url)
-                                           ->where('chat_status', '=', NULL)
-                                           ->count();
-
-                                       $backlink_count += $unread_outlink_count + $unread_backlink_count;
-
-                                       // Fetch notifications for the authenticated user and current website
-                                       $notifications = DB::table('notifications')
-                                           ->where(function ($query) use ($websites) {
-                                               $query->where('forwhich_user_url', $websites->website_url)
-                                                     ->orWhere('website_url', $websites->website_url);
-                                           })
-                                           ->where('seen', false)
-                                           ->orderBy('created_at', 'desc')
-                                           ->get();
-                                        }
-                                     }
-                                 ?>    
-                                 @if(count($notifications)>0)
-                                 @foreach($notifications as $notification)
-                                 <div class="notif-content">
-                                     <span class="block">{{ $notification->connnection_text }}</span>
-                                 </div>
-                                 @endforeach
+                                    
+                                 <!-- Use $notifications later in your Blade file -->
+                                 @if(count($notifications) > 0)
+                                     @foreach($notifications as $notification)
+                                         <div class="notif-content">
+                                             <span class="block">{{ $notification->connnection_text }}</span>
+                                         </div>
+                                     @endforeach
                                  @endif
                               </div>
                            </div>
