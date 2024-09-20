@@ -200,7 +200,7 @@ class GoogleLoginController extends Controller
             // Update the chat_id in the websites table
             DB::table('outlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
 
-            $html = 'In this chat, we will discuss the possibility of a backlink/outlink. Make sure to discuss: The type of link,the URL and the anchor text. When done, the one giving the link has to submit the link details using green button on the right.';
+            $html = 'In this chat, we will discuss the possibility of a backlink/outlink. Make sure to discuss: The type of link,the URL and the anchor text.';
 
             $sendtochat = [
                 'from_id' => $from_id,
@@ -274,7 +274,7 @@ class GoogleLoginController extends Controller
                     // Update the chat_id in the websites table
                     DB::table('backlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
 
-                    $html = 'In this chat, we will discuss the possibility of a backlink/outlink. Make sure to discuss: The type of link,the URL and the anchor text. When done, the one giving the link has to submit the link details using green button on the right.';
+                    $html = 'In this chat, we will discuss the possibility of a backlink/outlink. Make sure to discuss: The type of link,the URL and the anchor text.';
 
                     $sendtochat = [
                         'from_id' => $from_id,
@@ -357,7 +357,7 @@ class GoogleLoginController extends Controller
                 // Update the chat_id in the websites table
                 DB::table('outlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
 
-                $html = 'In this chat, we will discuss the possibility of a backlink/outlink. Make sure to discuss: The type of link,the URL and the anchor text. When done, the one giving the link has to submit the link details using green button on the right.';
+                $html = 'In this chat, we will discuss the possibility of a backlink/outlink. Make sure to discuss: The type of link,the URL and the anchor text.';
 
                 $sendtochat = [
                     'from_id' => $from_id,
@@ -432,7 +432,7 @@ class GoogleLoginController extends Controller
                     // Update the chat_id in the websites table
                     DB::table('backlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
 
-                    $html = 'In this chat, we will discuss the possibility of a backlink/outlink. Make sure to discuss: The type of link,the URL and the anchor text. When done, the one giving the link has to submit the link details using green button on the right.';
+                    $html = 'In this chat, we will discuss the possibility of a backlink/outlink. Make sure to discuss: The type of link,the URL and the anchor text.';
 
                     $sendtochat = [
                         'from_id' => $from_id,
