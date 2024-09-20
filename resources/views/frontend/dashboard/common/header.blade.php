@@ -350,12 +350,17 @@
                                  </div>
                                  <!-- </a> -->
                                  <?php 
-                                 // Fetch notifications for the authenticated user
-                                $notifications = DB::table('notifications')
-                                ->where('forwhich_user_url', $websites->website_url)->orwhere('website_url',$websites->website_url)
-                                ->where('seen', false)
-                                ->orderBy('created_at', 'desc')
-                                ->get();
+                                 $getwebsites = DB::table('websites')->where('website_uploader_email', Auth::user()->email)->get();
+                                   if (count($getwebsites) > 0) {
+                                   foreach ($getwebsites as $websites) {
+                                    // Fetch notifications for the authenticated user
+                                    $notifications = DB::table('notifications')
+                                    ->where('forwhich_user_url', $websites->website_url)->orwhere('website_url',$websites->website_url)
+                                    ->where('seen', false)
+                                    ->orderBy('created_at', 'desc')
+                                    ->get();
+                                   }
+                                   }
                                  ?>
                                  @if(count($notifications)>0)
                                  @foreach($notifications as $notification)
