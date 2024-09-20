@@ -281,6 +281,7 @@
                          
                          $backlink_count = 0;
                          $outlink_count = 0;
+                         $notifications_count = 0;
 
                          // Loop through the websites to calculate backlink and outlink counts
                          if (count($getwebsites) > 0) {
