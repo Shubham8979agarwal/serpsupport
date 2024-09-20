@@ -375,6 +375,8 @@
                                            ->where('seen', false)
                                            ->orderBy('created_at', 'desc')
                                            ->get();
+                                        }
+                                     }
                                  ?>    
                                  @if(count($notifications)>0)
                                  @foreach($notifications as $notification)
