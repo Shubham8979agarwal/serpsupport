@@ -318,15 +318,13 @@
 
                                 $notifications = array_merge($notifications, DB::table('notifications')
                                  ->where(function ($query) use ($websites) {
-                                     $query->whereRaw("SUBSTRING_INDEX(forwhich_user_url, '/', 1) = ?", [$websites->website_url])
-                                           ->orWhereRaw("SUBSTRING_INDEX(website_url, '/', 1) = ?", [$websites->website_url]);
+                                     $query->whereRaw("SUBSTRING(forwhich_user_url FROM '^(https?://)?([^/]+)') = ?", [$websites->website_url])
+                                           ->orWhereRaw("SUBSTRING(website_url FROM '^(https?://)?([^/]+)') = ?", [$websites->website_url]);
                                  })
                                  ->where('seen', false)
                                  ->orderBy('created_at', 'desc')
                                  ->get()
-                                 ->toArray());
-
-                                 //dd($notifications);   
+                                 ->toArray());   
 
                                  $outlink_count += $unread_outlink_count_oc + $unread_backlink_count_bc;
                              }
