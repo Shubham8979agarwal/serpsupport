@@ -36,7 +36,7 @@ $chat_status = DB::table('submitlinks')->where('chat_id', $chat_id)->value('chat
                   <button type="button" class="close" data-dismiss="modal">&times;</button>
                </div>
                <!-- Modal body -->
-               <form action="{{ route('submitlinkdetails') }}" method="post">
+               <form id="submitlinkdetails" action="{{ route('submitlinkdetails') }}" method="post">
                @csrf
                <div class="modal-body">
                   Select type of link: 
@@ -53,18 +53,18 @@ $chat_status = DB::table('submitlinks')->where('chat_id', $chat_id)->value('chat
                   <span class="text-danger">{{ $message }}</span>
                   @enderror
                   <div class="form-group row">
-                     <label for="inputEmail3" class="col-sm-2 col-form-label">Outlink on:</label>
+                     <label for="inputEmail3" class="col-sm-2 col-form-label">Referring page:</label>
                      <div class="col-sm-10">
-                        <input type="text" class="form-control" name="outlink_on" placeholder="Add URL here" autocomplete="off" value="{{ $get_outlinkon }}">
+                        <input type="text" class="form-control" name="outlink_on" autocomplete="off" placeholder="{{ $get_backlinkto }}">
                         @error('outlink_on')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
                      </div>
                   </div>
                   <div class="form-group row">
-                     <label for="inputPassword3" class="col-sm-2 col-form-label">Backlink to: </label>
+                     <label for="inputPassword3" class="col-sm-2 col-form-label">Target URL: </label>
                      <div class="col-sm-10">
-                        <input type="text" class="form-control" name="backlink_to" placeholder="Add URL here" autocomplete="off" value="{{ $get_backlinkto }}">
+                        <input type="text" class="form-control" name="backlink_to" autocomplete="off" placeholder="{{ $get_outlinkon }}">
                         @error('backlink_to')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
@@ -73,7 +73,7 @@ $chat_status = DB::table('submitlinks')->where('chat_id', $chat_id)->value('chat
                   <div class="form-group row">
                      <label for="inputPassword3" class="col-sm-2 col-form-label">Anchor text</label>
                      <div class="col-sm-10">
-                        <input type="text" class="form-control" name="anchor_text" placeholder="Add anchor text here" autocomplete="off" value="{{ old('anchor_text') }}">
+                        <input type="text" class="form-control" name="anchor_text" placeholder="Add anchor text here" autocomplete="off" placeholder="{{ old('anchor_text') }}">
                         @error('anchor_text')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
@@ -103,7 +103,7 @@ $chat_status = DB::table('submitlinks')->where('chat_id', $chat_id)->value('chat
    </div>
 </div>
 <div class="messenger-infoView-btns">
-   <a href="#" class="danger delete-conversation">Delete Conversation</a>
+   <a href="#" class="danger delete-conversation">Delete Connection</a>
 </div>
 @elseif($acceptedby_to==Auth::user()->id && $chat_status=="closed")
 <div class="alert alert-success" style="margin: 20px;">

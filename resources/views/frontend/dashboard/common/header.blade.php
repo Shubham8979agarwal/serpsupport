@@ -74,6 +74,12 @@
          .activeStatus{
          z-index: 9!important;
          }
+         .block {
+             font-size: 12px!important;
+         }
+         form#submitlinkdetails .form-group label{
+            white-space: normal!important;
+         }
       </style>
    </head>
    <body>
@@ -271,7 +277,7 @@
                   </li>
                   <?php
                          // Check if websites data is available
-                         $getwebsites = DB::table('websites')->where('website_uploader_email', Auth::user()->email)->get();
+                         $getwebsites = DB::table('websites')->where('website_uploader_email', Auth::user()->email)->get();  
                          
                          $backlink_count = 0;
                          $outlink_count = 0;
@@ -301,6 +307,12 @@
                                      ->where('chat_status', '=', NULL)
                                      ->count();
 
+                                 $notifications_count = DB::table('notifications')
+                                ->where('forwhich_user_url', $websites->website_url)->orwhere('website_url',$websites->website_url)
+                                ->where('seen', false)
+                                ->orderBy('created_at', 'desc')
+                                ->count();    
+
                                  $outlink_count += $unread_outlink_count_oc + $unread_backlink_count_bc;
                              }
                          }
@@ -311,8 +323,8 @@
                      <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fa fa-bell"></i>
                         <!-- Assuming backlink_count or outlink_count has a value -->
-                        @if($backlink_count > 0 || $outlink_count > 0)
-                        <span class="notification">{{ $backlink_count + $outlink_count }}</span>
+                        @if($backlink_count > 0 || $outlink_count > 0 || $notifications_count>0)
+                        <span class="notification">{{ $backlink_count + $outlink_count + $notifications_count }}</span>
                         @endif
                      </a>
                      <ul class="dropdown-menu notif-box animated fadeIn" aria-labelledby="notifDropdown">
@@ -336,6 +348,21 @@
                                     <span class="block">Received {{ $outlink_count }} Outlink(s)</span>
                                  </div>
                                  <!-- </a> -->
+                                 <?php 
+                                 // Fetch notifications for the authenticated user
+                                $notifications = DB::table('notifications')
+                                ->where('forwhich_user_url', $websites->website_url)->orwhere('website_url',$websites->website_url)
+                                ->where('seen', false)
+                                ->orderBy('created_at', 'desc')
+                                ->get();
+                                 ?>
+                                 @if(count($notifications)>0)
+                                 @foreach($notifications as $notification)
+                                 <div class="notif-content">
+                                     <span class="block">{{ $notification->connnection_text }}</span>
+                                 </div>
+                                 @endforeach
+                                 @endif
                               </div>
                            </div>
                         </li>

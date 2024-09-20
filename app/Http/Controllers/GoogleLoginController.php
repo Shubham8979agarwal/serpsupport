@@ -18,6 +18,7 @@ use App\Models\RejectedPair;
 use App\Models\ChMessage;
 use App\Models\ChFavorite;
 use App\Models\Submitlink;
+use App\Models\Notification;
 use Mail;
 use Illuminate\Support\Str;
 use DB;
@@ -34,10 +35,7 @@ class GoogleLoginController extends Controller
     public function __construct(LinkService $linkService)
    {
         $this->middleware('disable_back_btn');
-        /*$this->middleware('openChatCountOutlinks');
-        $this->middleware('openChatCountBacklinks');*/
         $this->linkService = $linkService;
-        #$this->middleware('auth');
    }
 
     public function signup()
@@ -93,14 +91,13 @@ class GoogleLoginController extends Controller
     {
         $data['data'] = Auth::user();
         $data['linkdetails'] = DB::table('submitlinks')
-    ->where(function($query) {
+        ->where(function($query) {
         $query->where('acceptedby_to', Auth::user()->id)
               ->orWhere('acceptedby_from', Auth::user()->id);
-    })
-    ->where('chat_status', 'closed')
-    ->get();
-
-    return view('frontend.dashboard.archivedchat_and_linkdetails',$data);
+        })
+        ->where('chat_status', 'closed')
+        ->get();
+        return view('frontend.dashboard.archivedchat_and_linkdetails',$data);
     }
 
     public function addwebsite()
@@ -160,7 +157,7 @@ class GoogleLoginController extends Controller
                 ->where('id', $id)
                 ->where('forwhich_user_url', $forwhich_user_url)
                 ->where('website_url', $website_url)
-                ->update(['acceptedby_to' => 'yes']);
+                ->update(['acceptedby_to' => 'yes']);        
 
         // Re-fetch the updated outlink record to check the new status
         $outlink = DB::table('outlinks')
@@ -181,6 +178,17 @@ class GoogleLoginController extends Controller
             ->where('website_url', $website_url)
             ->update(['status' => $newStatus]);
 
+            // Add notification to the notifications table
+            $notification = [
+                'forwhich_user_url' => $forwhich_user_url,
+                'website_url' => $website_url,
+                'acceptedby_from' => 'yes',
+                'acceptedby_to' => 'yes',
+                'connnection_text' => "Connection accepted by {$forwhich_user_url}",
+                'seen' => false,
+            ];
+            DB::table('notifications')->insert($notification);    
+
         // If the status is 'accepted', create a record in the ch_messages table
         if ($newStatus == 'accepted') {
             $from_id = $outlink->from_user_id;
@@ -192,7 +200,7 @@ class GoogleLoginController extends Controller
             // Update the chat_id in the websites table
             DB::table('outlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
 
-            $html = 'hi';
+            $html = 'In this chat, we will discuss the possibility of a backlink/outlink. Make sure to discuss: The type of link,the URL and the anchor text. When done, the one giving the link has to submit the link details using green button on the right.';
 
             $sendtochat = [
                 'from_id' => $from_id,
@@ -244,6 +252,17 @@ class GoogleLoginController extends Controller
                     ->where('website_url', $website_url)
                     ->update(['status' => $newStatus]);
 
+                // Add notification to the notifications table
+                $notification = [
+                    'forwhich_user_url' => $forwhich_user_url,
+                    'website_url' => $website_url,
+                    'acceptedby_from' => 'yes',
+                    'acceptedby_to' => 'yes',
+                    'connnection_text' => "Connection accepted by {$website_url}",
+                    'seen' => false,
+                ];
+                DB::table('notifications')->insert($notification);    
+
                 // If the status is 'accepted', create a record in the ch_messages table
                 if ($newStatus == 'accepted') {
                     $from_id = $backlink->from_user_id;
@@ -255,7 +274,7 @@ class GoogleLoginController extends Controller
                     // Update the chat_id in the websites table
                     DB::table('backlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
 
-                    $html = 'hi';
+                    $html = 'In this chat, we will discuss the possibility of a backlink/outlink. Make sure to discuss: The type of link,the URL and the anchor text. When done, the one giving the link has to submit the link details using green button on the right.';
 
                     $sendtochat = [
                         'from_id' => $from_id,
@@ -316,6 +335,16 @@ class GoogleLoginController extends Controller
                 ->where('forwhich_user_url', $forwhich_user_url)
                 ->where('website_url', $website_url)
                 ->update(['status' => $newStatus]);
+            // Add notification to the notifications table
+            $notification = [
+                'forwhich_user_url' => $forwhich_user_url,
+                'website_url' => $website_url,
+                'acceptedby_from' => 'yes',
+                'acceptedby_to' => 'yes',
+                'connnection_text' => "Connection accepted by {$website_url}",
+                'seen' => false,
+            ];
+            DB::table('notifications')->insert($notification);    
 
             // If the status is 'accepted', create a record in the ch_messages table
             if ($newStatus == 'accepted') {
@@ -328,7 +357,7 @@ class GoogleLoginController extends Controller
                 // Update the chat_id in the websites table
                 DB::table('outlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
 
-                $html = 'hi';
+                $html = 'In this chat, we will discuss the possibility of a backlink/outlink. Make sure to discuss: The type of link,the URL and the anchor text. When done, the one giving the link has to submit the link details using green button on the right.';
 
                 $sendtochat = [
                     'from_id' => $from_id,
@@ -380,6 +409,18 @@ class GoogleLoginController extends Controller
                     ->where('website_url', $website_url)
                     ->update(['status' => $newStatus]);
 
+                // Add notification to the notifications table
+            $notification = [
+                'forwhich_user_url' => $forwhich_user_url,
+                'website_url' => $website_url,
+                'acceptedby_from' => 'yes',
+                'acceptedby_to' => 'yes',
+                'connnection_text' => "Connection accepted by {$forwhich_user_url}",
+                'seen' => false,
+            ];
+
+            DB::table('notifications')->insert($notification);    
+
                 // If the status is 'accepted', create a record in the ch_messages table
                 if ($newStatus == 'accepted') {
                     $from_id = $backlink->from_user_id;
@@ -391,7 +432,7 @@ class GoogleLoginController extends Controller
                     // Update the chat_id in the websites table
                     DB::table('backlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
 
-                    $html = 'hi';
+                    $html = 'In this chat, we will discuss the possibility of a backlink/outlink. Make sure to discuss: The type of link,the URL and the anchor text. When done, the one giving the link has to submit the link details using green button on the right.';
 
                     $sendtochat = [
                         'from_id' => $from_id,
@@ -726,7 +767,6 @@ class GoogleLoginController extends Controller
         }
     }
 
-    
     public function chat(Request $request, $id)
     {
         $currentUrl = url()->current(); // Get the current URL
@@ -768,47 +808,6 @@ class GoogleLoginController extends Controller
         ]);
     }
 
-    /*public function submitlinkdetails(Request $request)
-    {
-        // Validate the incoming request data
-        $data = $request->validate([
-            'typeoflink' => 'required',
-            'outlink_on' => 'required',
-            'backlink_to' => 'required',
-            'anchor_text' => 'required',
-            'outlink_placed_on_your_website' => 'required',
-            'chat_id' => 'required'
-        ]);
-
-        // Retrieve the matching record from 'submitlinks' based on 'chat_id'
-        $submitlink = DB::table('submitlinks')
-            ->where('chat_id', $data['chat_id'])
-            ->first();
-
-        // Check if 'outlink_on' and 'backlink_to' in request match the database record
-        if (!$submitlink || $submitlink->outlink_on !== $data['outlink_on'] || $submitlink->backlink_to !== $data['backlink_to']) {
-            // Redirect back with an error message if there's a mismatch
-            return back()->with('error', 'The provided outlink or backlink does not match our records.');
-        }
-
-        // If everything matches, proceed with the update
-        $data['chat_status'] = "closed";
-
-        // Update the 'submitlinks' table
-        DB::table('submitlinks')
-            ->where('chat_id', $data['chat_id'])
-            ->update($data);
-
-        // Update 'ch_messages' table to archive the chat
-        $myuniqueid = $data['chat_id'] . "_@@!!";
-        DB::table('ch_messages')
-            ->where('myuniqueid', $myuniqueid)
-            ->update(['chatarchieve' => 'yes']);
-
-        // Return back with success
-        return back()->with('success', 'Link details updated successfully.');
-    }*/
-
     public function submitlinkdetails(Request $request)
     {
         // Validate the incoming request data
@@ -826,8 +825,33 @@ class GoogleLoginController extends Controller
             ->where('chat_id', $data['chat_id'])
             ->first();
 
-        // Check if 'outlink_on' and 'backlink_to' in request match the database record
-        if (!$submitlink || $submitlink->outlink_on !== $data['outlink_on'] || $submitlink->backlink_to !== $data['backlink_to']) {
+        // Helper function to extract domain from URL
+        function extractDomain($url) {
+            // Ensure URL has a scheme (http/https)
+            if (!preg_match('#^http(s)?://#', $url)) {
+                $url = 'http://' . $url; // Add a scheme if missing
+            }
+
+            // Extract host (domain) from the URL
+            $parsedUrl = parse_url($url, PHP_URL_HOST);
+
+            // Remove subdomains and keep only the base domain (e.g., example.com)
+            $domainParts = explode('.', $parsedUrl);
+            $domain = implode('.', array_slice($domainParts, -2));
+
+            return $domain; // e.g., returns 'physicswala.com'
+        }
+
+        // Extract domain from $submitlink->outlink_on and $data['backlink_to'
+        $outlinkOnDomain = extractDomain($submitlink->outlink_on);
+        $backlinkToDomain = extractDomain($data['backlink_to']);
+
+        // Extract domain from $submitlink->backlink_to and $data['outlink_on']
+        $backlinkToDomainSubmit = extractDomain($submitlink->backlink_to);
+        $outlinkOnDomainData = extractDomain($data['outlink_on']);
+
+        // Check if domains match, not the full URLs
+        if (!$submitlink || $outlinkOnDomain !== $backlinkToDomain || $backlinkToDomainSubmit !== $outlinkOnDomainData) {
             // Redirect back with an error message if there's a mismatch
             return back()->with('error', 'The provided outlink or backlink does not match our records.');
         }
@@ -869,6 +893,17 @@ class GoogleLoginController extends Controller
                 ->where('chat_id', $data['chat_id'])
                 ->update(['chat_status' => 'closed']);
         }
+
+        // Add notification to the notifications table
+        $notification = [
+            'forwhich_user_url' => $data['outlink_on'],
+            'website_url' => $data['backlink_to'],
+            'acceptedby_from' => 'yes',
+            'acceptedby_to' => 'yes',
+            'connnection_text' => "Link details submitted",
+            'seen' => false,
+        ];
+        DB::table('notifications')->insert($notification);
 
         // Return back with success
         return back()->with('success', 'Link details updated successfully.');
