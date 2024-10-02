@@ -22,8 +22,8 @@ class Notification extends Authenticatable
         'to_user_id',
         'forwhich_user_url',
         'website_url',
-        'acceptedby_from',
-        'acceptedby_to',
+        //'acceptedby_from',
+        //'acceptedby_to',
         'connnection_text',
         'seen'
     ];

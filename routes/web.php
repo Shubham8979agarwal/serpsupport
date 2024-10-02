@@ -71,7 +71,9 @@ Route::get('acceptedby-from-backlink-connection/{id}/{forwhich_user_url}/{websit
 
 Route::get('reject/{forwhich_user_url}/{website_url}', [GoogleLoginController::class, 'rejectPair'])->name('reject');
 
-Route::get('/archivedchat-and-linkdetails', [GoogleLoginController::class, 'archivedchat_and_linkdetails'])->name('archivedchat-and-linkdetails');;
+Route::get('/archivedchat-and-linkdetails', [GoogleLoginController::class, 'archivedchat_and_linkdetails'])->name('archivedchat-and-linkdetails');
+
+Route::get('/deleteconnection/{myuniqueid}', [GoogleLoginController::class, 'deleteconnection'])->name('deleteconnection');;
 
 Route::get('/weekly-update', [GoogleLoginController::class, 'weeklyUpdate']);
 

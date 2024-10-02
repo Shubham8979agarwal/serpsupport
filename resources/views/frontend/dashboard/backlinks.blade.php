@@ -36,7 +36,7 @@
             <div class="card card-round">
                <div class="card-header">
                   <div class="card-head-row card-tools-still-right">
-                     <div class="card-title">Backlink connections
+                     <div class="card-title">Backlink connection(s)
                         <p>These are the websites you get a backlink from</p>
                      </div>
                   </div>

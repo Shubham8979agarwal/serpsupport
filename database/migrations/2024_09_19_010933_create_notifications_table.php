@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('to_user_id')->nullable();
             $table->text('forwhich_user_url')->nullable();
             $table->string('website_url')->nullable();
-            $table->string('acceptedby_from')->nullable();
-            $table->string('acceptedby_to')->nullable();
+            //$table->string('acceptedby_from')->nullable();
+            //$table->string('acceptedby_to')->nullable();
             $table->string('connnection_text')->nullable();
             $table->boolean('seen')->default(false);
             $table->timestamps();

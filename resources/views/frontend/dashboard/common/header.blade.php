@@ -38,6 +38,12 @@
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" />
       <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.css" />
       <style type="text/css">
+         li.nav-item.faqs{
+         position: fixed;
+         bottom: 80px;
+         left: 0;
+         width:265px;
+         }
          li.nav-item.account-settings{
          position: fixed;
          bottom: 30px;
@@ -149,7 +155,7 @@
                               <li class="@if(strpos($currentUrl,'backlinks') && ($isActive)) changebackground @endif">
                                  <a href="{{ $backlinkUrl }}">
                                  <span class="sub-item">
-                                 Backlinks
+                                 Backlink Connection(s)
                                  <span class='flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20'>
                                  {{ $backlink_count }}
                                  </span>
@@ -159,7 +165,7 @@
                               <li class="@if(strpos($currentUrl,'outlinks') && ($isActive)) changebackground @endif">
                                  <a href="{{ $outlinkUrl }}">
                                  <span class="sub-item">
-                                 Outlinks
+                                 Outlink Connection(s)
                                  <span class='flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20'>
                                  {{ $outlink_count }}
                                  </span>
@@ -172,6 +178,12 @@
                      @endforeach
                   </ul>
                   @endif
+                  <li class="nav-item faqs">
+                     <a href="#">
+                        <i class="fas fa-question-circle"></i>
+                        <p>FAQ(s)</p>
+                     </a>
+                  </li>
                   <li class="nav-item account-settings">
                      <a href="{{ route('account-settings') }}">
                         <i class="fas fa-gear"></i>
@@ -310,13 +322,25 @@
                                      ->where('chat_status', '=', NULL)
                                      ->count();
 
-                                 $notifications_count = DB::table('notifications')
-                                ->where('forwhich_user_url', $websites->website_url)->orwhere('website_url',$websites->website_url)
-                                ->where('seen', false)
-                                ->orderBy('created_at', 'desc')
-                                ->count(); 
+                              // Get the domain from the website URL
+                              $domain = parse_url($websites->website_url, PHP_URL_HOST) ?: $websites->website_url;
 
-                                $notifications = array_merge($notifications, DB::table('notifications')
+                              // Get the authenticated user's ID
+                              $currentUserId = Auth::user()->id;
+
+                              // Count the notifications based on the criteria used for fetching them
+                              $notifications_count = DB::table('notifications')
+                                  ->where(function ($query) use ($domain) {
+                                      $query->where('forwhich_user_url', 'LIKE', "$domain%")
+                                            ->orWhere('website_url', 'LIKE', "$domain%");
+                                  })
+                                  ->where('seen', false)
+                                  ->where('from_user_id', '!=', $currentUserId)  // Exclude notifications from the logged-in user
+                                  ->where('to_user_id', '!=', $currentUserId)    // Exclude notifications to the logged-in user
+                                  ->count(); 
+
+                              // Now, fetch the notifications
+                              $notifications = array_merge($notifications, DB::table('notifications')
                                   ->where(function ($query) use ($websites) {
                                       $domain = parse_url($websites->website_url, PHP_URL_HOST) ?: $websites->website_url;
 
@@ -324,11 +348,11 @@
                                             ->orWhere('website_url', 'LIKE', "$domain%");
                                   })
                                   ->where('seen', false)
+                                  ->where('from_user_id', '!=', $currentUserId)  // Exclude notifications from the logged-in user
+                                  ->where('to_user_id', '!=', $currentUserId)    // Exclude notifications to the logged-in user
                                   ->orderBy('created_at', 'desc')
                                   ->get()
                                   ->toArray());
-                                
-                                 //dd($notifications);   
 
                                  $outlink_count += $unread_outlink_count_oc + $unread_backlink_count_bc;
                              }
@@ -347,7 +371,7 @@
                      <ul class="dropdown-menu notif-box animated fadeIn" aria-labelledby="notifDropdown">
                         <li>
                            <div class="dropdown-title">
-                              Backlink & Outlink Notifications
+                              Backlink & Outlink Connection(s) Notifications
                            </div>
                         </li>
                         <li>
@@ -356,21 +380,25 @@
                                  <!-- Display Backlink Notification -->
                                  <!-- <a href="#"> -->
                                  <div class="notif-content">
-                                    <span class="block">Received {{ $backlink_count }} Backlink(s)</span>
+                                    <span class="block">Received {{ $backlink_count }} Backlink connection(s)</span>
                                  </div>
                                  <!-- </a> -->
                                  <!-- Display Outlink Notification -->
                                  <!-- <a href="#"> -->
                                  <div class="notif-content">
-                                    <span class="block">Received {{ $outlink_count }} Outlink(s)</span>
+                                    <span class="block">Received {{ $outlink_count }} Outlink connection(s)</span>
                                  </div>
                                     
                                  <!-- Use $notifications later in your Blade file -->
                                  @if(count($notifications) > 0)
                                      @foreach($notifications as $notification)
+                                         @if($notification->from_user_id!=Auth::user()->id && $notification->to_user_id!=Auth::user()->id)
                                          <div class="notif-content">
-                                             <span class="block">{{ $notification->connnection_text }}</span>
+                                          <span class="block">
+                                             {{ $notification->connnection_text }}
+                                          </span>
                                          </div>
+                                         @endif
                                      @endforeach
                                  @endif
                               </div>
