@@ -658,7 +658,7 @@ class GoogleLoginController extends Controller
                 'to_user_id' => Auth::user()->id,
                 'forwhich_user_url' => $forwhich_user_url,
                 'website_url' => $website_url,
-                'connnection_text' => "Outlink connection accepted by {$forwhich_user_url}",
+                'connnection_text' => "Backlink connection accepted by {$website_url}",
                 'seen' => false,
             ];
             DB::table('notifications')->insert($notification);    
@@ -727,7 +727,7 @@ class GoogleLoginController extends Controller
                     'to_user_id' =>'',
                     'forwhich_user_url' => $forwhich_user_url,
                     'website_url' => $website_url,
-                    'connnection_text' => "Backlink connection accepted by {$website_url}",
+                    'connnection_text' => "Outlink connection accepted by {$forwhich_user_url}",
                     'seen' => false,
                 ];
                 DB::table('notifications')->insert($notification);    
@@ -1059,10 +1059,10 @@ class GoogleLoginController extends Controller
             }
             elseif($data->status=='blocked'){
                 $this->signout();
-                return back()->with('status_signin_failed','Account Blocked. Please contact Admin .. ');    
+                return back()->with('status_signin_failed','Account Blocked. Please contact admin..');    
             }elseif($data->is_email_verified==0){
                 $this->signout();
-                return back()->with('status_signin_failed','Please verify your email address ..');
+                return back()->with('status_signin_failed','Please verify your email address or contact admin..');
             }else{
                 $this->signout();
                 return redirect("login")->with('status_signin_failed','Login details are not valid. Try forget password or login with Google.');
@@ -1208,6 +1208,17 @@ class GoogleLoginController extends Controller
             'seen' => false,
         ];
         DB::table('notifications')->insert($notification);
+
+        // Extract from_user_id and to_user_id from chat_id
+        $chatIdParts = explode('_', $data['chat_id']);
+        $fromUserId = $chatIdParts[0];
+        $toUserId = $chatIdParts[1];
+
+        // Save from_user_id and to_user_id in 'rejected_pairs' table
+        DB::table('rejected_pairs')->insert([
+            'from_user_id' => $fromUserId,
+            'to_user_id' => $toUserId,
+        ]);
 
         // Return back with success
         return back()->with('success', 'Link details updated successfully.');
