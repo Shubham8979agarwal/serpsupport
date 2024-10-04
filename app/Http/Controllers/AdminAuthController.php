@@ -123,7 +123,19 @@ class AdminAuthController extends Controller
             ->where('from_user_id', $from_user_id)->orwhere('from_user_id', $to_user_id)
             ->where('to_user_id', $to_user_id)->orwhere('to_user_id',$from_user_id)
             ->delete();
-        }    
+        }
+
+        $submitlinks_record = DB::table('submitlinks')
+            ->where('acceptedby_to', $from_user_id)->orwhere('acceptedby_from', $to_user_id)
+            ->where('acceptedby_from', $to_user_id)->orwhere('acceptedby_to',$from_user_id)
+            ->first();
+
+        if($submitlinks_record){
+           DB::table('submitlinks')
+            ->where('acceptedby_to', $from_user_id)->orwhere('acceptedby_from', $to_user_id)
+            ->where('acceptedby_from', $to_user_id)->orwhere('acceptedby_to',$from_user_id)
+            ->delete();
+        }     
 
         $deletereq_connection = DB::delete('delete from submitlinks where chat_id = ?',[$chat_id]);
         
