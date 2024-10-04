@@ -73,7 +73,11 @@ Route::get('reject/{forwhich_user_url}/{website_url}', [GoogleLoginController::c
 
 Route::get('/archivedchat-and-linkdetails', [GoogleLoginController::class, 'archivedchat_and_linkdetails'])->name('archivedchat-and-linkdetails');
 
-Route::get('/deleteconnection/{myuniqueid}', [GoogleLoginController::class, 'deleteconnection'])->name('deleteconnection');;
+Route::get('/deleteconnection/{myuniqueid}', [GoogleLoginController::class, 'deleteconnection'])->name('deleteconnection');
+
+Route::get('/seen-notification/{id}', [GoogleLoginController::class, 'seen_notification'])->name('seen-notification');
+
+Route::get('/seen-message/{id}', [GoogleLoginController::class, 'seen_message'])->name('seen-message');
 
 Route::get('/weekly-update', [GoogleLoginController::class, 'weeklyUpdate']);
 

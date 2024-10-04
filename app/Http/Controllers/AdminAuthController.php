@@ -113,6 +113,18 @@ class AdminAuthController extends Controller
                 ->delete();
         }
 
+        $ch_messages_record = DB::table('ch_messages')
+            ->where('from_user_id', $from_user_id)->orwhere('from_user_id', $to_user_id)
+            ->where('to_user_id', $to_user_id)->orwhere('to_user_id',$from_user_id)
+            ->first();
+
+        if($ch_messages_record){
+           DB::table('ch_messages')
+            ->where('from_user_id', $from_user_id)->orwhere('from_user_id', $to_user_id)
+            ->where('to_user_id', $to_user_id)->orwhere('to_user_id',$from_user_id)
+            ->delete();
+        }    
+
         $deletereq_connection = DB::delete('delete from submitlinks where chat_id = ?',[$chat_id]);
         
         return back()->with('message', 'Connection Deleted Successfully');

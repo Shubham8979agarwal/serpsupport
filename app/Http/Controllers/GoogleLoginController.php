@@ -1094,6 +1094,9 @@ class GoogleLoginController extends Controller
             ->latest()
             ->first(); // Retrieve the latest message
 
+        /*$updateDetails = ['seen' => '1'];    
+        $update = DB::table('ch_messages')->where('from_id', $user->id)->where('to_id',$id)->update($updateDetails);*/    
+
         $messenger_color = $user->messenger_color;
 
         // Calculate $lastMessageBody if $lastMessage is not null
@@ -1294,6 +1297,20 @@ class GoogleLoginController extends Controller
 
         // Step 8: Redirect back with a success message
         return redirect('account-settings')->with('message', 'Connection and related records deleted successfully!');
+    }
+
+    public function seen_notification($id){
+            $id = decrypt($id);
+            $updateDetails = ['seen' => '1'];    
+                $update = DB::table('notifications')->where('id', $id)->update($updateDetails);
+            return back()->with('message','Notification seen successfully...');
+    }
+
+    public function seen_message($id){
+            $id = decrypt($id);
+            $updateDetails = ['seen' => '1'];    
+                $update = DB::table('ch_messages')->where('id', $id)->update($updateDetails);
+            return back()->with('message','Message seen successfully...');
     }
 
     public function signOut() 

@@ -264,16 +264,23 @@
                                        ->pluck('name')
                                        ->first();
                                     ?>
-                                 <a href="/chat/{{$message->from_id}}">
-                                    <div class="notif-content">
-                                       <span class="block">
-                                       Someone sent you a message
-                                       </span>
-                                       <span class="time">
-                                       {{ \Carbon\Carbon::parse($message->created_at)->diffForHumans() }}
-                                       </span>
-                                    </div>
-                                 </a>
+                                 <div class="col-md-12 d-flex align-items-center">
+                                     <a href="/chat/{{$message->from_id}}">
+                                         <div class="notif-content">
+                                             <span class="block">
+                                                 Someone sent you a message
+                                             </span>
+                                             <span class="time">
+                                                 {{ \Carbon\Carbon::parse($message->created_at)->diffForHumans() }}
+                                             </span>
+                                         </div>
+                                     </a>  
+                                     <a href="/seen-message/{{encrypt($message->id)}}" class="ms-2"> <!-- Added ms-2 for margin start -->
+                                         <span class='flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20'>
+                                             Mark seen
+                                         </span>
+                                     </a>
+                                 </div>
                                  @empty
                                  <div class="notif-content">
                                     <span class="block">No new messages</span>
@@ -395,7 +402,9 @@
                                          @if($notification->from_user_id!=Auth::user()->id && $notification->to_user_id!=Auth::user()->id)
                                          <div class="notif-content">
                                           <span class="block">
-                                             {{ $notification->connnection_text }}
+                                             <a href="/seen-notification/{{encrypt($notification->id)}}">{{ $notification->connnection_text }}<span class='flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20'>
+                                             Mark seen
+                                          </span></a>
                                           </span>
                                          </div>
                                          @endif
