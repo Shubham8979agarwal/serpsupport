@@ -59,7 +59,7 @@ Route::post('push-website', [GoogleLoginController::class, 'push_website'])->nam
 
 Route::post('submitlinkdetails', [GoogleLoginController::class, 'submitlinkdetails'])->name('submitlinkdetails');
 
-Route::get('delete-website/{id}', [GoogleLoginController::class, 'deletewebsite'])->name('delete-website');
+Route::get('deletewebsite/{id}', [GoogleLoginController::class, 'deletewebsite'])->name('deletewebsite');
 
 Route::get('chat/{id}', [GoogleLoginController::class, 'chat'])->name('chat');
 

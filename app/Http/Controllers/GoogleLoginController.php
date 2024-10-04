@@ -131,6 +131,24 @@ class GoogleLoginController extends Controller
                 ->where('website_url', $getwebsitename)
                 ->orWhere('forwhich_user_url', $getwebsitename)
                 ->delete();
+
+            //delete from ch_messages tabe
+            DB::table('ch_messages')
+                ->where('website_url', $getwebsitename)
+                ->orWhere('forwhich_user_url', $getwebsitename)
+                ->delete();
+
+            //delete from notifications tabe
+            DB::table('notifications')
+                ->where('website_url', $getwebsitename)
+                ->orWhere('forwhich_user_url', $getwebsitename)
+                ->delete();
+                
+            //delete from submitlinks tabe
+            DB::table('submitlinks')
+                ->where('outlink_on', $getwebsitename)
+                ->orWhere('backlink_to', $getwebsitename)
+                ->delete();    
             
             return redirect('account-settings')->with('message', 'Website and associated records deleted successfully');
         } else {

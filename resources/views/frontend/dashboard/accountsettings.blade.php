@@ -71,7 +71,7 @@
                                          <?php $totalAmount += 49.99; ?>
                                      @endif
                                  </td>
-                                 <td><a onclick="return confirm('Are you sure?')" href="delete-website/{{ encrypt($mywebsites->website_id) }}">Delete Website</a></td>
+                                 <td><a onclick="return confirm('Are you sure?')" href="deletewebsite/{{ encrypt($mywebsites->website_id) }}">Delete Website</a></td>
                              </tr>
                              @endforeach  
                          @endif
