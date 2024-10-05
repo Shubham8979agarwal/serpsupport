@@ -12,7 +12,7 @@
          <div class="col-md-12">
             <div class="card card-round">
                <div class="card-body p-4">
-                  <table id="websites" class="table" style="width:100%">
+                  <table id="acld" class="table" style="width:100%">
                      <thead>
                         <tr>
                            <th>Type Of Link</th>

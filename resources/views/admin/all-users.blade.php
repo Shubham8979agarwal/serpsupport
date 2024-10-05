@@ -74,6 +74,7 @@
 @include('admin.common.footer')
 <script type="text/javascript">
    $('#all_users').DataTable({
+      "scrollX": true,
       layout: {
         top: ['search'],
           topEnd: {

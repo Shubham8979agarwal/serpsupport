@@ -55,6 +55,13 @@
            "info":     false,
            "scrollX": true
        });
+       $('#acld').dataTable({
+           "paging": false,
+           "searching": false,
+           "ordering": false,
+           "info":     false,
+           "scrollX": true
+       });
     </script>
     <!-- <script type="text/javascript">
       function callUrlbacklink() {

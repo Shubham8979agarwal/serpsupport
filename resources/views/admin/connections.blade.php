@@ -58,6 +58,7 @@
 @include('admin.common.footer')
 <script type="text/javascript">
    $('#show_connections').DataTable({
+      "scrollX": true,
       layout: {
         top: ['search'],
           topEnd: {
