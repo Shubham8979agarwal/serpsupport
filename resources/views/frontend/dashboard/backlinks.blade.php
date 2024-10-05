@@ -192,14 +192,7 @@
                            <th>Action</th>
                         </tr>
                      </thead>
-                     <tbody>
-                        <tr>
-                           <td></td>
-                           <td></td>
-                           <td></td>
-                           <td></td>
-                        </tr>
-                     </tbody>
+                     <tbody></tbody>
                      <tfoot>
                         <tr>
                            <th>Website</th>
@@ -209,9 +202,6 @@
                         </tr>
                      </tfoot>
                   </table>
-                  <div class="card-title">
-                     <p>No connection at the moment</p>
-               </div>
                </div>
             </div>
          </div>

@@ -87,20 +87,44 @@ Route::get('signout', [GoogleLoginController::class, 'signout'])->name('signout'
 
 #admin
 Route::get('/admin', [AdminAuthController::class, 'adminlogin'])->name('admin');
+
 Route::post('/make-admin-login', [AdminAuthController::class, 'make_admin_login'])->name('make-admin-login');
+
 Route::group(['middleware' => 'disable_back_btn'], function () {    
 Route::group(['middleware' => 'adminauth'], function () {
+
 Route::get('/admin-dashboard', [AdminAuthController::class, 'admindashboard'])->name('admin-dashboard');
+
 Route::get('/all-users', [AdminAuthController::class, 'all_users'])->name('all-users');
+
 Route::get('/all-websites', [AdminAuthController::class, 'all_websites'])->name('all-websites');
+
 Route::get('/connections', [AdminAuthController::class, 'connections'])->name('connections');
+
 Route::get('/delete-connection/{chat_id}', [AdminAuthController::class, 'delete_connection'])->name('delete-connection');
+
 Route::get('/plans-module', [AdminAuthController::class, 'plans_module'])->name('plans-module');
+
+Route::post('/add-plans', [AdminAuthController::class, 'add_plans'])->name('add-plans');
+
+Route::get('/show-plans', [AdminAuthController::class, 'show_plans'])->name('show-plans');
+
 Route::get('/delete-user/{userid}', [AdminAuthController::class, 'delete_user'])->name('delete-user');
+
 Route::get('/delete-website/{id}', [AdminAuthController::class, 'delete_website'])->name('delete-website');
+
+Route::get('/delete-plan/{id}', [AdminAuthController::class, 'delete_plan'])->name('delete-plan');
+
 Route::get('/block-user/{userid}', [AdminAuthController::class, 'block_user'])->name('block-user');
+
 Route::get('/unblock-user/{userid}', [AdminAuthController::class, 'unblock_user'])->name('unblock-user');
+
 Route::get('/verify-email/{userid}', [AdminAuthController::class, 'verify_email'])->name('verify-email');
+
+Route::get('/turn-off-plan/{planid}', [AdminAuthController::class, 'turn_off_plan'])->name('turn-off-plan');
+
+Route::get('/turn-on-plan/{planid}', [AdminAuthController::class, 'turn_on_plan'])->name('turn-on-plan');
+
 Route::get('admin-signout', [AdminAuthController::class, 'adminsignout'])->name('admin-signout');
 });
 });

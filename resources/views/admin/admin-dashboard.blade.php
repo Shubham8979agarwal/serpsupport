@@ -57,13 +57,13 @@
 	                    <div
 	                       class="icon-big text-center icon-success bubble-shadow-small"
 	                       >
-	                       <i class="far fa-comments"></i>
+	                       <i class="fa fa-money"></i>
 	                    </div>
 	                 </div>
 	                 <div class="col col-stats ms-3 ms-sm-0">
 	                    <div class="numbers">
-	                       <p class="card-category">Total Messages</p>
-	                       <h4 class="card-title">{{ $count_total_messages }}</h4>
+	                       <p class="card-category">Total Plans</p>
+	                       <h4 class="card-title">{{ $count_total_plans }}</h4>
 	                    </div>
 	                 </div>
 	              </div>

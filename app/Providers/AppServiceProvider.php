@@ -4,6 +4,8 @@ namespace App\Providers;
 
 #use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Artisan;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,5 +30,9 @@ class AppServiceProvider extends ServiceProvider
         if(config('app.env') === 'production') {
             \URL::forceScheme('https');
         }
+
+        /*if (env('APP_ENV') === 'local'){
+            Artisan::call('view:clear');
+        }*/
     }
 }

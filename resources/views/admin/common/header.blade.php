@@ -61,13 +61,13 @@
                   <li class="nav-item @if(Route::currentRouteName() == 'all-users') active @endif">
                      <a href="{{ route('all-users') }}">
                         <i class="fas fa-users"></i>
-                        <p>All Users</p>
+                        <p>All User(s)</p>
                      </a>
                   </li>
                   <li class="nav-item @if(Route::currentRouteName() == 'all-websites') active @endif">
                      <a href="{{ route('all-websites') }}">
                         <i class="fas fa-globe"></i>
-                        <p>All Websites</p>
+                        <p>All Website(s)</p>
                      </a>
                   </li>
                   <li class="nav-item @if(Route::currentRouteName() == 'connections') active @endif">
@@ -80,6 +80,12 @@
                      <a href="{{ route('plans-module') }}">
                         <i class="fas fa-money"></i>
                         <p>Payment Plan(s) Module</p>
+                     </a>
+                  </li>
+                  <li class="nav-item @if(Route::currentRouteName() == 'show-plans') active @endif">
+                     <a href="{{ route('show-plans') }}">
+                        <i class="fas fa-eye"></i>
+                        <p>Show Plan(s)</p>
                      </a>
                   </li>
                </ul>

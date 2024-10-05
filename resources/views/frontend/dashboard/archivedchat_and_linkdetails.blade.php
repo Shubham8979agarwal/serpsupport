@@ -11,11 +11,6 @@
       <div class="row">
          <div class="col-md-12">
             <div class="card card-round">
-               <div class="card-header">
-                  <div class="card-head-row card-tools-still-right">
-                     <div class="card-title">Archived Chat & Link Details</div>
-                  </div>
-               </div>
                <div class="card-body p-4">
                   <table id="websites" class="table" style="width:100%">
                      <thead>
