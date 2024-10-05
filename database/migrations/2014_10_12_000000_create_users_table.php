@@ -18,14 +18,14 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('name')->nullable();
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+            //$table->timestamp('email_verified_at')->nullable();
             $table->string('status')->nullable();
             $table->string('password')->nullable();
             $table->string('plan_name')->nullable();
             $table->string('dateofpurchase')->nullable();
             $table->string('plan_pricing')->nullable();
             $table->string('plan_expiry')->nullable();
-            $table->rememberToken();
+            //$table->rememberToken();
             $table->timestamps();
         });
     }
