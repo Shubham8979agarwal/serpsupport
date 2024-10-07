@@ -3,12 +3,9 @@
    <head>
       <meta http-equiv="X-UA-Compatible" content="IE=edge" />
       <title>SERPsupport</title>
-      <meta
-         content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
-         name="viewport"
-         />
-      <link rel="icon" href="{{ url('dashboard_assets/img/kaiadmin/favicon.ico') }}" type="image/x-icon"
-         />
+      <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
+         name="viewport"/>
+      <link rel="icon" href="{{ url('dashboard_assets/img/kaiadmin/favicon.ico') }}" type="image/x-icon"/>
       <!-- Fonts and icons -->
       <script src="{{ url('dashboard_assets/js/plugin/webfont/webfont.min.js') }}"></script>
       <script>
@@ -33,7 +30,7 @@
       <link rel="stylesheet" href="{{ url('dashboard_assets/css/plugins.min.css') }}" />
       <link rel="stylesheet" href="{{ url('dashboard_assets/css/kaiadmin.min.css') }}" />
       <!-- CSS Just for demo purpose, don't include it in your project -->
-      <link rel="stylesheet" href="{{ url('dashboard_assets/css/demo.css') }}" />
+      <link rel="stylesheet" href="{{ url('dashboard_assets/css/demo.css') }}"/>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" />
       <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.css" />
@@ -81,10 +78,10 @@
          z-index: 9!important;
          }
          .block {
-             font-size: 12px!important;
+         font-size: 12px!important;
          }
          form#submitlinkdetails .form-group label{
-            white-space: normal!important;
+         white-space: normal!important;
          }
       </style>
    </head>
@@ -104,18 +101,34 @@
          <div class="sidebar-wrapper scrollbar scrollbar-inner">
             <div class="sidebar-content">
                <ul class="nav nav-secondary">
+                  <?php
+                     $currentUrl = url()->current();
+                     $getwebsites = DB::table('websites')->where('website_uploader_email', Auth::user()->email)->get();
+                     $ls = request()->segment(count(request()->segments()));
+                     $lastSegment = decryptData($ls);
+                  ?>
                   <li class="nav-item @if(Route::currentRouteName() == 'dashboard') active @endif">
                      <a href="{{ route('dashboard') }}">
                         <i class="fas fa-home"></i>
                         <p>Dashboard</p>
                      </a>
                   </li>
-                  <?php
-                     $currentUrl = url()->current();
-                     $getwebsites = DB::table('websites')->where('website_uploader_email', Auth::user()->email)->get();
-                     $ls = request()->segment(count(request()->segments()));
-                     $lastSegment = decryptData($ls);
-                     ?>
+                  <!-- <li class="nav-item @if(Route::currentRouteName() == 'dashboard') active @endif">
+                        <a data-bs-toggle="collapse" href="{{ route('dashboard') }}" class="collapsed" aria-expanded="false">
+                           <i class="fas fa-home"></i>
+                           <p>Dashboard</p>
+                           <span class="caret"></span>
+                        </a>
+                        <div class="collapse" id="dashboard">
+                           <ul class="nav nav-collapse">
+                              <li>
+                                 <a href="../demo1/index.html">
+                                 <span class="sub-item">Dashboard 1</span>
+                                 </a>
+                              </li>
+                           </ul>
+                        </div>
+                     </li> -->
                   @if(count($getwebsites) > 0)
                   <ul class="nav">
                      @foreach($getwebsites as $websites)
@@ -134,7 +147,7 @@
                         $unread_backlink_count = DB::table('backlinks')
                             ->where('forwhich_user_url', $websites->website_url)->where('chat_status',"=",NULL)->count();
                         
-                        $backlink_count = $unread_outlink_count + $unread_backlink_count  ;
+                        $backlink_count = $unread_outlink_count + $unread_backlink_count;
                         
                         // Fetch the counts of unseen outlinks
                         $unread_outlink_count_oc = DB::table('outlinks')
@@ -259,27 +272,33 @@
                                  @forelse($unseenMessages as $message)
                                  <?php
                                     // Get the sender's name (assuming there is a 'users' table)
-                                    $senderName = DB::table('users')
+                                    $senderEmail = DB::table('users')
                                        ->where('id', $message->from_id)
-                                       ->pluck('name')
+                                       ->pluck('email')
                                        ->first();
+                                    
+                                    $websiteName = DB::table('websites')
+                                       ->where('website_uploader_email', $senderEmail)
+                                       ->pluck('website_url')
+                                       ->first();   
                                     ?>
                                  <div class="col-md-12 d-flex align-items-center">
-                                     <a href="/chat/{{$message->from_id}}">
-                                         <div class="notif-content">
-                                             <span class="block">
-                                                 Someone sent you a message
-                                             </span>
-                                             <span class="time">
-                                                 {{ \Carbon\Carbon::parse($message->created_at)->diffForHumans() }}
-                                             </span>
-                                         </div>
-                                     </a>  
-                                     <a href="/seen-message/{{encrypt($message->id)}}" class="ms-2"> <!-- Added ms-2 for margin start -->
-                                         <span class='flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20'>
-                                             Mark seen
-                                         </span>
-                                     </a>
+                                    <a href="/chat/{{$message->from_id}}">
+                                       <div class="notif-content">
+                                          <span class="block">
+                                          {{$websiteName}} sent you a message
+                                          </span>
+                                          <span class="time">
+                                          {{ \Carbon\Carbon::parse($message->created_at)->diffForHumans() }}
+                                          </span>
+                                       </div>
+                                    </a>
+                                    <a href="/seen-message/{{encrypt($message->id)}}" class="ms-2">
+                                       <!-- Added ms-2 for margin start -->
+                                       <span class='flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20'>
+                                       Mark seen
+                                       </span>
+                                    </a>
                                  </div>
                                  @empty
                                  <div class="notif-content">
@@ -295,77 +314,75 @@
                      </ul>
                   </li>
                   <?php
-
-                         $notifications = [];
-                         // Check if websites data is available
-                         $getwebsites = DB::table('websites')->where('website_uploader_email', Auth::user()->email)->get();  
-                         
-                         $backlink_count = 0;
-                         $outlink_count = 0;
-                         $notifications_count = 0;
-
-                         // Loop through the websites to calculate backlink and outlink counts
-                         if (count($getwebsites) > 0) {
-                             foreach ($getwebsites as $websites) {
-                                 $unread_outlink_count = DB::table('outlinks')
-                                     ->where('website_url', $websites->website_url)
-                                     ->where('chat_status', '=', NULL)
-                                     ->count();
-                                     
-                                 $unread_backlink_count = DB::table('backlinks')
-                                     ->where('forwhich_user_url', $websites->website_url)
-                                     ->where('chat_status', '=', NULL)
-                                     ->count();
-                                     
-                                 $backlink_count += $unread_outlink_count + $unread_backlink_count;
-
-                                 $unread_outlink_count_oc = DB::table('outlinks')
-                                     ->where('forwhich_user_url', $websites->website_url)
-                                     ->where('chat_status', '=', NULL)
-                                     ->count();
-                                     
-                                 $unread_backlink_count_bc = DB::table('backlinks')
-                                     ->where('website_url', $websites->website_url)
-                                     ->where('chat_status', '=', NULL)
-                                     ->count();
-
-                              // Get the domain from the website URL
-                              $domain = parse_url($websites->website_url, PHP_URL_HOST) ?: $websites->website_url;
-
-                              // Get the authenticated user's ID
-                              $currentUserId = Auth::user()->id;
-
-                              // Count the notifications based on the criteria used for fetching them
-                              $notifications_count = DB::table('notifications')
-                                  ->where(function ($query) use ($domain) {
-                                      $query->where('forwhich_user_url', 'LIKE', "$domain%")
-                                            ->orWhere('website_url', 'LIKE', "$domain%");
-                                  })
-                                  ->where('seen', false)
-                                  ->where('from_user_id', '!=', $currentUserId)  // Exclude notifications from the logged-in user
-                                  ->where('to_user_id', '!=', $currentUserId)    // Exclude notifications to the logged-in user
-                                  ->count(); 
-
-                              // Now, fetch the notifications
-                              $notifications = array_merge($notifications, DB::table('notifications')
-                                  ->where(function ($query) use ($websites) {
-                                      $domain = parse_url($websites->website_url, PHP_URL_HOST) ?: $websites->website_url;
-
-                                      $query->where('forwhich_user_url', 'LIKE', "$domain%")
-                                            ->orWhere('website_url', 'LIKE', "$domain%");
-                                  })
-                                  ->where('seen', false)
-                                  ->where('from_user_id', '!=', $currentUserId)  // Exclude notifications from the logged-in user
-                                  ->where('to_user_id', '!=', $currentUserId)    // Exclude notifications to the logged-in user
-                                  ->orderBy('created_at', 'desc')
-                                  ->get()
-                                  ->toArray());
-
-                                 $outlink_count += $unread_outlink_count_oc + $unread_backlink_count_bc;
-                             }
+                     $notifications = [];
+                     // Check if websites data is available
+                     $getwebsites = DB::table('websites')->where('website_uploader_email', Auth::user()->email)->get();  
+                     
+                     $backlink_count = 0;
+                     $outlink_count = 0;
+                     $notifications_count = 0;
+                     
+                     // Loop through the websites to calculate backlink and outlink counts
+                     if (count($getwebsites) > 0) {
+                         foreach ($getwebsites as $websites) {
+                             $unread_outlink_count = DB::table('outlinks')
+                                 ->where('website_url', $websites->website_url)
+                                 ->where('chat_status', '=', NULL)
+                                 ->count();
+                                 
+                             $unread_backlink_count = DB::table('backlinks')
+                                 ->where('forwhich_user_url', $websites->website_url)
+                                 ->where('chat_status', '=', NULL)
+                                 ->count();
+                                 
+                             $backlink_count += $unread_outlink_count + $unread_backlink_count;
+                     
+                             $unread_outlink_count_oc = DB::table('outlinks')
+                                 ->where('forwhich_user_url', $websites->website_url)
+                                 ->where('chat_status', '=', NULL)
+                                 ->count();
+                                 
+                             $unread_backlink_count_bc = DB::table('backlinks')
+                                 ->where('website_url', $websites->website_url)
+                                 ->where('chat_status', '=', NULL)
+                                 ->count();
+                     
+                          // Get the domain from the website URL
+                          $domain = parse_url($websites->website_url, PHP_URL_HOST) ?: $websites->website_url;
+                     
+                          // Get the authenticated user's ID
+                          $currentUserId = Auth::user()->id;
+                     
+                          // Count the notifications based on the criteria used for fetching them
+                          $notifications_count = DB::table('notifications')
+                              ->where(function ($query) use ($domain) {
+                                  $query->where('forwhich_user_url', 'LIKE', "$domain%")
+                                        ->orWhere('website_url', 'LIKE', "$domain%");
+                              })
+                              ->where('seen', false)
+                              ->where('from_user_id', '!=', $currentUserId)  // Exclude notifications from the logged-in user
+                              ->where('to_user_id', '!=', $currentUserId)    // Exclude notifications to the logged-in user
+                              ->count(); 
+                     
+                          // Now, fetch the notifications
+                          $notifications = array_merge($notifications, DB::table('notifications')
+                              ->where(function ($query) use ($websites) {
+                                  $domain = parse_url($websites->website_url, PHP_URL_HOST) ?: $websites->website_url;
+                     
+                                  $query->where('forwhich_user_url', 'LIKE', "$domain%")
+                                        ->orWhere('website_url', 'LIKE', "$domain%");
+                              })
+                              ->where('seen', false)
+                              ->where('from_user_id', '!=', $currentUserId)  // Exclude notifications from the logged-in user
+                              ->where('to_user_id', '!=', $currentUserId)    // Exclude notifications to the logged-in user
+                              ->orderBy('created_at', 'desc')
+                              ->get()
+                              ->toArray());
+                     
+                             $outlink_count += $unread_outlink_count_oc + $unread_backlink_count_bc;
                          }
+                     }
                      ?>
-
                   <!-- Backlinks and Outlinks Notification -->
                   <li class="nav-item topbar-icon dropdown hidden-caret">
                      <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -395,20 +412,19 @@
                                  <div class="notif-content">
                                     <span class="block">Received {{ $outlink_count }} Outlink connection(s)</span>
                                  </div>
-                                    
                                  <!-- Use $notifications later in your Blade file -->
                                  @if(count($notifications) > 0)
-                                     @foreach($notifications as $notification)
-                                         @if($notification->from_user_id!=Auth::user()->id && $notification->to_user_id!=Auth::user()->id)
-                                         <div class="notif-content">
-                                          <span class="block">
-                                             <a href="/seen-notification/{{encrypt($notification->id)}}">{{ $notification->connnection_text }}<span class='flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20'>
-                                             Mark seen
-                                          </span></a>
-                                          </span>
-                                         </div>
-                                         @endif
-                                     @endforeach
+                                 @foreach($notifications as $notification)
+                                 @if($notification->from_user_id!=Auth::user()->id && $notification->to_user_id!=Auth::user()->id)
+                                 <div class="notif-content">
+                                    <span class="block">
+                                    <a href="/seen-notification/{{encrypt($notification->id)}}">{{ $notification->connnection_text }}<span class='flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20'>
+                                    Mark seen
+                                    </span></a>
+                                    </span>
+                                 </div>
+                                 @endif
+                                 @endforeach
                                  @endif
                               </div>
                            </div>

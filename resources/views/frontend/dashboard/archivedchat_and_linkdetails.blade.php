@@ -20,7 +20,7 @@
                            <th>Backlink To</th>
                            <th>Anchor Text</th>
                            <th>Outlink Placed</th>
-                           <th>Chat Status</th>
+                           <!-- <th>Chat Status</th> -->
                            <th>Archive Chat</th>
                         </tr>
                      </thead>
@@ -33,7 +33,7 @@
                                  <td>{{ $mywebsites->backlink_to }}</td>
                                  <td>{{ $mywebsites->anchor_text }}</td>
                                  <td>{{ $mywebsites->outlink_placed_on_your_website }}</td>
-                                 <td>{{ $mywebsites->chat_status }}</td>
+                                 <!-- <td>{{ $mywebsites->chat_status }}</td> -->
                                  <td>
                                      <?php 
                                          $chatid = $mywebsites->chat_id; 
@@ -60,7 +60,7 @@
                            <th>Backlink To</th>
                            <th>Anchor Text</th>
                            <th>Outlink Placed</th>
-                           <th>Chat Status</th>
+                           <!-- <th>Chat Status</th> -->
                            <th>Archive Chat</th>
                         </tr>
                      </tfoot>

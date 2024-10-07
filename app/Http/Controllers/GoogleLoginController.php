@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Services\LinkService;
@@ -210,7 +209,9 @@ class GoogleLoginController extends Controller
                 DB::table('outlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
 
                 // Updated HTML content
-                $html = "In this chat, we will discuss the possibility of a outlink from {$website_url} to {$forwhich_user_url}. Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left.";
+                /*$html = "In this chat, we will discuss the possibility of a outlink from {$website_url} to {$forwhich_user_url}. Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left.";*/
+
+                $html = "In this chat, we will discuss the possibility of a outlink from {$forwhich_user_url} to {$website_url} . Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left. See video - <a href='#'>How it works</a>";
 
                 $sendtochat = [
                     'from_id' => $from_id,
@@ -275,7 +276,7 @@ class GoogleLoginController extends Controller
                     
                     DB::table('backlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
 
-                    $html = "In this chat, we will discuss the possibility of a backlink from {$website_url} to {$forwhich_user_url}. Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left.";
+                    $html = "In this chat, we will discuss the possibility of a backlink from {$website_url} to {$forwhich_user_url}. Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left. See video - <a href='#'>How it works</a>";
 
                     $sendtochat = [
                         'from_id' => $from_id,
@@ -359,7 +360,7 @@ class GoogleLoginController extends Controller
                 DB::table('outlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
 
                 // Updated HTML content
-                $html = "In this chat, we will discuss the possibility of a outlink from {$website_url} to {$forwhich_user_url}. Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left.";
+                $html = "In this chat, we will discuss the possibility of a outlink from {$forwhich_user_url} to {$website_url}. Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left. See video - <a href='#'>How it works</a>";
 
                 $sendtochat = [
                     'from_id' => $from_id,
@@ -424,7 +425,7 @@ class GoogleLoginController extends Controller
                     
                     DB::table('backlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
 
-                    $html = "In this chat, we will discuss the possibility of a backlink from {$website_url} to {$forwhich_user_url}. Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left.";
+                    $html = "In this chat, we will discuss the possibility of a backlink from {$website_url} to {$forwhich_user_url}. Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left. See video - <a href='#'>How it works</a>";
 
                     $sendtochat = [
                         'from_id' => $from_id,
@@ -828,7 +829,6 @@ class GoogleLoginController extends Controller
         if($outlinkOnDomain!=$outlinkOnDomainData && $backlinkToDomainSubmit!=$backlinkToDomain){
             return back()->with('error', 'Please enter valid Referring page and Target URL.');
         }
-
         // If everything matches, proceed with the update
         $data['chat_status'] = "closed";
 

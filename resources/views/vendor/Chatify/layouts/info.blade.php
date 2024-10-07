@@ -52,23 +52,26 @@ $chat_status = DB::table('submitlinks')->where('chat_id', $chat_id)->value('chat
                   <label class="checkbox-inline">
                   <input type="checkbox" name="typeoflink" class="link-checkbox" value="Image link"> Image link
                   </label>
+                  <label class="checkbox-inline">
+                  <input type="checkbox" name="typeoflink" class="link-checkbox" value="Others"> Others
+                  </label>
                   @error('typeoflink')
                   <span class="text-danger">{{ $message }}</span>
                   @enderror
                   <div class="form-group row">
-                     <label for="inputEmail3" class="col-sm-4 col-form-label">Referring page (on {{ $get_outlinkon }})</label>
+                     <label for="inputEmail3" class="col-sm-4 col-form-label">Referring page (on {{ $get_backlinkto }})</label>
                      <div class="col-sm-8">
-                        <input type="text" class="form-control" name="outlink_on" autocomplete="off">
-                        @error('outlink_on')
+                        <input type="text" class="form-control" name="backlink_to" autocomplete="off">
+                        @error('backlink_to')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
                      </div>
                   </div>
                   <div class="form-group row">
-                     <label for="inputPassword3" class="col-sm-4 col-form-label">Target URL (on {{ $get_backlinkto }}) </label>
+                     <label for="inputPassword3" class="col-sm-4 col-form-label">Target URL (on {{ $get_outlinkon }}) </label>
                      <div class="col-sm-8">
-                        <input type="text" class="form-control" name="backlink_to" autocomplete="off">
-                        @error('backlink_to')
+                        <input type="text" class="form-control" name="outlink_on" autocomplete="off">
+                        @error('outlink_on')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
                      </div>
@@ -145,6 +148,9 @@ $chat_status = DB::table('submitlinks')->where('chat_id', $chat_id)->value('chat
                   </label>
                   <label class="checkbox-inline">
                   <input type="checkbox" name="typeoflink" class="link-checkbox" value="Image link"> Image link
+                  </label>
+                  <label class="checkbox-inline">
+                  <input type="checkbox" name="typeoflink" class="link-checkbox" value="Others"> Others
                   </label>
                   @error('typeoflink')
                   <span class="text-danger">{{ $message }}</span>
