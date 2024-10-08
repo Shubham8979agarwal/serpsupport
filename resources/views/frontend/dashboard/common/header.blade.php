@@ -107,28 +107,31 @@
                      $ls = request()->segment(count(request()->segments()));
                      $lastSegment = decryptData($ls);
                   ?>
-                  <li class="nav-item @if(Route::currentRouteName() == 'dashboard') active @endif">
-                     <a href="{{ route('dashboard') }}">
-                        <i class="fas fa-home"></i>
-                        <p>Dashboard</p>
-                     </a>
-                  </li>
-                  <!-- <li class="nav-item @if(Route::currentRouteName() == 'dashboard') active @endif">
-                        <a data-bs-toggle="collapse" href="{{ route('dashboard') }}" class="collapsed" aria-expanded="false">
+                  <li class="nav-item @if(Route::currentRouteName() == 'backlinks-submission-details' || Route::currentRouteName() == 'outlinks-submission-details') active submenu @endif">
+                        <a data-bs-toggle="collapse" href="#dashboard">
                            <i class="fas fa-home"></i>
                            <p>Dashboard</p>
                            <span class="caret"></span>
                         </a>
-                        <div class="collapse" id="dashboard">
+                        <div class="collapse @if(Route::currentRouteName() == 'backlinks-submission-details' || Route::currentRouteName() == 'outlinks-submission-details') show @endif" id="dashboard">
                            <ul class="nav nav-collapse">
-                              <li>
-                                 <a href="../demo1/index.html">
-                                 <span class="sub-item">Dashboard 1</span>
+                              <li class="@if(strpos($currentUrl,'backlinks-submission-details')) changebackground @endif">
+                                 <a href="{{ route('backlinks-submission-details') }}">
+                                 <span class="sub-item">
+                                 Backlink(s) Details
+                                 </span>
+                                 </a>
+                              </li>
+                              <li class="@if(strpos($currentUrl,'outlinks-submission-details')) changebackground @endif">
+                                 <a href="{{ route('outlinks-submission-details') }}">
+                                 <span class="sub-item">
+                                 Outlink(s) Details
+                                 </span>
                                  </a>
                               </li>
                            </ul>
                         </div>
-                     </li> -->
+                     </li>
                   @if(count($getwebsites) > 0)
                   <ul class="nav">
                      @foreach($getwebsites as $websites)
@@ -316,8 +319,7 @@
                   <?php
                      $notifications = [];
                      // Check if websites data is available
-                     $getwebsites = DB::table('websites')->where('website_uploader_email', Auth::user()->email)->get();  
-                     
+                     $getwebsites = DB::table('websites')->where('website_uploader_email', Auth::user()->email)->get(); 
                      $backlink_count = 0;
                      $outlink_count = 0;
                      $notifications_count = 0;
@@ -438,15 +440,13 @@
                         href="#"
                         aria-expanded="false"
                         >
-                     <span class="fw-bold">{{ Auth::user()->email }} <i class="fa fa-caret-down"></i> </span>
+                     <span class="fw-bold">{{ Auth::user()->email }} <i class="fa fa-caret-down"></i></span>
                      </span>
                      </a>
                      <ul class="dropdown-menu dropdown-user animated fadeIn">
                         <div class="dropdown-user-scroll scrollbar-outer">
                            <li>
                               <a class="dropdown-item" href="{{ route('account-settings') }}">Account Setting</a>
-                              <div class="dropdown-divider"></div>
-                              <a class="dropdown-item" href="{{ route('archivedchat-and-linkdetails') }}">Archived Chat & Link Details</a>
                               <div class="dropdown-divider"></div>
                               <a class="dropdown-item" href="{{ route('signout') }}">Signout</a>
                            </li>

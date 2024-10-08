@@ -43,7 +43,7 @@ Route::post('reset-password', [ForgotPasswordController::class, 'submitResetPass
 Route::group(['middleware' => 'disable_back_btn'], function () {
 Route::group(['middleware' => ['auth']], function()
 { 
-Route::get('/dashboard', [GoogleLoginController::class, 'dashboard'])->name('dashboard');    
+#Route::get('/dashboard', [GoogleLoginController::class, 'dashboard'])->name('dashboard');    
 Route::get('/account-settings', [GoogleLoginController::class, 'accountsettings'])->name('account-settings');
 Route::get('/addwebsite', [GoogleLoginController::class, 'addwebsite'])->name('addwebsite');
 
@@ -71,7 +71,9 @@ Route::get('acceptedby-from-backlink-connection/{id}/{forwhich_user_url}/{websit
 
 Route::get('reject/{forwhich_user_url}/{website_url}', [GoogleLoginController::class, 'rejectPair'])->name('reject');
 
-Route::get('/archivedchat-and-linkdetails', [GoogleLoginController::class, 'archivedchat_and_linkdetails'])->name('archivedchat-and-linkdetails');
+Route::get('/backlinks-submission-details', [GoogleLoginController::class, 'backlinks_submission_details'])->name('backlinks-submission-details');
+
+Route::get('/outlinks-submission-details', [GoogleLoginController::class, 'outlinks_submission_details'])->name('outlinks-submission-details');
 
 Route::get('/deleteconnection/{myuniqueid}', [GoogleLoginController::class, 'deleteconnection'])->name('deleteconnection');
 
