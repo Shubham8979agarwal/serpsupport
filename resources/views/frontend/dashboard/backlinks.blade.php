@@ -42,8 +42,8 @@
             <div class="card card-round">
                <div class="card-header">
                   <div class="card-head-row card-tools-still-right">
-                     <div class="card-title">Backlink connection(s)
-                        <p>These are the websites you get a backlink from</p>
+                     <div class="card-title">Inbound Link Connects
+                        <p>These are the links you receive to your website</p>
                      </div>
                   </div>
                </div>

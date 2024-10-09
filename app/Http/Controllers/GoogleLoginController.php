@@ -108,13 +108,10 @@ class GoogleLoginController extends Controller
         $data['find_outlink_connection'] = DB::table('outlinks')->where('forwhich_user_url',$data['fetch_user_website'])->orwhere('website_url',$data['fetch_user_website'])->count();
 
         $data['connections'] = $data['find_backlink_connection'] + $data['find_outlink_connection'];
-        $data['linkdetails'] = DB::table('submitlinks')
-        ->where(function($query) {
+        $data['linkdetails'] = DB::table('submitlinks')->where(function($query) {
         $query->where('acceptedby_to', Auth::user()->id)
               ->orWhere('acceptedby_from', Auth::user()->id);
-        })
-        ->where('chat_status', 'closed')->where('connection_type','backlinks')
-        ->get();
+        })->where('chat_status', 'closed')->where('connection_type','backlinks')->get();
         return view('frontend.dashboard.backlinks-submission-details',$data);
     }
 
@@ -143,9 +140,7 @@ class GoogleLoginController extends Controller
         ->where(function($query) {
         $query->where('acceptedby_to', Auth::user()->id)
               ->orWhere('acceptedby_from', Auth::user()->id);
-        })
-        ->where('chat_status', 'closed')->where('connection_type','outlinks')
-        ->get();
+        })->where('chat_status', 'closed')->where('connection_type','outlinks')->get();
         return view('frontend.dashboard.outlinks-submission-details',$data);
     }
 
@@ -971,48 +966,37 @@ class GoogleLoginController extends Controller
         DB::table('backlinks')
             ->where(function ($query) use ($fromId, $toId) {
                 $query->where('from_user_id', $fromId)->where('to_user_id', $toId);
-            })
-            ->orWhere(function ($query) use ($fromId, $toId) {
+            })->orWhere(function ($query) use ($fromId, $toId) {
                 $query->where('from_user_id', $toId)->where('to_user_id', $fromId);
-            })
-            ->delete();
+            })->delete();
 
         // Step 4: Delete records in `outlinks` where `from_user_id` and `to_user_id` match (in both directions)
-        DB::table('outlinks')
-            ->where(function ($query) use ($fromId, $toId) {
+        DB::table('outlinks')->where(function ($query) use ($fromId, $toId) {
                 $query->where('from_user_id', $fromId)->where('to_user_id', $toId);
-            })
-            ->orWhere(function ($query) use ($fromId, $toId) {
+            })->orWhere(function ($query) use ($fromId, $toId) {
                 $query->where('from_user_id', $toId)->where('to_user_id', $fromId);
-            })
-            ->delete();
+            })->delete();
 
         // Step 5: Delete records from `notifications` where `forwhich_user_url` and `website_url` match (in both directions)
         DB::table('notifications')
             ->where(function ($query) use ($forWhichUserUrl, $websiteUrl) {
                 $query->where('forwhich_user_url', $forWhichUserUrl)->where('website_url', $websiteUrl);
-            })
-            ->orWhere(function ($query) use ($forWhichUserUrl, $websiteUrl) {
+            })->orWhere(function ($query) use ($forWhichUserUrl, $websiteUrl) {
                 $query->where('forwhich_user_url', $websiteUrl)->where('website_url', $forWhichUserUrl);
-            })
-            ->delete();
+            })->delete();
 
         // Step 6: Delete all records from `ch_messages` where `from_id` and `to_id` match (in both directions)
         DB::table('ch_messages')
             ->where(function ($query) use ($fromId, $toId) {
                 $query->where('from_id', $fromId)->where('to_id', $toId);
-            })
-            ->orWhere(function ($query) use ($fromId, $toId) {
+            })->orWhere(function ($query) use ($fromId, $toId) {
                 $query->where('from_id', $toId)->where('to_id', $fromId); // In case of reverse direction
-            })
-            ->delete();
+            })->delete();
 
         // Step 7: Delete records in `submitlinks` where `chat_id` matches `myuniqueid` (without '_@@!!')
         $strippedMyUniqueId = str_replace('_@@!!', '', $myuniqueid); // Remove the '_@@!!' part
 
-        DB::table('submitlinks')
-            ->where('chat_id', $strippedMyUniqueId)
-            ->delete();
+        DB::table('submitlinks')->where('chat_id', $strippedMyUniqueId)->delete();
 
         // Step 8: Redirect back with a success message
         return redirect('account-settings')->with('message', 'Connection and related records deleted successfully!');

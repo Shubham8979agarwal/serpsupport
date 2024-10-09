@@ -118,14 +118,14 @@
                               <li class="@if(strpos($currentUrl,'backlinks-submission-details')) changebackground @endif">
                                  <a href="{{ route('backlinks-submission-details') }}">
                                  <span class="sub-item">
-                                 Backlink(s) Details
+                                 Inbound Links
                                  </span>
                                  </a>
                               </li>
                               <li class="@if(strpos($currentUrl,'outlinks-submission-details')) changebackground @endif">
                                  <a href="{{ route('outlinks-submission-details') }}">
                                  <span class="sub-item">
-                                 Outlink(s) Details
+                                 Outbound Links
                                  </span>
                                  </a>
                               </li>
@@ -171,7 +171,7 @@
                               <li class="@if(strpos($currentUrl,'backlinks') && ($isActive)) changebackground @endif">
                                  <a href="{{ $backlinkUrl }}">
                                  <span class="sub-item">
-                                 Backlink Connection(s)
+                                 Inbound Link Connects
                                  <span class='flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20'>
                                  {{ $backlink_count }}
                                  </span>
@@ -181,7 +181,7 @@
                               <li class="@if(strpos($currentUrl,'outlinks') && ($isActive)) changebackground @endif">
                                  <a href="{{ $outlinkUrl }}">
                                  <span class="sub-item">
-                                 Outlink Connection(s)
+                                 Outbound Link Connects
                                  <span class='flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20'>
                                  {{ $outlink_count }}
                                  </span>

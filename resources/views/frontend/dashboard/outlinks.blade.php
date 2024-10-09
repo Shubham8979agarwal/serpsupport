@@ -39,8 +39,8 @@
             <div class="card card-round">
                <div class="card-header">
                   <div class="card-head-row card-tools-still-right">
-                     <div class="card-title">Outlink connection(s)
-                        <p>These are the websites you have to give a backlink to</p>
+                     <div class="card-title">Outbound Link Connects
+                        <p>These are the links you give to other websites</p>
                      </div>
                   </div>
                </div>

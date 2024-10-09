@@ -19,7 +19,7 @@ $chat_status = DB::table('submitlinks')->where('chat_id', $chat_id)->value('chat
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
    <div class="container">
       <!-- Button to Open the Modal -->
-      <button type="button" class="btn btn-success mb-3" data-toggle="modal" data-target="#myModal">
+      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModal">
       Submit Link Details
       </button>
       @if (session('error'))

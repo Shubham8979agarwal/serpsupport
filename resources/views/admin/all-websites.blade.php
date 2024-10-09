@@ -17,7 +17,7 @@
          <div class="col-md-12">
             <div class="card card-round">
                <div class="card-body p-4">
-                  <table id="all_websites" class="table">
+                  <table id="all_websites" class="table" style="width:100%">
                      <thead>
                         <tr>
                            <th>Website URL</th>

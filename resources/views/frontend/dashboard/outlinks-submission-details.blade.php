@@ -18,7 +18,7 @@
                      </div>
                      <div class="col col-stats ms-3 ms-sm-0">
                         <div class="numbers">
-                           <p class="card-category">Total Backlink(s)</p>
+                           <p class="card-category">Inbound Links</p>
                            <h4 class="card-title">{{ $confirmed_backlinks }}</h4>
                         </div>
                      </div>
@@ -37,7 +37,7 @@
                      </div>
                      <div class="col col-stats ms-3 ms-sm-0">
                         <div class="numbers">
-                           <p class="card-category">Total Outlink(s)</p>
+                           <p class="card-category">Outbound Links</p>
                            <h4 class="card-title">{{ $confirmed_outlinks }}</h4>
                         </div>
                      </div>
@@ -75,7 +75,7 @@
                      </div>
                      <div class="col col-stats ms-3 ms-sm-0">
                         <div class="numbers">
-                           <p class="card-category">Connection(s)</p>
+                           <p class="card-category">Total Connects</p>
                            <h4 class="card-title">{{ $connections }}</h4>
                         </div>
                      </div>
@@ -97,10 +97,10 @@
                      <thead>
                         <tr>
                            <th>Type Of Link</th>
-                           <th>Outlink On</th>
-                           <th>Backlink To</th>
+                           <th>Outbound Link Page</th>
+                           <th>Inbound Link Page</th>
                            <th>Anchor Text</th>
-                           <th>Outlink Placed</th>
+                           <!-- <th>Outlink Placed</th> -->
                            <th>Archive Chat</th>
                         </tr>
                      </thead>
@@ -109,10 +109,9 @@
                              @foreach($linkdetails as $index => $mywebsites)
                              <tr>
                                  <td>{{ $mywebsites->typeoflink }}</td>
-                                 <td><a href="{{ $mywebsites->outlink_on }}">{{ $mywebsites->outlink_on }}</a></td>
-                                 <td><a href="{{ $mywebsites->backlink_to }}">{{ $mywebsites->backlink_to }}</a></td>
+                                 <td><a href="https://{{ $mywebsites->outlink_on }}">{{ $mywebsites->outlink_on }}</a></td>
+                                 <td><a href="https://{{ $mywebsites->backlink_to }}">{{ $mywebsites->backlink_to }}</a></td>
                                  <td>{{ $mywebsites->anchor_text }}</td>
-                                 <td>{{ $mywebsites->outlink_placed_on_your_website }}</td>
                                  <td>
                                      <?php 
                                          $chatid = $mywebsites->chat_id; 
@@ -138,7 +137,7 @@
                            <th>Outlink On</th>
                            <th>Backlink To</th>
                            <th>Anchor Text</th>
-                           <th>Outlink Placed</th>
+                           <!-- <th>Outlink Placed</th> -->
                            <th>Archive Chat</th>
                         </tr>
                      </tfoot>
