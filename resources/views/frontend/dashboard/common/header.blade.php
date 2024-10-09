@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
    <head>
-      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
       <title>SERPsupport</title>
       <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
          name="viewport"/>
@@ -26,13 +26,13 @@
          });
       </script>
       <!-- CSS Files -->
-      <link rel="stylesheet" href="{{ url('dashboard_assets/css/bootstrap.min.css') }}" />
-      <link rel="stylesheet" href="{{ url('dashboard_assets/css/plugins.min.css') }}" />
-      <link rel="stylesheet" href="{{ url('dashboard_assets/css/kaiadmin.min.css') }}" />
+      <link rel="stylesheet" href="{{ url('dashboard_assets/css/bootstrap.min.css') }}"/>
+      <link rel="stylesheet" href="{{ url('dashboard_assets/css/plugins.min.css') }}"/>
+      <link rel="stylesheet" href="{{ url('dashboard_assets/css/kaiadmin.min.css') }}"/>
       <!-- CSS Just for demo purpose, don't include it in your project -->
-      <link rel="stylesheet" href="{{ url('dashboard_assets/css/demo.css') }}"/>
+      <link rel="stylesheet" href="{{ url('dashboard_assets/css/demo.css')}}"/>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" />
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css"/>
       <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.css" />
       <style type="text/css">
          li.nav-item.faqs{
