@@ -243,7 +243,7 @@ class GoogleLoginController extends Controller
                 'to_user_id' => Auth::user()->id,
                 'forwhich_user_url' => $forwhich_user_url,
                 'website_url' => $website_url,
-                'connnection_text' => "Outbound connection accepted by {$forwhich_user_url}",
+                'connnection_text' => "Outbound link connection accepted by {$forwhich_user_url}",
                 'seen' => false,
             ];
             DB::table('notifications')->insert($notification);    
@@ -314,7 +314,7 @@ class GoogleLoginController extends Controller
                     'to_user_id' =>'',
                     'forwhich_user_url' => $forwhich_user_url,
                     'website_url' => $website_url,
-                    'connnection_text' => "Inbound connection accepted by {$website_url}",
+                    'connnection_text' => "Inbound link connection accepted by {$website_url}",
                     'seen' => false,
                 ];
                 DB::table('notifications')->insert($notification);    
@@ -394,7 +394,7 @@ class GoogleLoginController extends Controller
                 'to_user_id' => Auth::user()->id,
                 'forwhich_user_url' => $forwhich_user_url,
                 'website_url' => $website_url,
-                'connnection_text' => "Inbound connection accepted by {$website_url}",
+                'connnection_text' => "Inbound link connection accepted by {$website_url}",
                 'seen' => false,
             ];
             DB::table('notifications')->insert($notification);    
@@ -463,7 +463,7 @@ class GoogleLoginController extends Controller
                     'to_user_id' =>'',
                     'forwhich_user_url' => $forwhich_user_url,
                     'website_url' => $website_url,
-                    'connnection_text' => "Outbound connection accepted by {$forwhich_user_url}",
+                    'connnection_text' => "Outbound link connection accepted by {$forwhich_user_url}",
                     'seen' => false,
                 ];
                 DB::table('notifications')->insert($notification);    
@@ -922,7 +922,7 @@ class GoogleLoginController extends Controller
         $notification = [
             'forwhich_user_url' => $data['outlink_on'],
             'website_url' => $data['backlink_to'],
-            'connnection_text' => "Details submitted",
+            'connnection_text' => "Link details submitted",
             'seen' => false,
         ];
         DB::table('notifications')->insert($notification);
@@ -939,7 +939,7 @@ class GoogleLoginController extends Controller
         ]);
 
         // Return back with success
-        return back()->with('success', 'Details updated successfully.');
+        return back()->with('success', 'Link details updated successfully.');
     }
 
     public function deleteconnection($myuniqueid){
