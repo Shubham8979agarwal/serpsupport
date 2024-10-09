@@ -228,12 +228,8 @@
                <i class="gg-more-vertical-alt"></i>
                </button>
             </div>
-            <!-- End Logo Header -->
          </div>
-         <!-- Navbar Header -->
-         <nav
-            class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom"
-            >
+         <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
             <div class="container-fluid">
                <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
                   <li class="nav-item topbar-icon dropdown hidden-caret">
@@ -385,11 +381,9 @@
                          }
                      }
                      ?>
-                  <!-- Backlinks and Outlinks Notification -->
                   <li class="nav-item topbar-icon dropdown hidden-caret">
                      <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fa fa-bell"></i>
-                        <!-- Assuming backlink_count or outlink_count has a value -->
                         @if($backlink_count > 0 || $outlink_count > 0 || $notifications_count>0)
                         <span class="notification">{{ $backlink_count + $outlink_count + $notifications_count }}</span>
                         @endif
@@ -397,24 +391,20 @@
                      <ul class="dropdown-menu notif-box animated fadeIn" aria-labelledby="notifDropdown">
                         <li>
                            <div class="dropdown-title">
-                              Backlink & Outlink Connection(s) Notifications
+                              Inbound & Outbound Connects Notifications
                            </div>
                         </li>
                         <li>
                            <div class="notif-scroll scrollbar-outer">
                               <div class="notif-center">
-                                 <!-- Display Backlink Notification -->
-                                 <!-- <a href="#"> -->
                                  <div class="notif-content">
                                     <span class="block">Received {{ $backlink_count }} Backlink connection(s)</span>
                                  </div>
-                                 <!-- </a> -->
-                                 <!-- Display Outlink Notification -->
-                                 <!-- <a href="#"> -->
+                                 
                                  <div class="notif-content">
                                     <span class="block">Received {{ $outlink_count }} Outlink connection(s)</span>
                                  </div>
-                                 <!-- Use $notifications later in your Blade file -->
+
                                  @if(count($notifications) > 0)
                                  @foreach($notifications as $notification)
                                  @if($notification->from_user_id!=Auth::user()->id && $notification->to_user_id!=Auth::user()->id)
@@ -434,12 +424,7 @@
                      </ul>
                   </li>
                   <li class="nav-item topbar-user dropdown hidden-caret">
-                     <a
-                        class="dropdown-toggle profile-pic"
-                        data-bs-toggle="dropdown"
-                        href="#"
-                        aria-expanded="false"
-                        >
+                     <a class="dropdown-toggle profile-pic" data-bs-toggle="dropdown" href="#" aria-expanded="false">
                      <span class="fw-bold">{{ Auth::user()->email }} <i class="fa fa-caret-down"></i></span>
                      </span>
                      </a>
@@ -456,5 +441,4 @@
                </ul>
             </div>
          </nav>
-         <!-- End Navbar -->
       </div>
