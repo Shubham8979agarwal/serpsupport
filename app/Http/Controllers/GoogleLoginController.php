@@ -243,7 +243,7 @@ class GoogleLoginController extends Controller
                 'to_user_id' => Auth::user()->id,
                 'forwhich_user_url' => $forwhich_user_url,
                 'website_url' => $website_url,
-                'connnection_text' => "Outlink connection accepted by {$forwhich_user_url}",
+                'connnection_text' => "Outbound connection accepted by {$forwhich_user_url}",
                 'seen' => false,
             ];
             DB::table('notifications')->insert($notification);    
@@ -260,9 +260,9 @@ class GoogleLoginController extends Controller
                 DB::table('outlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
 
                 // Updated HTML content
-                /*$html = "In this chat, we will discuss the possibility of a outlink from {$website_url} to {$forwhich_user_url}. Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left.";*/
+                /*$html = "In this chat, we will discuss the possibility of a outbound link from {$website_url} to {$forwhich_user_url}. Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left.";*/
 
-                $html = "In this chat, we will discuss the possibility of a outlink from {$forwhich_user_url} to {$website_url} . Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left. See video - <a href='#'>How it works</a>";
+                $html = "In this chat, we will discuss the possibility of a outbound link from {$forwhich_user_url} to {$website_url} . Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left. See video - <a href='#'>How it works</a>";
 
                 $sendtochat = [
                     'from_id' => $from_id,
@@ -314,7 +314,7 @@ class GoogleLoginController extends Controller
                     'to_user_id' =>'',
                     'forwhich_user_url' => $forwhich_user_url,
                     'website_url' => $website_url,
-                    'connnection_text' => "Backlink connection accepted by {$website_url}",
+                    'connnection_text' => "Inbound connection accepted by {$website_url}",
                     'seen' => false,
                 ];
                 DB::table('notifications')->insert($notification);    
@@ -327,7 +327,7 @@ class GoogleLoginController extends Controller
                     
                     DB::table('backlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
 
-                    $html = "In this chat, we will discuss the possibility of a backlink from {$website_url} to {$forwhich_user_url}. Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left. See video - <a href='#'>How it works</a>";
+                    $html = "In this chat, we will discuss the possibility of a inbound link from {$website_url} to {$forwhich_user_url}. Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left. See video - <a href='#'>How it works</a>";
 
                     $sendtochat = [
                         'from_id' => $from_id,
@@ -394,7 +394,7 @@ class GoogleLoginController extends Controller
                 'to_user_id' => Auth::user()->id,
                 'forwhich_user_url' => $forwhich_user_url,
                 'website_url' => $website_url,
-                'connnection_text' => "Backlink connection accepted by {$website_url}",
+                'connnection_text' => "Inbound connection accepted by {$website_url}",
                 'seen' => false,
             ];
             DB::table('notifications')->insert($notification);    
@@ -411,7 +411,7 @@ class GoogleLoginController extends Controller
                 DB::table('outlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
 
                 // Updated HTML content
-                $html = "In this chat, we will discuss the possibility of a outlink from {$forwhich_user_url} to {$website_url}. Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left. See video - <a href='#'>How it works</a>";
+                $html = "In this chat, we will discuss the possibility of a outbound link from {$forwhich_user_url} to {$website_url}. Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left. See video - <a href='#'>How it works</a>";
 
                 $sendtochat = [
                     'from_id' => $from_id,
@@ -463,7 +463,7 @@ class GoogleLoginController extends Controller
                     'to_user_id' =>'',
                     'forwhich_user_url' => $forwhich_user_url,
                     'website_url' => $website_url,
-                    'connnection_text' => "Outlink connection accepted by {$forwhich_user_url}",
+                    'connnection_text' => "Outbound connection accepted by {$forwhich_user_url}",
                     'seen' => false,
                 ];
                 DB::table('notifications')->insert($notification);    
@@ -476,7 +476,7 @@ class GoogleLoginController extends Controller
                     
                     DB::table('backlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
 
-                    $html = "In this chat, we will discuss the possibility of a backlink from {$website_url} to {$forwhich_user_url}. Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left. See video - <a href='#'>How it works</a>";
+                    $html = "In this chat, we will discuss the possibility of a inbound link from {$website_url} to {$forwhich_user_url}. Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left. See video - <a href='#'>How it works</a>";
 
                     $sendtochat = [
                         'from_id' => $from_id,
@@ -922,7 +922,7 @@ class GoogleLoginController extends Controller
         $notification = [
             'forwhich_user_url' => $data['outlink_on'],
             'website_url' => $data['backlink_to'],
-            'connnection_text' => "Link details submitted",
+            'connnection_text' => "Details submitted",
             'seen' => false,
         ];
         DB::table('notifications')->insert($notification);
@@ -939,7 +939,7 @@ class GoogleLoginController extends Controller
         ]);
 
         // Return back with success
-        return back()->with('success', 'Link details updated successfully.');
+        return back()->with('success', 'Details updated successfully.');
     }
 
     public function deleteconnection($myuniqueid){

@@ -238,7 +238,7 @@
                         <?php
                            // Get the authenticated user's ID
                            $userId = Auth::id();
-                           
+
                            // Count the number of unread messages (seen = 0) where the logged-in user is the recipient (to_id)
                            $unreadCount = DB::table('ch_messages')
                               ->where('to_id', $userId)
@@ -309,7 +309,7 @@
                         </li>
                         <!-- <li class="dropdown-footer">
                            <a href="#">View All Notifications</a>
-                           </li> -->
+                        </li> -->
                      </ul>
                   </li>
                   <?php
