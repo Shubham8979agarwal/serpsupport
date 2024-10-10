@@ -81,6 +81,10 @@ Route::get('/seen-notification/{id}', [GoogleLoginController::class, 'seen_notif
 
 Route::get('/seen-message/{id}', [GoogleLoginController::class, 'seen_message'])->name('seen-message');
 
+Route::get('/show-edit-form/{website_id}', [GoogleLoginController::class, 'show_edit_form'])->name('show-edit-form');
+
+Route::post('/edit-website/{website_id}', [GoogleLoginController::class, 'edit_website'])->name('edit-website');
+
 Route::get('/weekly-update', [GoogleLoginController::class, 'weeklyUpdate']);
 
 Route::get('signout', [GoogleLoginController::class, 'signout'])->name('signout');

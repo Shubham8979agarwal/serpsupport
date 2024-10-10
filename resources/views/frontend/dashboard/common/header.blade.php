@@ -83,6 +83,17 @@
          form#submitlinkdetails .form-group label{
          white-space: normal!important;
          }
+         /* Hide by default (for larger screens like desktop) */
+            .logo-header .nav-toggle {
+                display: none!important;
+            }
+
+            /* Show on mobile (small screens) */
+            @media (max-width: 768px){
+                .logo-header .nav-toggle {
+                    display: block!important; /* Makes it visible on mobile screens */
+                }
+            }
       </style>
    </head>
    <body>
@@ -90,14 +101,25 @@
       <!-- Sidebar -->
       <div class="sidebar" data-background-color="dark">
          <div class="sidebar-logo">
-            <!-- Logo Header -->
-            <div class="logo-header" data-background-color="dark">
-               <a href="#" class="logo" style="color:#FFF!important">
-               SERPsupport
-               </a>
+               <!-- Logo Header -->
+               <div class="logo-header" data-background-color="dark">
+                  <a href="#" class="logo" style="color:#FFF!important">
+                     SERPsupport
+                  </a>
+                  <div class="nav-toggle">
+                     <button class="btn btn-toggle toggle-sidebar">
+                     <i class="gg-menu-right"></i>
+                     </button>
+                     <button class="btn btn-toggle sidenav-toggler">
+                     <i class="gg-menu-left"></i>
+                     </button>
+                  </div>
+                  <button class="topbar-toggler more">
+                  <i class="gg-more-vertical-alt"></i>
+                  </button>
+               </div>
+               <!-- End Logo Header -->
             </div>
-            <!-- End Logo Header -->
-         </div>
          <div class="sidebar-wrapper scrollbar scrollbar-inner">
             <div class="sidebar-content">
                <ul class="nav nav-secondary">
@@ -425,7 +447,10 @@
                   </li>
                   <li class="nav-item topbar-user dropdown hidden-caret">
                      <a class="dropdown-toggle profile-pic" data-bs-toggle="dropdown" href="#" aria-expanded="false">
-                     <span class="fw-bold">{{ Auth::user()->email }} <i class="fa fa-caret-down"></i></span>
+                     <div class="avatar-sm">
+                        <img src="{{ url('admin_assets/dashboard_assets/img/profile.png') }}" alt="..." class="avatar-img rounded-circle"/>
+                     </div>   
+                     <span class="fw-bold">&nbsp;{{ Auth::user()->email }} <i class="fa fa-caret-down"></i></span>
                      </span>
                      </a>
                      <ul class="dropdown-menu dropdown-user animated fadeIn">

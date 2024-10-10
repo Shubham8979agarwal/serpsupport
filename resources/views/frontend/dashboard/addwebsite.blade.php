@@ -19,6 +19,7 @@
                   </div>
                   @endif
                </div>
+               @if($check==0)
                <div class="card-body">
                   <div class="row">
                      <form action="{{ route('push-website') }}" method="POST">
@@ -111,6 +112,13 @@
                      </form>
                   </div>
                </div>
+               @else
+               <div class="card-body">
+                  <div class="row">
+                     <p>You have already added 1 website.</p>
+                  </div>
+               </div>   
+               @endif
             </div>
          </div>
       </div>

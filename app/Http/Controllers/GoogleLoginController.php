@@ -146,6 +146,8 @@ class GoogleLoginController extends Controller
 
     public function addwebsite(){
         $data['data'] = Auth::user();
+        $data['check'] = DB::table('websites')->where('website_uploader_email', Auth::user()->email)->count();
+        //dd($data['check']);
         return view('frontend.dashboard.addwebsite',$data);
     }
 
@@ -188,9 +190,9 @@ class GoogleLoginController extends Controller
                 
             //delete from submitlinks tabe
             DB::table('submitlinks')
-                ->where('outlink_on', $getwebsitename)
-                ->orWhere('backlink_to', $getwebsitename)
-                ->delete();    
+                ->where('outlink_on','LIKE', $getwebsitename)
+                ->orWhere('backlink_to', 'LIKE', $getwebsitename)
+                ->delete();  
             
             return redirect('account-settings')->with('message', 'Website and associated records deleted successfully');
         } else {
@@ -243,7 +245,7 @@ class GoogleLoginController extends Controller
                 'to_user_id' => Auth::user()->id,
                 'forwhich_user_url' => $forwhich_user_url,
                 'website_url' => $website_url,
-                'connnection_text' => "Outbound link connection accepted by {$forwhich_user_url}",
+                'connnection_text' => "outlink connection accepted by {$forwhich_user_url}",
                 'seen' => false,
             ];
             DB::table('notifications')->insert($notification);    
@@ -260,9 +262,9 @@ class GoogleLoginController extends Controller
                 DB::table('outlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
 
                 // Updated HTML content
-                /*$html = "In this chat, we will discuss the possibility of a outbound link from {$website_url} to {$forwhich_user_url}. Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left.";*/
+                /*$html = "In this chat, we will discuss the possibility of a outlink from {$website_url} to {$forwhich_user_url}. Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left.";*/
 
-                $html = "In this chat, we will discuss the possibility of a outbound link from {$forwhich_user_url} to {$website_url} . Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left. See video - <a href='#'>How it works</a>";
+                $html = "In this chat, we will discuss the possibility of a outlink from {$forwhich_user_url} to {$website_url}.For more information how to proceed, please have a look at the FAQs page in the menu or watch our video: <a href='#'>How it works</a>";
 
                 $sendtochat = [
                     'from_id' => $from_id,
@@ -314,7 +316,7 @@ class GoogleLoginController extends Controller
                     'to_user_id' =>'',
                     'forwhich_user_url' => $forwhich_user_url,
                     'website_url' => $website_url,
-                    'connnection_text' => "Inbound link connection accepted by {$website_url}",
+                    'connnection_text' => "backlink connection accepted by {$website_url}",
                     'seen' => false,
                 ];
                 DB::table('notifications')->insert($notification);    
@@ -327,7 +329,7 @@ class GoogleLoginController extends Controller
                     
                     DB::table('backlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
 
-                    $html = "In this chat, we will discuss the possibility of a inbound link from {$website_url} to {$forwhich_user_url}. Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left. See video - <a href='#'>How it works</a>";
+                    $html = "In this chat, we will discuss the possibility of a backlink from {$website_url} to {$forwhich_user_url}.For more information how to proceed, please have a look at the FAQs page in the menu or watch our video: <a href='#'>How it works</a>";
 
                     $sendtochat = [
                         'from_id' => $from_id,
@@ -394,7 +396,7 @@ class GoogleLoginController extends Controller
                 'to_user_id' => Auth::user()->id,
                 'forwhich_user_url' => $forwhich_user_url,
                 'website_url' => $website_url,
-                'connnection_text' => "Inbound link connection accepted by {$website_url}",
+                'connnection_text' => "backlink connection accepted by {$website_url}",
                 'seen' => false,
             ];
             DB::table('notifications')->insert($notification);    
@@ -411,7 +413,7 @@ class GoogleLoginController extends Controller
                 DB::table('outlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
 
                 // Updated HTML content
-                $html = "In this chat, we will discuss the possibility of a outbound link from {$forwhich_user_url} to {$website_url}. Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left. See video - <a href='#'>How it works</a>";
+                $html = "In this chat, we will discuss the possibility of a outlink from {$forwhich_user_url} to {$website_url}.For more information how to proceed, please have a look at the FAQs page in the menu or watch our video: <a href='#'>How it works</a>";
 
                 $sendtochat = [
                     'from_id' => $from_id,
@@ -463,7 +465,7 @@ class GoogleLoginController extends Controller
                     'to_user_id' =>'',
                     'forwhich_user_url' => $forwhich_user_url,
                     'website_url' => $website_url,
-                    'connnection_text' => "Outbound link connection accepted by {$forwhich_user_url}",
+                    'connnection_text' => "outlink connection accepted by {$forwhich_user_url}",
                     'seen' => false,
                 ];
                 DB::table('notifications')->insert($notification);    
@@ -476,7 +478,7 @@ class GoogleLoginController extends Controller
                     
                     DB::table('backlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
 
-                    $html = "In this chat, we will discuss the possibility of a inbound link from {$website_url} to {$forwhich_user_url}. Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left. See video - <a href='#'>How it works</a>";
+                    $html = "In this chat, we will discuss the possibility of a backlink from {$website_url} to {$forwhich_user_url}.For more information how to proceed, please have a look at the FAQs page in the menu or watch our video: <a href='#'>How it works</a>";
 
                     $sendtochat = [
                         'from_id' => $from_id,
@@ -540,6 +542,45 @@ class GoogleLoginController extends Controller
         $this->linkService->addWebsite(Auth::user(), $data);
 
         return redirect('account-settings')->with('message', 'Website Added Successfully ...');
+    }
+
+    public function show_edit_form($website_id) {
+        $website = Website::where('website_id', $website_id)->where('user_id', Auth::user()->id)->firstOrFail();
+        return view('frontend.dashboard.editwebsite', compact('website'));
+    }
+
+    public function edit_website(Request $request, $website_id) {
+        // Validate the incoming request data
+        $request->validate([
+            'website_niche' => 'required|string|max:255',
+            'website_description' => 'required|string',
+        ]);
+
+        // Retrieve the validated data
+        $data = $request->only(['website_niche', 'website_description']);
+
+        // Validate the length of website description (max 250 words)
+        if (str_word_count($data['website_description']) > 250) {
+            return back()->with('error_message', 'Failed! The website description exceeds 250 words.');
+        }
+
+        // Find the website by ID and make sure it belongs to the authenticated user
+        $website = Website::where('website_id', $website_id)
+                          ->where('user_id', Auth::user()->id)
+                          ->first();
+
+        if (!$website) {
+            return back()->with('error_message', 'Website not found.');
+        }
+
+        // Update the website's niche and description
+        $website->website_niche = $data['website_niche'];
+        $website->website_description = $data['website_description'];
+
+        // Save the changes to the database
+        $website->save();
+
+        return redirect('account-settings')->with('message', 'Website updated successfully.');
     }
 
     public function backlinks($forwhich_user_url){
