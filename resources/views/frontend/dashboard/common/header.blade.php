@@ -84,16 +84,28 @@
          white-space: normal!important;
          }
          /* Hide by default (for larger screens like desktop) */
-            .logo-header .nav-toggle {
-                display: none!important;
-            }
-
-            /* Show on mobile (small screens) */
-            @media (max-width: 768px){
-                .logo-header .nav-toggle {
-                    display: block!important; /* Makes it visible on mobile screens */
-                }
-            }
+         .logo-header .nav-toggle {
+         display: none!important;
+         }
+         /* Show on mobile (small screens) */
+         @media (max-width: 768px){
+         .logo-header .nav-toggle {
+         display: block!important; /* Makes it visible on mobile screens */
+         }
+         }
+         .sidebar .nav-collapse li a .sub-item:before, .sidebar[data-background-color=white] .nav-collapse li a .sub-item:before{
+            display: none!important;
+         }
+         .sidebar .nav-collapse li a .sub-item, .sidebar[data-background-color=white] .nav-collapse li a .sub-item{
+            margin-left: 0!important;
+         }
+         .sidebar .nav-collapse, .sidebar[data-background-color=white] .nav-collapse{
+            padding-top: 0!important;
+            padding-bottom: 0!important;
+         }
+         .sidebar .nav-collapse li a, .sidebar[data-background-color=white] .nav-collapse li a{
+            padding: 5px 10px 10px 32px !important;
+         }
       </style>
    </head>
    <body>
@@ -101,25 +113,25 @@
       <!-- Sidebar -->
       <div class="sidebar" data-background-color="dark">
          <div class="sidebar-logo">
-               <!-- Logo Header -->
-               <div class="logo-header" data-background-color="dark">
-                  <a href="#" class="logo" style="color:#FFF!important">
-                     SERPsupport
-                  </a>
-                  <div class="nav-toggle">
-                     <button class="btn btn-toggle toggle-sidebar">
-                     <i class="gg-menu-right"></i>
-                     </button>
-                     <button class="btn btn-toggle sidenav-toggler">
-                     <i class="gg-menu-left"></i>
-                     </button>
-                  </div>
-                  <button class="topbar-toggler more">
-                  <i class="gg-more-vertical-alt"></i>
+            <!-- Logo Header -->
+            <div class="logo-header" data-background-color="dark">
+               <a href="#" class="logo" style="color:#FFF!important">
+               SERPsupport
+               </a>
+               <div class="nav-toggle">
+                  <button class="btn btn-toggle toggle-sidebar">
+                  <i class="gg-menu-right"></i>
+                  </button>
+                  <button class="btn btn-toggle sidenav-toggler">
+                  <i class="gg-menu-left"></i>
                   </button>
                </div>
-               <!-- End Logo Header -->
+               <button class="topbar-toggler more">
+               <i class="gg-more-vertical-alt"></i>
+               </button>
             </div>
+            <!-- End Logo Header -->
+         </div>
          <div class="sidebar-wrapper scrollbar scrollbar-inner">
             <div class="sidebar-content">
                <ul class="nav nav-secondary">
@@ -128,32 +140,29 @@
                      $getwebsites = DB::table('websites')->where('website_uploader_email', Auth::user()->email)->get();
                      $ls = request()->segment(count(request()->segments()));
                      $lastSegment = decryptData($ls);
-                  ?>
+                     ?>
                   <li class="nav-item @if(Route::currentRouteName() == 'backlinks-submission-details' || Route::currentRouteName() == 'outlinks-submission-details') active submenu @endif">
-                        <a data-bs-toggle="collapse" href="#dashboard">
-                           <i class="fas fa-home"></i>
-                           <p>Dashboard</p>
-                           <span class="caret"></span>
-                        </a>
-                        <div class="collapse @if(Route::currentRouteName() == 'backlinks-submission-details' || Route::currentRouteName() == 'outlinks-submission-details') show @endif" id="dashboard">
-                           <ul class="nav nav-collapse">
-                              <li class="@if(strpos($currentUrl,'backlinks-submission-details')) changebackground @endif">
-                                 <a href="{{ route('backlinks-submission-details') }}">
-                                 <span class="sub-item">
-                                 Inbound Links
-                                 </span>
-                                 </a>
-                              </li>
-                              <li class="@if(strpos($currentUrl,'outlinks-submission-details')) changebackground @endif">
-                                 <a href="{{ route('outlinks-submission-details') }}">
-                                 <span class="sub-item">
-                                 Outbound Links
-                                 </span>
-                                 </a>
-                              </li>
-                           </ul>
-                        </div>
-                     </li>
+                     <a data-bs-toggle="collapse" href="#dashboard">
+                        <i class="fas fa-home"></i>
+                        <p>Dashboard</p>
+                        <i class="fas fa-caret-up"></i>
+                     </a>
+                     <div class="collapse show" id="dashboard">
+                        <!-- 'show' class to make it expanded by default -->
+                        <ul class="nav nav-collapse">
+                           <li class="@if(strpos($currentUrl,'backlinks-submission-details')) changebackground @endif">
+                              <a href="{{ route('backlinks-submission-details') }}">
+                              <span class="sub-item">Inbound Links</span>
+                              </a>
+                           </li>
+                           <li class="@if(strpos($currentUrl,'outlinks-submission-details')) changebackground @endif">
+                              <a href="{{ route('outlinks-submission-details') }}">
+                              <span class="sub-item">Outbound Links</span>
+                              </a>
+                           </li>
+                        </ul>
+                     </div>
+                  </li>
                   @if(count($getwebsites) > 0)
                   <ul class="nav">
                      @foreach($getwebsites as $websites)
@@ -186,9 +195,12 @@
                         <a data-bs-toggle="collapse" href="#{{ $submenuId }}">
                            <i class="fas fa-bars"></i>
                            <p>{{ $websites->website_url }}</p>
-                           <span class="caret"></span>
+                           <!-- <span class="caret"> -->
+                           <i class="fas fa-caret-up"></i> <!-- Always show caret up since it is open by default -->
+                           <!-- </span> -->
                         </a>
-                        <div class="collapse @if($isActive) show @endif" id="{{ $submenuId }}">
+                        <div class="collapse show" id="{{ $submenuId }}">
+                           <!-- 'show' class to keep it expanded -->
                            <ul class="nav nav-collapse">
                               <li class="@if(strpos($currentUrl,'backlinks') && ($isActive)) changebackground @endif">
                                  <a href="{{ $backlinkUrl }}">
@@ -222,12 +234,12 @@
                         <p>FAQ(s)</p>
                      </a>
                   </li>
-                  <li class="nav-item account-settings">
-                     <a href="{{ route('account-settings') }}">
+                  <li class="nav-item account-settings @if(Route::currentRouteName() == 'account-settings') active @endif">
+                    <a href="{{ route('account-settings') }}">
                         <i class="fas fa-gear"></i>
                         <p>Account Settings</p>
-                     </a>
-                  </li>
+                    </a>
+                </li>
                </ul>
             </div>
          </div>
@@ -260,7 +272,7 @@
                         <?php
                            // Get the authenticated user's ID
                            $userId = Auth::id();
-
+                           
                            // Count the number of unread messages (seen = 0) where the logged-in user is the recipient (to_id)
                            $unreadCount = DB::table('ch_messages')
                               ->where('to_id', $userId)
@@ -331,7 +343,7 @@
                         </li>
                         <!-- <li class="dropdown-footer">
                            <a href="#">View All Notifications</a>
-                        </li> -->
+                           </li> -->
                      </ul>
                   </li>
                   <?php
@@ -405,10 +417,10 @@
                      ?>
                   <li class="nav-item topbar-icon dropdown hidden-caret">
                      <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa fa-bell"></i>
-                        @if($backlink_count > 0 || $outlink_count > 0 || $notifications_count>0)
-                        <span class="notification">{{ $backlink_count + $outlink_count + $notifications_count }}</span>
-                        @endif
+                     <i class="fa fa-bell"></i>
+                     @if($backlink_count > 0 || $outlink_count > 0 || $notifications_count>0)
+                     <span class="notification">{{ $backlink_count + $outlink_count + $notifications_count }}</span>
+                     @endif
                      </a>
                      <ul class="dropdown-menu notif-box animated fadeIn" aria-labelledby="notifDropdown">
                         <li>
@@ -422,11 +434,9 @@
                                  <div class="notif-content">
                                     <span class="block">Received {{ $backlink_count }} Backlink connection(s)</span>
                                  </div>
-                                 
                                  <div class="notif-content">
                                     <span class="block">Received {{ $outlink_count }} Outlink connection(s)</span>
                                  </div>
-
                                  @if(count($notifications) > 0)
                                  @foreach($notifications as $notification)
                                  @if($notification->from_user_id!=Auth::user()->id && $notification->to_user_id!=Auth::user()->id)
@@ -447,11 +457,11 @@
                   </li>
                   <li class="nav-item topbar-user dropdown hidden-caret">
                      <a class="dropdown-toggle profile-pic" data-bs-toggle="dropdown" href="#" aria-expanded="false">
-                     <div class="avatar-sm">
-                        <img src="{{ url('admin_assets/dashboard_assets/img/profile.png') }}" alt="..." class="avatar-img rounded-circle"/>
-                     </div>   
-                     <span class="fw-bold">&nbsp;{{ Auth::user()->email }} <i class="fa fa-caret-down"></i></span>
-                     </span>
+                        <div class="avatar-sm">
+                           <img src="{{ url('admin_assets/dashboard_assets/img/profile.png') }}" alt="..." class="avatar-img rounded-circle"/>
+                        </div>
+                        <span class="fw-bold">&nbsp;{{ Auth::user()->email }} <i class="fa fa-caret-down"></i></span>
+                        </span>
                      </a>
                      <ul class="dropdown-menu dropdown-user animated fadeIn">
                         <div class="dropdown-user-scroll scrollbar-outer">

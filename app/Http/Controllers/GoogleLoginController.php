@@ -26,7 +26,6 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Chatify\Facades\ChatifyMessenger as Chatify;
 
-
 class GoogleLoginController extends Controller
 {
     protected $linkService;
@@ -108,10 +107,17 @@ class GoogleLoginController extends Controller
         $data['find_outlink_connection'] = DB::table('outlinks')->where('forwhich_user_url',$data['fetch_user_website'])->orwhere('website_url',$data['fetch_user_website'])->count();
 
         $data['connections'] = $data['find_backlink_connection'] + $data['find_outlink_connection'];
+
+        /*$data['linkdetails'] = DB::table('submitlinks')->where(function($query) {
+        $query->where('acceptedby_to', Auth::user()->id)
+              ->orWhere('acceptedby_from', Auth::user()->id);
+        })->where('chat_status', 'closed')->where('connection_type','backlinks')->get();*/
+
         $data['linkdetails'] = DB::table('submitlinks')->where(function($query) {
         $query->where('acceptedby_to', Auth::user()->id)
               ->orWhere('acceptedby_from', Auth::user()->id);
-        })->where('chat_status', 'closed')->where('connection_type','backlinks')->get();
+        })->where('chat_status', 'closed')->get();
+        
         return view('frontend.dashboard.backlinks-submission-details',$data);
     }
 
@@ -136,11 +142,17 @@ class GoogleLoginController extends Controller
         $data['find_outlink_connection'] = DB::table('outlinks')->where('forwhich_user_url',$data['fetch_user_website'])->orwhere('website_url',$data['fetch_user_website'])->count();
 
         $data['connections'] = $data['find_backlink_connection'] + $data['find_outlink_connection'];
-        $data['linkdetails'] = DB::table('submitlinks')
+
+        /*$data['linkdetails'] = DB::table('submitlinks')
         ->where(function($query) {
         $query->where('acceptedby_to', Auth::user()->id)
               ->orWhere('acceptedby_from', Auth::user()->id);
-        })->where('chat_status', 'closed')->where('connection_type','outlinks')->get();
+        })->where('chat_status', 'closed')->where('connection_type','outlinks')->get();*/
+
+        $data['linkdetails'] = DB::table('submitlinks')->where(function($query) {
+        $query->where('acceptedby_to', Auth::user()->id)->orWhere('acceptedby_from', Auth::user()->id);
+        })->where('chat_status', 'closed')->get();
+
         return view('frontend.dashboard.outlinks-submission-details',$data);
     }
 

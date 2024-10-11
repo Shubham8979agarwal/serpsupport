@@ -1,3 +1,24 @@
+<style type="text/css">
+   @media (max-width: 1060px) {
+       .messenger-infoView {
+           margin-top: 134px!important;
+       }
+   }
+   @media (max-width: 884px) {
+       .main-header {
+           height: 70px!important;
+       }
+       div#myModal {
+       margin-top: 120px!important;
+   }
+   .modal-backdrop {
+       z-index: -1;
+   }
+   p.messenger-title {
+       margin-top: 40px!important;
+   }
+   }
+</style>
 {{-- user info and avatar --}}
 <?php
 $currentUrl = url()->current();
@@ -59,7 +80,7 @@ $chat_status = DB::table('submitlinks')->where('chat_id', $chat_id)->value('chat
                   <span class="text-danger">{{ $message }}</span>
                   @enderror
                   <div class="form-group row">
-                     <label for="inputEmail3" class="col-sm-4 col-form-label">Referring page (on {{ $get_backlinkto }})</label>
+                     <label for="inputEmail3" class="col-sm-4 col-form-label">Outbound link URL ({{ $get_backlinkto }} URL where the backlink is placed)</label>
                      <div class="col-sm-8">
                         <input type="text" class="form-control" name="backlink_to" autocomplete="off">
                         @error('backlink_to')
@@ -68,7 +89,7 @@ $chat_status = DB::table('submitlinks')->where('chat_id', $chat_id)->value('chat
                      </div>
                   </div>
                   <div class="form-group row">
-                     <label for="inputPassword3" class="col-sm-4 col-form-label">Target URL (on {{ $get_outlinkon }}) </label>
+                     <label for="inputPassword3" class="col-sm-4 col-form-label">Inbound link URL ({{ $get_outlinkon }} URL where the backlink links to) </label>
                      <div class="col-sm-8">
                         <input type="text" class="form-control" name="outlink_on" autocomplete="off">
                         @error('outlink_on')
@@ -156,7 +177,7 @@ $chat_status = DB::table('submitlinks')->where('chat_id', $chat_id)->value('chat
                   <span class="text-danger">{{ $message }}</span>
                   @enderror
                   <div class="form-group row">
-                     <label for="inputEmail3" class="col-sm-4 col-form-label">Referring page (on {{ $get_backlinkto }})</label>
+                     <label for="inputEmail3" class="col-sm-4 col-form-label">Outbound link URL ({{ $get_backlinkto }} URL where the backlink is placed)</label>
                      <div class="col-sm-8">
                         <input type="text" class="form-control" name="backlink_to" autocomplete="off">
                         @error('backlink_to')
@@ -165,7 +186,7 @@ $chat_status = DB::table('submitlinks')->where('chat_id', $chat_id)->value('chat
                      </div>
                   </div>
                   <div class="form-group row">
-                     <label for="inputPassword3" class="col-sm-4 col-form-label">Target URL (on {{ $get_outlinkon }}) </label>
+                     <label for="inputPassword3" class="col-sm-4 col-form-label">Inbound link URL ({{ $get_outlinkon }} URL where the backlink links to) </label>
                      <div class="col-sm-8">
                         <input type="text" class="form-control" name="outlink_on" autocomplete="off">
                         @error('outlink_on')

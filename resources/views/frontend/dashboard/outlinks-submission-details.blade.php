@@ -56,7 +56,7 @@
                      </div>
                      <div class="col col-stats ms-3 ms-sm-0">
                         <div class="numbers">
-                           <p class="card-category">Website(s) in portal</p>
+                           <p class="card-category">Total Website(s)</p>
                            <h4 class="card-title">{{ $total_websites }}</h4>
                         </div>
                      </div>
@@ -98,7 +98,7 @@
                         <tr>
                            <th>Type Of Link</th>
                            <th>Outbound Link Page</th>
-                           <th>Inbound Link Page</th>
+                           <!-- <th>Inbound Link Page</th> -->
                            <th>Anchor Text</th>
                            <!-- <th>Outlink Placed</th> -->
                            <th>Archive Chat</th>
@@ -110,7 +110,7 @@
                              <tr>
                                  <td>{{ $mywebsites->typeoflink }}</td>
                                  <td><a href="https://{{ $mywebsites->outlink_on }}">{{ $mywebsites->outlink_on }}</a></td>
-                                 <td><a href="https://{{ $mywebsites->backlink_to }}">{{ $mywebsites->backlink_to }}</a></td>
+                                 <!-- <td><a href="https://{{ $mywebsites->backlink_to }}">{{ $mywebsites->backlink_to }}</a></td> -->
                                  <td>{{ $mywebsites->anchor_text }}</td>
                                  <td>
                                      <?php 
@@ -134,8 +134,8 @@
                      <tfoot>
                         <tr>
                            <th>Type Of Link</th>
-                           <th>Outlink On</th>
-                           <th>Backlink To</th>
+                           <th>Outbound Link Page</th>
+                           <!-- <th>Inbound Link Page</th> -->
                            <th>Anchor Text</th>
                            <!-- <th>Outlink Placed</th> -->
                            <th>Archive Chat</th>

@@ -1,9 +1,9 @@
 <footer class="footer">
 <div class="container-fluid d-flex justify-content-between">
-  <div class="copyright" >
+  <!-- <div class="copyright" >
     2024, made with <i class="fa fa-heart heart text-danger"></i> by
     <a href="#">SerpSupport</a>
-  </div>
+  </div> -->
 </div>
 </footer>
 </div>
@@ -65,6 +65,38 @@
            "info":     false,
            "scrollX": true
        });
+    </script>
+    <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', function() {
+        // Get all sidebar nav items with submenus
+        const navItems = document.querySelectorAll('.nav-item[data-bs-toggle="collapse"]');
+          navItems.forEach(item => {
+                const link = item.querySelector('a[data-bs-toggle="collapse"]');
+                const submenu = item.querySelector('.collapse');
+                const caret = item.querySelector('.caret .fas');
+
+                link.addEventListener('click', function() {
+                    // Collapse other open submenus
+                    navItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            const otherSubmenu = otherItem.querySelector('.collapse');
+                            if (otherSubmenu) {
+                                otherSubmenu.classList.remove('show');
+                                const otherCaret = otherItem.querySelector('.caret .fas');
+                                if (otherCaret) {
+                                    otherCaret.classList.remove('fa-caret-up');
+                                    otherCaret.classList.add('fa-caret-down');
+                                }
+                            }
+                        }
+                    });
+                // Toggle the clicked submenu
+                submenu.classList.toggle('show');
+                caret.classList.toggle('fa-caret-up');
+                caret.classList.toggle('fa-caret-down');
+            });
+        });
+    });
     </script>
   </body>
 </html>
