@@ -106,6 +106,9 @@
          .sidebar .nav-collapse li a, .sidebar[data-background-color=white] .nav-collapse li a{
             padding: 5px 10px 10px 32px !important;
          }
+         span.sub-item {
+            margin-top: 5px!important;
+         }
       </style>
    </head>
    <body>
