@@ -35,17 +35,24 @@
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css"/>
       <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.css" />
       <style type="text/css">
-         li.nav-item.faqs{
-         position: fixed;
-         bottom: 80px;
-         left: 0;
-         width:265px;
+         ul.nav {
+            position: relative; /* Ensure parent respects child positioning */
+         }
+         li.nav-item.faqs {
+          position: absolute; /* Change from fixed to absolute */
+          bottom: -160px; /* Adjust spacing from the bottom */
+          left: 0;
+          width: 265px;
+          z-index: 1; /* Adjust as needed, but lower than other menu items */
+          padding-top: 10px; /* Optional: to add space above it */
          }
          li.nav-item.account-settings{
-         position: fixed;
-         bottom: 30px;
+         position: absolute; /* Change from fixed to absolute */
+         bottom: -210px; /* Adjust spacing from the bottom */
          left: 0;
-         width:265px;
+         width: 265px;
+         z-index: 1; /* Adjust as needed, but lower than other menu items */
+         padding-top: 10px; /* Optional: to add space above it */
          }
          @media screen and (max-width: 991.5px) {
          .topbar_open .navbar-header {
