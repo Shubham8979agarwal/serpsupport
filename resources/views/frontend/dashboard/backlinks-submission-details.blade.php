@@ -3,7 +3,7 @@
    <div class="page-inner">
       <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
          <div>
-            <h3 class="fw-bold mb-3">SERPsupport Total Stats</h3>
+            <h3 class="fw-bold mb-3">SERPsupport Portal Stats</h3>
          </div>
       </div>
       <div class="row">
@@ -18,7 +18,7 @@
                      </div>
                      <div class="col col-stats ms-3 ms-sm-0">
                         <div class="numbers">
-                           <p class="card-category">Inbound Links</p>
+                           <p class="card-category">Total Inbound Links</p>
                            <h4 class="card-title">{{ $confirmed_backlinks }}</h4>
                         </div>
                      </div>
@@ -37,7 +37,7 @@
                      </div>
                      <div class="col col-stats ms-3 ms-sm-0">
                         <div class="numbers">
-                           <p class="card-category">Outbound Links</p>
+                           <p class="card-category">Total Outbound Links</p>
                            <h4 class="card-title">{{ $confirmed_outlinks }}</h4>
                         </div>
                      </div>
