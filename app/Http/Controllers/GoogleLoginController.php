@@ -90,7 +90,7 @@ class GoogleLoginController extends Controller
         $data['data'] = Auth::user();
         $data['total_websites'] = DB::table('websites')->count();
 
-        $data['confirmed_backlinks'] = DB::table('submitlinks')->where(function($query) {
+        /*$data['confirmed_backlinks'] = DB::table('submitlinks')->where(function($query) {
         $query->where('acceptedby_to', Auth::user()->id)
               ->orWhere('acceptedby_from', Auth::user()->id);
         })->where('chat_status', 'closed')->where('connection_type','backlinks')->count();
@@ -98,7 +98,11 @@ class GoogleLoginController extends Controller
         $data['confirmed_outlinks'] = DB::table('submitlinks')->where(function($query) {
         $query->where('acceptedby_to', Auth::user()->id)
               ->orWhere('acceptedby_from', Auth::user()->id);
-        })->where('chat_status', 'closed')->where('connection_type','outlinks')->count();
+        })->where('chat_status', 'closed')->where('connection_type','outlinks')->count();*/
+
+        $data['confirmed_backlinks'] = DB::table('submitlinks')->where('chat_status', 'closed')->where('connection_type','backlinks')->count();
+
+        $data['confirmed_outlinks'] = DB::table('submitlinks')->where('chat_status', 'closed')->where('connection_type','outlinks')->count(); 
 
         $data['fetch_user_website'] =  DB::table('websites')->where('website_uploader_email',Auth::user()->email)->value('website_url');
 
@@ -108,24 +112,24 @@ class GoogleLoginController extends Controller
 
         $data['connections'] = $data['find_backlink_connection'] + $data['find_outlink_connection'];
 
+        $data['linkdetails'] = DB::table('submitlinks')->where(function($query) {
+            $query->where('acceptedby_to', Auth::user()->id)
+                  ->orWhere('acceptedby_from', Auth::user()->id);
+            })->where('chat_status', 'closed')->where('connection_type','backlinks')->get();
+
         /*$data['linkdetails'] = DB::table('submitlinks')->where(function($query) {
         $query->where('acceptedby_to', Auth::user()->id)
               ->orWhere('acceptedby_from', Auth::user()->id);
-        })->where('chat_status', 'closed')->where('connection_type','backlinks')->get();*/
-
-        $data['linkdetails'] = DB::table('submitlinks')->where(function($query) {
-        $query->where('acceptedby_to', Auth::user()->id)
-              ->orWhere('acceptedby_from', Auth::user()->id);
-        })->where('chat_status', 'closed')->get();
+        })->where('chat_status', 'closed')->get();*/
         
-        return view('frontend.dashboard.backlinks-submission-details',$data);
-    }
+    return view('frontend.dashboard.backlinks-submission-details',$data);
+  }
 
     public function outlinks_submission_details(){
         $data['data'] = Auth::user();
         $data['total_websites'] = DB::table('websites')->count();
 
-        $data['confirmed_backlinks'] = DB::table('submitlinks')->where(function($query) {
+        /*$data['confirmed_backlinks'] = DB::table('submitlinks')->where(function($query) {
         $query->where('acceptedby_to', Auth::user()->id)
               ->orWhere('acceptedby_from', Auth::user()->id);
         })->where('chat_status', 'closed')->where('connection_type','backlinks')->count();
@@ -133,7 +137,11 @@ class GoogleLoginController extends Controller
         $data['confirmed_outlinks'] = DB::table('submitlinks')->where(function($query) {
         $query->where('acceptedby_to', Auth::user()->id)
               ->orWhere('acceptedby_from', Auth::user()->id);
-        })->where('chat_status', 'closed')->where('connection_type','outlinks')->count();
+        })->where('chat_status', 'closed')->where('connection_type','outlinks')->count();*/
+
+        $data['confirmed_backlinks'] = DB::table('submitlinks')->where('chat_status', 'closed')->where('connection_type','backlinks')->count();
+
+        $data['confirmed_outlinks'] = DB::table('submitlinks')->where('chat_status', 'closed')->where('connection_type','outlinks')->count(); 
 
         $data['fetch_user_website'] =  DB::table('websites')->where('website_uploader_email',Auth::user()->email)->value('website_url');
 
@@ -143,15 +151,15 @@ class GoogleLoginController extends Controller
 
         $data['connections'] = $data['find_backlink_connection'] + $data['find_outlink_connection'];
 
-        /*$data['linkdetails'] = DB::table('submitlinks')
+        $data['linkdetails'] = DB::table('submitlinks')
         ->where(function($query) {
         $query->where('acceptedby_to', Auth::user()->id)
               ->orWhere('acceptedby_from', Auth::user()->id);
-        })->where('chat_status', 'closed')->where('connection_type','outlinks')->get();*/
+        })->where('chat_status', 'closed')->where('connection_type','outlinks')->get();
 
-        $data['linkdetails'] = DB::table('submitlinks')->where(function($query) {
+        /*$data['linkdetails'] = DB::table('submitlinks')->where(function($query) {
         $query->where('acceptedby_to', Auth::user()->id)->orWhere('acceptedby_from', Auth::user()->id);
-        })->where('chat_status', 'closed')->get();
+        })->where('chat_status', 'closed')->get();*/
 
         return view('frontend.dashboard.outlinks-submission-details',$data);
     }
@@ -257,7 +265,7 @@ class GoogleLoginController extends Controller
                 'to_user_id' => Auth::user()->id,
                 'forwhich_user_url' => $forwhich_user_url,
                 'website_url' => $website_url,
-                'connnection_text' => "outlink connection accepted by {$forwhich_user_url}",
+                'connnection_text' => "Outbound link connect accepted by {$forwhich_user_url}",
                 'seen' => false,
             ];
             DB::table('notifications')->insert($notification);    
@@ -276,7 +284,9 @@ class GoogleLoginController extends Controller
                 // Updated HTML content
                 /*$html = "In this chat, we will discuss the possibility of a outlink from {$website_url} to {$forwhich_user_url}. Make sure to discuss: the type of link, the URL, and the anchor text. For more information, please have a look at the FAQ/Tips menu item on the left.";*/
 
-                $html = "In this chat, we will discuss the possibility of a outlink from {$forwhich_user_url} to {$website_url}.For more information how to proceed, please have a look at the FAQs page in the menu or watch our video: <a href='#'>How it works</a>";
+                /*$html = "In this chat, we will discuss the possibility of a outlink from {$forwhich_user_url} to {$website_url}.For more information on how to proceed, please have a look at the FAQs page in the menu or watch our video: <a href='#' class='hiw'>How it works</a>";*/
+
+                $html = "In this chat, discuss the possibility of an inbound link (backlink) from {$forwhich_user_url} to {$website_url}. For more information on how to proceed, please have a look at the FAQs page in the menu or watch our video: <a href='#' class='hiw'>How it works</a>";
 
                 $sendtochat = [
                     'from_id' => $from_id,
@@ -328,7 +338,7 @@ class GoogleLoginController extends Controller
                     'to_user_id' =>'',
                     'forwhich_user_url' => $forwhich_user_url,
                     'website_url' => $website_url,
-                    'connnection_text' => "backlink connection accepted by {$website_url}",
+                    'connnection_text' => "Inbound link connect accepted by {$website_url}",
                     'seen' => false,
                 ];
                 DB::table('notifications')->insert($notification);    
@@ -341,7 +351,7 @@ class GoogleLoginController extends Controller
                     
                     DB::table('backlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
 
-                    $html = "In this chat, we will discuss the possibility of a backlink from {$website_url} to {$forwhich_user_url}.For more information how to proceed, please have a look at the FAQs page in the menu or watch our video: <a href='#'>How it works</a>";
+                    $html = "In this chat, discuss the possibility of an inbound link (backlink) from {$website_url} to {$forwhich_user_url}. For more information on how to proceed, please have a look at the FAQs page in the menu or watch our video: <a href='#' class='hiw'>How it works</a>";
 
                     $sendtochat = [
                         'from_id' => $from_id,
@@ -408,7 +418,7 @@ class GoogleLoginController extends Controller
                 'to_user_id' => Auth::user()->id,
                 'forwhich_user_url' => $forwhich_user_url,
                 'website_url' => $website_url,
-                'connnection_text' => "backlink connection accepted by {$website_url}",
+                'connnection_text' => "Inbound link connect accepted by {$website_url}",
                 'seen' => false,
             ];
             DB::table('notifications')->insert($notification);    
@@ -425,7 +435,9 @@ class GoogleLoginController extends Controller
                 DB::table('outlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
 
                 // Updated HTML content
-                $html = "In this chat, we will discuss the possibility of a outlink from {$forwhich_user_url} to {$website_url}.For more information how to proceed, please have a look at the FAQs page in the menu or watch our video: <a href='#'>How it works</a>";
+                /*$html = "In this chat, we will discuss the possibility of a outlink from {$forwhich_user_url} to {$website_url}.For more information on how to proceed, please have a look at the FAQs page in the menu or watch our video: <a href='#' class='hiw'>How it works</a>";*/
+
+                $html = "In this chat, discuss the possibility of an inbound link (backlink) from {$forwhich_user_url} to {$website_url}. For more information on how to proceed, please have a look at the FAQs page in the menu or watch our video: <a href='#' class='hiw'>How it works</a>";
 
                 $sendtochat = [
                     'from_id' => $from_id,
@@ -477,7 +489,7 @@ class GoogleLoginController extends Controller
                     'to_user_id' =>'',
                     'forwhich_user_url' => $forwhich_user_url,
                     'website_url' => $website_url,
-                    'connnection_text' => "outlink connection accepted by {$forwhich_user_url}",
+                    'connnection_text' => "Outbound link connect accepted by {$forwhich_user_url}",
                     'seen' => false,
                 ];
                 DB::table('notifications')->insert($notification);    
@@ -490,7 +502,7 @@ class GoogleLoginController extends Controller
                     
                     DB::table('backlinks')->where('from_user_id', $from_id)->where('to_user_id', $to_id)->update(['chat_id' => $chat_id]);
 
-                    $html = "In this chat, we will discuss the possibility of a backlink from {$website_url} to {$forwhich_user_url}.For more information how to proceed, please have a look at the FAQs page in the menu or watch our video: <a href='#'>How it works</a>";
+                    $html = "In this chat, discuss the possibility of an inbound link (backlink) from {$website_url} to {$forwhich_user_url}. For more information on how to proceed, please have a look at the FAQs page in the menu or watch our video: <a href='#' class='hiw'>How it works</a>";
 
                     $sendtochat = [
                         'from_id' => $from_id,
@@ -898,8 +910,12 @@ class GoogleLoginController extends Controller
             'anchor_text' => 'required',
             'outlink_placed_on_your_website' => 'required',
             'chat_id' => 'required'
+        ],[
+            'typeoflink.required' => 'Type of link field is required',
+            'outlink_on.required' => 'This field is required.',
+            'backlink_to.required' => 'This field is required.',
         ]);
-        //dd($data);
+
         // Retrieve the matching record from 'submitlinks' based on 'chat_id'
         $submitlink = DB::table('submitlinks')
             ->where('chat_id', $data['chat_id'])

@@ -116,6 +116,10 @@
          span.sub-item {
             margin-top: 5px!important;
          }
+         .message-card.mc-sender .message a.hiw{
+            color: #FFF;
+            text-decoration: underline !important;
+         }
       </style>
    </head>
    <body>
@@ -442,10 +446,10 @@
                            <div class="notif-scroll scrollbar-outer">
                               <div class="notif-center">
                                  <div class="notif-content">
-                                    <span class="block">Received {{ $backlink_count }} Backlink connection(s)</span>
+                                    <span class="block">Received {{ $backlink_count }} Inbound link connect(s)</span>
                                  </div>
                                  <div class="notif-content">
-                                    <span class="block">Received {{ $outlink_count }} Outlink connection(s)</span>
+                                    <span class="block">Received {{ $outlink_count }} Outbound link connect(s)</span>
                                  </div>
                                  @if(count($notifications) > 0)
                                  @foreach($notifications as $notification)

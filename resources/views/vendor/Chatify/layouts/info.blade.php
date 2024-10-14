@@ -1,22 +1,28 @@
 <style type="text/css">
-   @media (max-width: 1060px) {
-       .messenger-infoView {
-           margin-top: 134px!important;
-       }
+  @media (max-width: 1060px){
+    .messenger-infoView {
+       margin-top: 134px!important;
+     }
    }
-   @media (max-width: 884px) {
-       .main-header {
+   @media (max-width: 884px)
+   {
+      .main-header {
            height: 70px!important;
        }
        div#myModal {
-       margin-top: 120px!important;
-   }
-   .modal-backdrop {
-       z-index: -1;
-   }
-   p.messenger-title {
+         margin-top: 120px!important;
+      }
+      .modal-backdrop {
+        z-index: -1;
+      }
+      p.messenger-title {
        margin-top: 40px!important;
+      }
    }
+   .toast-close-button {
+    color: #fff;  /* Customize the color of the close icon */
+    font-size: 16px;  /* Adjust the size of the close icon */
+    opacity: 1;  /* Ensure it is fully visible */
    }
 </style>
 {{-- user info and avatar --}}
@@ -26,7 +32,6 @@ $lastSegment = request()->segment(count(request()->segments()));
 $chat_id = $lastSegment . "_" . Auth::user()->id;
 $myuniqueid = $chat_id."_@@!!";
 $connection_type = DB::table('submitlinks')->where('chat_id', $chat_id)->value('connection_type');
-//dd($connection_type);
 $acceptedby_to = DB::table('submitlinks')->where('chat_id', $chat_id)->value('acceptedby_to');
 $get_backlinkto = DB::table('submitlinks')->where('chat_id', $chat_id)->value('backlink_to');
 $get_outlinkon = DB::table('submitlinks')->where('chat_id', $chat_id)->value('outlink_on');    
@@ -43,13 +48,37 @@ $chat_status = DB::table('submitlinks')->where('chat_id', $chat_id)->value('chat
       <button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModal">
       Submit Link Details
       </button>
-      @if (session('error'))
+      <!-- @if (session('error'))
           <div class="alert alert-danger">
              {{ session('error') }}
              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
           </div>
-       @endif
+       @endif -->
+       <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
+       <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+       <script>
+        @if ($errors->any())
+            @foreach ($errors->all() as $error)
+               toastr.options = {
+               "closeButton": true,
+               "newestOnTop": true,
+               "progressBar": true,
+               "positionClass": "toast-top-right",
+               "preventDuplicates": true,
+               "showDuration": "300",
+               "hideDuration": "1000",
+               "timeOut": "5000",
+               "extendedTimeOut": "1000",
+               "showEasing": "swing",
+               "hideEasing": "linear",
+               "showMethod": "fadeIn",
+               "hideMethod": "fadeOut"
+               };
+               toastr.error("{{ $error }}");
+            @endforeach
+        @endif
+    </script>
       <!-- The Modal -->
       <div class="modal fade" id="myModal">
          <div class="modal-dialog">
@@ -77,7 +106,7 @@ $chat_status = DB::table('submitlinks')->where('chat_id', $chat_id)->value('chat
                   <input type="checkbox" name="typeoflink" class="link-checkbox" value="Others"> Others
                   </label>
                   @error('typeoflink')
-                  <span class="text-danger">{{ $message }}</span>
+                  <br><span class="text-danger">{{ $message }}</span>
                   @enderror
                   <div class="form-group row">
                      <label for="inputEmail3" class="col-sm-4 col-form-label">Outbound link URL ({{ $get_backlinkto }} URL where the backlink is placed)</label>
@@ -114,7 +143,7 @@ $chat_status = DB::table('submitlinks')->where('chat_id', $chat_id)->value('chat
                   <input type="checkbox" name="outlink_placed_on_your_website" value="No" class="link-checkbox02"> No
                   </label>
                   @error('outlink_placed_on_your_website')
-                  <span class="text-danger">{{ $message }}</span>
+                  <br><span class="text-danger">{{ $message }}</span>
                   @enderror
                </div>
                <div class="form-group row">
@@ -140,13 +169,37 @@ $chat_status = DB::table('submitlinks')->where('chat_id', $chat_id)->value('chat
       <button type="button" class="btn btn-success mb-3" data-toggle="modal" data-target="#myModal">
       Submit Link Details
       </button>
-      @if (session('error'))
+      <!-- @if (session('error'))
           <div class="alert alert-danger">
              {{ session('error') }}
              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
           </div>
-       @endif
+       @endif -->
+       <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
+       <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+       <script>
+        @if ($errors->any())
+            @foreach ($errors->all() as $error)
+               toastr.options = {
+               "closeButton": true,
+               "newestOnTop": true,
+               "progressBar": true,
+               "positionClass": "toast-top-right",
+               "preventDuplicates": true,
+               "showDuration": "300",
+               "hideDuration": "1000",
+               "timeOut": "5000",
+               "extendedTimeOut": "1000",
+               "showEasing": "swing",
+               "hideEasing": "linear",
+               "showMethod": "fadeIn",
+               "hideMethod": "fadeOut"
+               };
+               toastr.error("{{ $error }}");
+            @endforeach
+        @endif
+    </script>
       <!-- The Modal -->
       <div class="modal fade" id="myModal">
          <div class="modal-dialog">
@@ -174,7 +227,7 @@ $chat_status = DB::table('submitlinks')->where('chat_id', $chat_id)->value('chat
                   <input type="checkbox" name="typeoflink" class="link-checkbox" value="Others"> Others
                   </label>
                   @error('typeoflink')
-                  <span class="text-danger">{{ $message }}</span>
+                  <br><span class="text-danger">{{ $message }}</span>
                   @enderror
                   <div class="form-group row">
                      <label for="inputEmail3" class="col-sm-4 col-form-label">Outbound link URL ({{ $get_backlinkto }} URL where the backlink is placed)</label>
@@ -211,7 +264,7 @@ $chat_status = DB::table('submitlinks')->where('chat_id', $chat_id)->value('chat
                   <input type="checkbox" name="outlink_placed_on_your_website" value="No" class="link-checkbox02"> No
                   </label>
                   @error('outlink_placed_on_your_website')
-                  <span class="text-danger">{{ $message }}</span>
+                  <br><span class="text-danger">{{ $message }}</span>
                   @enderror
                </div>
                <div class="form-group row">
