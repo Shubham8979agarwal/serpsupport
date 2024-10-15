@@ -60,55 +60,16 @@ class GoogleLoginController extends Controller
         return view('frontend.dashboard.accountsettings',$data);
     }
 
-    /*public function dashboard(){
-        $data['data'] = Auth::user();
-
-        $data['total_websites'] = DB::table('websites')->count();
-
-        $data['confirmed_backlinks'] = DB::table('submitlinks')->where(function($query) {
-        $query->where('acceptedby_to', Auth::user()->id)
-              ->orWhere('acceptedby_from', Auth::user()->id);
-        })->where('chat_status', 'closed')->where('connection_type','backlinks')->count();
-
-        $data['confirmed_outlinks'] = DB::table('submitlinks')->where(function($query) {
-        $query->where('acceptedby_to', Auth::user()->id)
-              ->orWhere('acceptedby_from', Auth::user()->id);
-        })->where('chat_status', 'closed')->where('connection_type','outlinks')->count();
-
-        $data['fetch_user_website'] =  DB::table('websites')->where('website_uploader_email',Auth::user()->email)->value('website_url');
-
-        $data['find_backlink_connection'] = DB::table('backlinks')->where('forwhich_user_url',$data['fetch_user_website'])->orwhere('website_url',$data['fetch_user_website'])->count();
-
-        $data['find_outlink_connection'] = DB::table('outlinks')->where('forwhich_user_url',$data['fetch_user_website'])->orwhere('website_url',$data['fetch_user_website'])->count();
-
-        $data['connections'] = $data['find_backlink_connection'] + $data['find_outlink_connection'];
-
-        return view('frontend.dashboard.dashboard',$data);
-    }*/
-
     public function backlinks_submission_details(){
         $data['data'] = Auth::user();
+
         $data['total_websites'] = DB::table('websites')->count();
 
-        /*$data['confirmed_backlinks'] = DB::table('submitlinks')->where(function($query) {
-        $query->where('acceptedby_to', Auth::user()->id)
-              ->orWhere('acceptedby_from', Auth::user()->id);
-        })->where('chat_status', 'closed')->where('connection_type','backlinks')->count();
+        $data['total_users'] = DB::table('users')->where('is_email_verified', '1')->count();
 
-        $data['confirmed_outlinks'] = DB::table('submitlinks')->where(function($query) {
-        $query->where('acceptedby_to', Auth::user()->id)
-              ->orWhere('acceptedby_from', Auth::user()->id);
-        })->where('chat_status', 'closed')->where('connection_type','outlinks')->count();*/
-
-        $data['confirmed_backlinks'] = DB::table('submitlinks')->where('chat_status', 'closed')->where('connection_type','backlinks')->count();
-
-        $data['confirmed_outlinks'] = DB::table('submitlinks')->where('chat_status', 'closed')->where('connection_type','outlinks')->count(); 
+        $data['total_links'] = DB::table('submitlinks')->where('chat_status', 'closed')->count(); 
 
         $data['fetch_user_website'] =  DB::table('websites')->where('website_uploader_email',Auth::user()->email)->value('website_url');
-
-        /*$data['find_backlink_connection'] = DB::table('backlinks')->where('forwhich_user_url',$data['fetch_user_website'])->orwhere('website_url',$data['fetch_user_website'])->count();
-
-        $data['find_outlink_connection'] = DB::table('outlinks')->where('forwhich_user_url',$data['fetch_user_website'])->orwhere('website_url',$data['fetch_user_website'])->count();*/
 
         $data['find_backlink_connection'] = DB::table('backlinks')->count();
 
@@ -119,39 +80,21 @@ class GoogleLoginController extends Controller
         $data['linkdetails'] = DB::table('submitlinks')->where(function($query) {
             $query->where('acceptedby_to', Auth::user()->id)
                   ->orWhere('acceptedby_from', Auth::user()->id);
-            })->where('chat_status', 'closed')->where('connection_type','backlinks')->get();
-
-        /*$data['linkdetails'] = DB::table('submitlinks')->where(function($query) {
-        $query->where('acceptedby_to', Auth::user()->id)
-              ->orWhere('acceptedby_from', Auth::user()->id);
-        })->where('chat_status', 'closed')->get();*/
+            })->where('chat_status', 'closed')->get();
         
         return view('frontend.dashboard.backlinks-submission-details',$data);
     }
 
     public function outlinks_submission_details(){
         $data['data'] = Auth::user();
+
         $data['total_websites'] = DB::table('websites')->count();
 
-        /*$data['confirmed_backlinks'] = DB::table('submitlinks')->where(function($query) {
-        $query->where('acceptedby_to', Auth::user()->id)
-              ->orWhere('acceptedby_from', Auth::user()->id);
-        })->where('chat_status', 'closed')->where('connection_type','backlinks')->count();
+        $data['total_users'] = DB::table('users')->where('is_email_verified', '1')->count();
 
-        $data['confirmed_outlinks'] = DB::table('submitlinks')->where(function($query) {
-        $query->where('acceptedby_to', Auth::user()->id)
-              ->orWhere('acceptedby_from', Auth::user()->id);
-        })->where('chat_status', 'closed')->where('connection_type','outlinks')->count();*/
-
-        $data['confirmed_backlinks'] = DB::table('submitlinks')->where('chat_status', 'closed')->where('connection_type','backlinks')->count();
-
-        $data['confirmed_outlinks'] = DB::table('submitlinks')->where('chat_status', 'closed')->where('connection_type','outlinks')->count(); 
+        $data['total_links'] = DB::table('submitlinks')->where('chat_status', 'closed')->count();
 
         $data['fetch_user_website'] =  DB::table('websites')->where('website_uploader_email',Auth::user()->email)->value('website_url');
-
-        /*$data['find_backlink_connection'] = DB::table('backlinks')->where('forwhich_user_url',$data['fetch_user_website'])->orwhere('website_url',$data['fetch_user_website'])->count();
-
-        $data['find_outlink_connection'] = DB::table('outlinks')->where('forwhich_user_url',$data['fetch_user_website'])->orwhere('website_url',$data['fetch_user_website'])->count();*/
 
         $data['find_backlink_connection'] = DB::table('backlinks')->count();
 
@@ -159,14 +102,10 @@ class GoogleLoginController extends Controller
 
         $data['connections'] = $data['find_backlink_connection'] + $data['find_outlink_connection'];
 
-        $data['linkdetails'] = DB::table('submitlinks')
-        ->where(function($query) {
-        $query->where('acceptedby_to', Auth::user()->id)->orWhere('acceptedby_from', Auth::user()->id);
-        })->where('chat_status', 'closed')->where('connection_type','outlinks')->get();
-
-        /*$data['linkdetails'] = DB::table('submitlinks')->where(function($query) {
-        $query->where('acceptedby_to', Auth::user()->id)->orWhere('acceptedby_from', Auth::user()->id);
-        })->where('chat_status', 'closed')->get();*/
+        $data['linkdetails'] = DB::table('submitlinks')->where(function($query) {
+            $query->where('acceptedby_to', Auth::user()->id)
+                  ->orWhere('acceptedby_from', Auth::user()->id);
+            })->where('chat_status', 'closed')->get();
 
         return view('frontend.dashboard.outlinks-submission-details',$data);
     }

@@ -10,10 +10,10 @@
       <link rel="stylesheet" href="{{ url('assets/css/bootstrap.min.css') }}">
       <link rel="stylesheet" href="{{ url('assets/css/style.css') }}">
       <title>SERPsupport</title>
-      <style type="text/css">
+      <!-- <style type="text/css">
          .card-category{
             font-size: 12px!important;
          }
-      </style>
+      </style> -->
    </head>
    <body>

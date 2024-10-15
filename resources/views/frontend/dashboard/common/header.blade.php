@@ -120,9 +120,9 @@
             color: #FFF;
             text-decoration: underline !important;
          }
-         .card-category{
+         /*.card-category{
             font-size: 12px!important;
-         }
+         }*/
       </style>
    </head>
    <body>
