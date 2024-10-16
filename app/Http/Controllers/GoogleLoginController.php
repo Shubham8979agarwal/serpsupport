@@ -902,14 +902,14 @@ class GoogleLoginController extends Controller
     public function seen_notification($id){
         $id = decrypt($id);
         $updateDetails = ['seen' => '1'];    
-            $update = DB::table('notifications')->where('id', $id)->update($updateDetails);
+        $update = DB::table('notifications')->where('id', $id)->update($updateDetails);
         return back()->with('message','Notification seen successfully...');
     }
 
     public function seen_message($id){
         $id = decrypt($id);
         $updateDetails = ['seen' => '1'];    
-            $update = DB::table('ch_messages')->where('id', $id)->update($updateDetails);
+        $update = DB::table('ch_messages')->where('id', $id)->update($updateDetails);
         return back()->with('message','Message seen successfully...');
     }
 
