@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('backlinks', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('from_user_id')->nullable();
-            $table->unsignedBigInteger('to_user_id')->nullable();
+            $table->string('from_user_id')->nullable();
+            $table->string('to_user_id')->nullable();
             $table->text('forwhich_user_url')->nullable();
             $table->string('website_id')->nullable();
             $table->string('website_url')->nullable();
@@ -30,9 +30,9 @@ return new class extends Migration
             $table->string('status')->nullable(); 
             $table->timestamps();
 
-            // Add foreign keys
-            $table->foreign('from_user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('to_user_id')->references('id')->on('users')->onDelete('cascade');
+            // Adding unique constraints directly here
+            $table->unique(['from_user_id', 'to_user_id'], 'unique_backlink_pair');
+            $table->unique(['to_user_id', 'from_user_id'], 'unique_backlink_pair_reverse');
         });
     }
 
