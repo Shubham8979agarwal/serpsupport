@@ -16,13 +16,11 @@ class AddUniqueConstraintsToBacklinksAndOutlinks extends Migration
         // Adding unique constraints to the backlinks table
         Schema::table('backlinks', function (Blueprint $table) {
             $table->unique(['from_user_id', 'to_user_id'], 'unique_backlink_pair');
-            $table->unique(['to_user_id', 'from_user_id'], 'unique_backlink_pair_reverse'); // For reverse pairs
         });
 
         // Adding unique constraints to the outlinks table
         Schema::table('outlinks', function (Blueprint $table) {
             $table->unique(['from_user_id', 'to_user_id'], 'unique_outlink_pair');
-            $table->unique(['to_user_id', 'from_user_id'], 'unique_outlink_pair_reverse'); // For reverse pairs
         });
     }
 
@@ -36,12 +34,10 @@ class AddUniqueConstraintsToBacklinksAndOutlinks extends Migration
         // Drop unique constraints if rolling back
         Schema::table('backlinks', function (Blueprint $table) {
             $table->dropUnique('unique_backlink_pair');
-            $table->dropUnique('unique_backlink_pair_reverse');
         });
 
         Schema::table('outlinks', function (Blueprint $table) {
             $table->dropUnique('unique_outlink_pair');
-            $table->dropUnique('unique_outlink_pair_reverse');
         });
     }
 }

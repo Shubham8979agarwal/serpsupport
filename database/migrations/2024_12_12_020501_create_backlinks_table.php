@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('backlinks', function (Blueprint $table) {
             $table->id();
-            $table->string('from_user_id')->nullable();
-            $table->string('to_user_id')->nullable();
+            $table->unsignedBigInteger('from_user_id')->nullable();
+            $table->unsignedBigInteger('to_user_id')->nullable();
             $table->text('forwhich_user_url')->nullable();
             $table->string('website_id')->nullable();
             $table->string('website_url')->nullable();
@@ -27,9 +27,12 @@ return new class extends Migration
             $table->string('acceptedby_from')->nullable();
             $table->string('acceptedby_to')->nullable();
             $table->boolean('seen')->default(false);
-            //$table->string('seenby_ol_user')->default('0');
             $table->string('status')->nullable(); 
             $table->timestamps();
+
+            // Add foreign keys
+            $table->foreign('from_user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('to_user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
