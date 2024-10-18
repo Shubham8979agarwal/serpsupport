@@ -25,32 +25,57 @@ class LinkService
     {
         $usersWithWebsites = User::whereHas('websites')->orderBy('id')->get();
 
-        // If fewer than 2 users, no backlinks or outlinks can be created
-        if (count($usersWithWebsites) < 2) {
-            Log::info("Not enough users to create links.");
+        if ($usersWithWebsites->count() < 3) {
             return;
         }
 
-        // Apply Round Robin logic for pairing users
+        $users = $usersWithWebsites->pluck('id')->toArray();
+        $maxIndex = count($users);
+
+        $pairs = $this->generatePairs($type, $users, $maxIndex);
         $inserts = [];
-        $totalUsers = count($usersWithWebsites);
 
-        for ($i = 0; $i < $totalUsers; $i++) {
-            $fromUser = $usersWithWebsites[$i];
-            $toUser = $usersWithWebsites[($i + 1) % $totalUsers]; // Circular round-robin pairing
+        foreach ($pairs as $pair) {
+            $fromUserId = $pair[0];
+            $toUserId = $pair[1];
 
-            // Ensure valid websites exist for both users
+            // Skip rejected pairs
+            if (DB::table('rejected_pairs')
+                ->where('from_user_id', $fromUserId)
+                ->where('to_user_id', $toUserId)
+                ->exists()) {
+                continue;
+            }
+
+            // Ensure valid pairings according to the selected pattern
+            if (($type === 'outlinks' && abs(array_search($fromUserId, $users) - array_search($toUserId, $users)) !== 1) ||
+                ($type === 'backlinks' && abs(array_search($fromUserId, $users) - array_search($toUserId, $users)) !== 2)) {
+                continue;
+            }
+
+            $fromUser = User::find($fromUserId);
+            $toUser = User::find($toUserId);
+
+            // Check if users exist
+            if (!$fromUser || !$toUser) {
+                continue;
+            }
+
             foreach ($fromUser->websites as $fromWebsite) {
                 foreach ($toUser->websites as $toWebsite) {
-                    $linkData = $this->prepareLinkData(
-                        $fromUser->id,
-                        $toUser->id,
-                        $fromWebsite,
-                        $toWebsite,
-                        $type
-                    );
+                    // Create a unique key for each potential link
+                    $linkData = [
+                        'from_user_id' => $fromUserId,
+                        'to_user_id' => $toUserId,
+                        'forwhich_user_url' => $type === 'backlinks' ? $fromWebsite->website_url : $toWebsite->website_url,
+                        'website_id' => $type === 'backlinks' ? $fromWebsite->website_id : $toWebsite->website_id,
+                        'website_url' => $type === 'backlinks' ? $toWebsite->website_url : $fromWebsite->website_url,
+                        'website_niche' => $fromWebsite->website_niche,
+                        'website_description' => $fromWebsite->website_description,
+                        'status' => "",
+                    ];
 
-                    // Check for duplicates before adding
+                    // Check for duplicate records in the same table and across tables
                     if (!$this->isDuplicate($linkData, $type)) {
                         $inserts[] = $linkData;
                     }
@@ -61,12 +86,23 @@ class LinkService
         if (!empty($inserts)) {
             DB::beginTransaction();
             try {
-                // Insert the links (backlinks or outlinks)
                 DB::table($type)->insert($inserts);
 
-                // Also insert records into the submitlinks table
-                $this->createSubmitLinks($inserts, $type);
+                foreach ($inserts as $insert) {
+                    $chatId = "{$insert['from_user_id']}_{$insert['to_user_id']}";
 
+                    DB::table('submitlinks')->insert([
+                        'connection_type' => $type,
+                        'chat_id' => $chatId,  // Generated chat_id as a combination of from_user_id and to_user_id
+                        'acceptedby_to' => $insert['to_user_id'],
+                        'acceptedby_from' => $insert['from_user_id'],
+                        
+                        // Add 'outlink_on' and 'backlink_to' fields
+                        'outlink_on' => $insert['website_url'],   // You can modify this to point to the actual value for 'outlink_on'
+                        'backlink_to' => $insert['forwhich_user_url'],   // Modify this as needed based on where 'backlink_to' should point
+                    ]);
+                }
+                
                 DB::commit();
             } catch (\Exception $e) {
                 DB::rollback();
@@ -75,81 +111,83 @@ class LinkService
         }
     }
 
-    private function prepareLinkData($fromUserId, $toUserId, $fromWebsite, $toWebsite, $type)
+
+    private function generatePairs($type, $users, $maxIndex)
     {
-        return [
-            'from_user_id' => $fromUserId,
-            'to_user_id' => $toUserId,
-            'forwhich_user_url' => $type === 'backlinks' ? $fromWebsite->website_url : $toWebsite->website_url,
-            'website_id' => $type === 'backlinks' ? $fromWebsite->website_id : $toWebsite->website_id,
-            'website_url' => $type === 'backlinks' ? $toWebsite->website_url : $fromWebsite->website_url,
-            'website_niche' => $fromWebsite->website_niche,
-            'website_description' => $fromWebsite->website_description,
-            'status' => "",
-        ];
+        $pairs = [];
+
+        if ($type === 'outlinks') {
+            // Generate outlinks as sequential pairs
+            for ($i = 0; $i < $maxIndex - 1; $i++) {
+                $pairs[] = [$users[$i], $users[$i + 1]];
+            }
+        } elseif ($type === 'backlinks') {
+            // Generate backlinks with the pattern (i, i-2)
+            for ($i = 2; $i < $maxIndex; $i++) {
+                $pairs[] = [$users[$i], $users[$i - 2]];
+            }
+        }
+
+        // Shuffle pairs to ensure randomness
+        shuffle($pairs);
+
+        return $pairs;
     }
 
     private function isDuplicate($linkData, $type)
     {
-        // Check for duplicates in the same table (both ways)
-        $existsInSameTable = DB::table($type)
+        // Ensure consistent order for cross-table uniqueness
+        $firstUserId = min($linkData['from_user_id'], $linkData['to_user_id']);
+        $secondUserId = max($linkData['from_user_id'], $linkData['to_user_id']);
+
+        // Check within the same table
+        if (DB::table($type)
             ->where('from_user_id', $linkData['from_user_id'])
             ->where('to_user_id', $linkData['to_user_id'])
-            ->exists();
+            ->where('website_url', $linkData['website_url'])
+            ->exists()) {
+            return true;
+        }
 
-        $existsInReverseTable = DB::table($type)
+        // Check for reverse pair in the same table
+        if (DB::table($type)
             ->where('from_user_id', $linkData['to_user_id'])
             ->where('to_user_id', $linkData['from_user_id'])
-            ->exists();
-
-        if ($existsInSameTable || $existsInReverseTable) {
+            ->where('website_url', $linkData['forwhich_user_url'])
+            ->exists()) {
             return true;
         }
 
         // Check across tables for the same pair
-        if ($type === 'backlinks') {
-            // Check in outlinks
-            return DB::table('outlinks')
-                ->where('from_user_id', $linkData['from_user_id'])
-                ->where('to_user_id', $linkData['to_user_id'])
-                ->exists();
-        } else {
-            // Check in backlinks
-            return DB::table('backlinks')
-                ->where('from_user_id', $linkData['from_user_id'])
-                ->where('to_user_id', $linkData['to_user_id'])
-                ->exists();
+        if (DB::table('backlinks')
+            ->where('from_user_id', $firstUserId)
+            ->where('to_user_id', $secondUserId)
+            ->where('website_url', $linkData['website_url'])
+            ->exists()) {
+            return true;
         }
-    }
 
-    private function createSubmitLinks($inserts, $type)
-    {
-        foreach ($inserts as $insert) {
-            $chatId = "{$insert['from_user_id']}_{$insert['to_user_id']}";
-
-            DB::table('submitlinks')->insert([
-                'connection_type' => $type,
-                'chat_id' => $chatId,
-                'acceptedby_to' => $insert['to_user_id'],
-                'acceptedby_from' => $insert['from_user_id'],
-                'outlink_on' => $insert['website_url'],
-                'backlink_to' => $insert['forwhich_user_url'],
-            ]);
+        if (DB::table('outlinks')
+            ->where('from_user_id', $firstUserId)
+            ->where('to_user_id', $secondUserId)
+            ->where('website_url', $linkData['website_url'])
+            ->exists()) {
+            return true;
         }
+
+        return false;
     }
 
     public function addWebsite($user, $websiteData)
     {
         $existingWebsite = Website::where('website_url', $websiteData['website_url'])
-            ->where('website_uploader_email', $user->email)
-            ->first();
+                                  ->where('website_uploader_email', $user->email)
+                                  ->first();
 
-        // If the website already exists for this user, don't add again
         if ($existingWebsite) {
             return;
         }
 
-        // Create a new website
         $newWebsite = new Website();
         $newWebsite->website_uploader_email = $user->email;
         $newWebsite->website_url = $websiteData['website_url'];
@@ -159,7 +197,6 @@ class LinkService
         $newWebsite->user_id = $user->id;
         $newWebsite->save();
 
-        // Create backlinks and outlinks for the new website
         $this->createSingleLink($newWebsite, 'backlinks');
         $this->createSingleLink($newWebsite, 'outlinks');
     }
@@ -168,32 +205,24 @@ class LinkService
     {
         $linkClass = $linkType === 'backlinks' ? Backlink::class : Outlink::class;
 
-        // Prepare link data
-        $linkData = [
-            'from_user_id' => $website->user_id,
-            'website_url' => $website->website_url,
-            'forwhich_user_url' => $website->website_url, // Same for single link
-            'website_id' => $website->website_id,
-        ];
+        $existingLink = $linkClass::where('website_url', $website->website_url)
+                                  ->where('from_user_id', $website->user_id)
+                                  ->first();
 
-        // Check for duplicates
-        if ($this->isDuplicate($linkData, $linkType)) {
-            return; // Skip creation if it's a duplicate
+        if ($existingLink) {
+            return;
         }
 
-        // Proceed to create the link
         $link = new $linkClass();
         $link->website_url = $website->website_url;
         $link->from_user_id = $website->user_id;
 
-        // Select the next user for pairing (using Round Robin logic)
         if ($linkType === 'backlinks') {
             $toUser = $this->getBacklinkUser($website->user_id);
         } else {
             $toUser = $this->getOutlinkUser($website->user_id);
         }
 
-        // If a valid pairing user exists, assign the link to that user
         if ($toUser) {
             $link->to_user_id = $toUser->id;
             $link->forwhich_user_url = $website->website_url;
@@ -203,30 +232,28 @@ class LinkService
 
     private function getBacklinkUser($userId)
     {
-        // Get all users who have websites
         $usersWithWebsites = User::whereHas('websites')->pluck('id')->toArray();
+
         $index = array_search($userId, $usersWithWebsites);
 
-        if ($index === false || $index >= count($usersWithWebsites) - 1) {
+        if ($index === false || $index < 2) {
             return null;
         }
 
-        // Get the next user in the list for backlink pairing
-        $targetUserId = $usersWithWebsites[$index + 1];
+        $targetUserId = $usersWithWebsites[$index - 2];
         return User::find($targetUserId);
     }
 
     private function getOutlinkUser($userId)
     {
-        // Get all users who have websites
         $usersWithWebsites = User::whereHas('websites')->pluck('id')->toArray();
+
         $index = array_search($userId, $usersWithWebsites);
 
         if ($index === false || $index >= count($usersWithWebsites) - 1) {
             return null;
         }
 
-        // Get the next user in the list for outlink pairing
         $targetUserId = $usersWithWebsites[$index + 1];
         return User::find($targetUserId);
     }

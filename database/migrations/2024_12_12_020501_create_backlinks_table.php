@@ -27,12 +27,9 @@ return new class extends Migration
             $table->string('acceptedby_from')->nullable();
             $table->string('acceptedby_to')->nullable();
             $table->boolean('seen')->default(false);
+            //$table->string('seenby_ol_user')->default('0');
             $table->string('status')->nullable(); 
             $table->timestamps();
-
-            // Adding unique constraints directly here
-            $table->unique(['from_user_id', 'to_user_id'], 'unique_backlink_pair');
-            $table->unique(['to_user_id', 'from_user_id'], 'unique_backlink_pair_reverse');
         });
     }
 
