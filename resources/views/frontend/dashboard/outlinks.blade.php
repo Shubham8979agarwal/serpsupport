@@ -39,7 +39,7 @@
             <div class="card card-round">
                <div class="card-header">
                   <div class="card-head-row card-tools-still-right">
-                     <div class="card-title">Outbound Link Connects
+                     <div class="card-title">Outgoing Link Connection(s)
                         <p>These are the links you give to other websites</p>
                      </div>
                   </div>

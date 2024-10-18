@@ -27,10 +27,9 @@
       </script>
       <!-- CSS Files -->
       <link rel="stylesheet" href="{{ url('dashboard_assets/css/bootstrap.min.css') }}"/>
+      <link rel="stylesheet" href="{{ url('assets/css/accordian.css') }}"/>
       <link rel="stylesheet" href="{{ url('dashboard_assets/css/plugins.min.css') }}"/>
       <link rel="stylesheet" href="{{ url('dashboard_assets/css/kaiadmin.min.css') }}"/>
-      <!-- CSS Just for demo purpose, don't include it in your project -->
-      <link rel="stylesheet" href="{{ url('dashboard_assets/css/demo.css')}}"/>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css"/>
       <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.css" />
@@ -39,20 +38,20 @@
             position: relative; /* Ensure parent respects child positioning */
          }
          li.nav-item.faqs {
-          position: absolute; /* Change from fixed to absolute */
-          bottom: -160px; /* Adjust spacing from the bottom */
-          left: 0;
-          width: 265px;
-          z-index: 1; /* Adjust as needed, but lower than other menu items */
-          padding-top: 10px; /* Optional: to add space above it */
+             position: fixed; /* Keep fixed positioning */
+             bottom: 100px; /* Adjust as needed */
+             left: 0; /* Stick to the left */
+             width: 265px; /* Adjust width */
+             z-index: 0; /* Lower the z-index to avoid overlap */
+             padding-top: 10px;
          }
-         li.nav-item.account-settings{
-         position: absolute; /* Change from fixed to absolute */
-         bottom: -210px; /* Adjust spacing from the bottom */
-         left: 0;
-         width: 265px;
-         z-index: 1; /* Adjust as needed, but lower than other menu items */
-         padding-top: 10px; /* Optional: to add space above it */
+         li.nav-item.account-settings {
+             position: fixed; /* Keep fixed positioning */
+             bottom: 50px; /* Adjust distance from the bottom */
+             left: 0; /* Stick to the left */
+             width: 265px; /* Adjust width */
+             z-index: 0; /* Lower z-index to avoid overlap */
+             padding-top: 10px;
          }
          @media screen and (max-width: 991.5px) {
          .topbar_open .navbar-header {
@@ -120,9 +119,6 @@
             color: #FFF;
             text-decoration: underline !important;
          }
-         /*.card-category{
-            font-size: 12px!important;
-         }*/
       </style>
    </head>
    <body>
@@ -169,12 +165,12 @@
                         <ul class="nav nav-collapse">
                            <li class="@if(strpos($currentUrl,'backlinks-submission-details')) changebackground @endif">
                               <a href="{{ route('backlinks-submission-details') }}">
-                              <span class="sub-item">Inbound Links</span>
+                              <span class="sub-item">Incoming Links</span>
                               </a>
                            </li>
                            <li class="@if(strpos($currentUrl,'outlinks-submission-details')) changebackground @endif">
                               <a href="{{ route('outlinks-submission-details') }}">
-                              <span class="sub-item">Outbound Links</span>
+                              <span class="sub-item">Outgoing Links</span>
                               </a>
                            </li>
                         </ul>
@@ -222,7 +218,7 @@
                               <li class="@if(strpos($currentUrl,'backlinks') && ($isActive)) changebackground @endif">
                                  <a href="{{ $backlinkUrl }}">
                                  <span class="sub-item">
-                                 Inbound Link Connects
+                                 Incoming Link Connection(s)
                                  <span class='flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20'>
                                  {{ $backlink_count }}
                                  </span>
@@ -232,7 +228,7 @@
                               <li class="@if(strpos($currentUrl,'outlinks') && ($isActive)) changebackground @endif">
                                  <a href="{{ $outlinkUrl }}">
                                  <span class="sub-item">
-                                 Outbound Link Connects
+                                 Outgoing Link Connection(s)
                                  <span class='flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20'>
                                  {{ $outlink_count }}
                                  </span>
@@ -245,8 +241,8 @@
                      @endforeach
                   </ul>
                   @endif
-                  <li class="nav-item faqs">
-                     <a href="#">
+                  <li class="nav-item faqs @if(Route::currentRouteName() == 'faqs') active @endif">
+                     <a href="{{ route('faqs') }}">
                         <i class="fas fa-question-circle"></i>
                         <p>FAQ(s)</p>
                      </a>

@@ -7,7 +7,6 @@
                   <div class="col-md-7">
                      <div class="mb-4">
                         <h3>Sign Up</h3>
-                        <!-- <p class="mb-4">Lorem ipsum dolor sit amet elit. Sapiente sit aut eos consectetur adipisicing.</p> -->
                      </div>
                      <form action="{{ route('make.account') }}" method="post">
                         @csrf
@@ -17,6 +16,7 @@
                            </a>
                         </div>
                         <span class="d-block text-center my-4 text-muted">&mdash; or &mdash;</span>
+
                         @if (session('register_success'))
                             <div class="alert alert-success">
                                {{ session('register_success') }}
@@ -43,11 +43,16 @@
                             <span class="text-danger">{{ $message }}</span>
                            @enderror
                         </div>
-                        <div class="form-group">
-                           <input type="password" class="form-control" name="password" placeholder="Enter Password" autocomplete="off" value="{{ old('password') }}">
-                           @error('password')
-                            <span class="text-danger">{{ $message }}</span>
-                           @enderror
+                        <div class="form-group position-relative">
+                            <input type="password" id="password" class="form-control" name="password" placeholder="Enter Password" autocomplete="off" value="{{ old('password') }}">
+
+                            <!-- Eye icon to toggle password visibility -->
+                            <span toggle="#password" class="fa fa-fw fa-eye password-toggle-icon"></span>
+
+                            <!-- Error message for password field -->
+                            @error('password')
+                                <span class="text-danger password-error">{{ $message }}</span>
+                            @enderror
                         </div>
                         <div class="d-flex mb-3 align-items-center">
                            <span class="caption">Already have a account? <a href="{{ route('login') }}">Login</a></span>
@@ -60,4 +65,4 @@
             </div>
          </div>
       </div>
-      @include('frontend.common.footer')
+@include('frontend.common.footer')

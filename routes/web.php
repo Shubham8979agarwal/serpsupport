@@ -24,6 +24,7 @@ Route::get('/', [GoogleLoginController::class, 'signup'])->name('signup');
 Route::post('make-account', [GoogleLoginController::class, 'make_account'])->name('make.account');
 
 Route::get('/login', [GoogleLoginController::class, 'login'])->name('login');
+Route::get('/faqs', [GoogleLoginController::class, 'faqs'])->name('faqs');
 Route::post('make-login', [GoogleLoginController::class, 'make_login'])->name('make.login');
 
 Route::get('/google/redirect', [GoogleLoginController::class, 'redirectToGoogle'])->name('google.redirect');

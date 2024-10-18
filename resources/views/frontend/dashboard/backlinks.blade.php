@@ -42,7 +42,7 @@
             <div class="card card-round">
                <div class="card-header">
                   <div class="card-head-row card-tools-still-right">
-                     <div class="card-title">Inbound Link Connects
+                     <div class="card-title">Incoming Link Connection(s)
                         <p>These are the links you receive to your website</p>
                      </div>
                   </div>

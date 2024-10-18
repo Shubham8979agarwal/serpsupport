@@ -86,7 +86,7 @@
       </div>
       <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
          <div>
-            <h3 class="fw-bold mb-3">Inbound Link Details</h3>
+            <h3 class="fw-bold mb-3">Incoming Link Details</h3>
          </div>
       </div>
       <div class="row">
@@ -101,8 +101,8 @@
                      <thead>
                         <tr>
                            <th>Type Of Link</th>
-                           <th>Inbound Link URL</th>
-                           <th>Outbound Link URL</th>
+                           <th>Outgoing Link URL</th>
+                           <th>Incoming Link URL</th>
                            <th>Anchor Text</th>
                            <!-- <th>Outlink Placed</th> -->
                            <th>Archive Chat</th>
@@ -167,8 +167,8 @@
                      <tfoot>
                         <tr>
                            <th>Type Of Link</th>
-                           <th>Inbound Link URL</th>
-                           <th>Outbound Link URL</th>
+                           <th>Outgoing Link URL</th>
+                           <th>Incoming Link URL</th>
                            <th>Anchor Text</th>
                            <!-- <th>Outlink Placed</th> -->
                            <th>Archive Chat</th>
