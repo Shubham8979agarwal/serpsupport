@@ -1,12 +1,12 @@
 <footer class="footer">
-          <div class="container-fluid d-flex justify-content-between">
-            <!-- <div class="copyright" >
-              2024, made with <i class="fa fa-heart heart text-danger"></i> by
-              <a href="#">SerpSupport</a>
-            </div> -->
-          </div>
-        </footer>
-      </div>
+  <div class="container-fluid d-flex justify-content-between">
+    <!-- <div class="copyright" >
+      2024, made with <i class="fa fa-heart heart text-danger"></i> by
+      <a href="#">SerpSupport</a>
+    </div> -->
+  </div>
+</footer>
+</div>
 </div>
     <!--   Core JS Files   -->
     <script src="{{ url('admin_assets/dashboard_assets/js/core/jquery-3.7.1.min.js') }}"></script>
@@ -63,27 +63,5 @@
            "scrollX": true
        });
     </script>
-    <!-- <script type="text/javascript">
-      function callUrlbacklink() {
-          fetch("{{ route('create-backlinks')}}")
-              .then(response => response.json())
-              .then(data => console.log(data))
-              .catch(error => console.error('Error:', error));
-      }
-
-      callUrlbacklink();
-      setInterval(callUrlbacklink, 60000);
-
-      
-      function callUrloutlink() {
-          fetch("{{ route('create-outlinks')}}")
-              .then(response => response.json())
-              .then(data => console.log(data))
-              .catch(error => console.error('Error:', error));
-      }
-
-      callUrloutlink();
-      setInterval(callUrloutlink, 60000);
-    </script> -->
   </body>
 </html>

@@ -38,11 +38,16 @@
                   <span class="text-danger">{{ $message }}</span>
                   @enderror
                   </div>
-                  <div class="form-group">
-                  <input type="password" class="form-control" name="password" placeholder="Enter Password" autocomplete="off" value="{{ old('password') }}">
-                  @error('password')
-                  <span class="text-danger">{{ $message }}</span>
-                  @enderror
+                  <div class="form-group position-relative">
+                   <input type="password" id="password" class="form-control" name="password" placeholder="Enter Password" autocomplete="off" value="{{ old('password') }}">
+
+                   <!-- Eye icon to toggle password visibility -->
+                   <span toggle="#password" class="fa fa-fw fa-eye password-toggle-icon"></span>
+
+                   <!-- Error message for password field -->
+                   @error('password')
+                       <span class="text-danger password-error">{{ $message }}</span>
+                   @enderror
                   </div>
                   <!-- <div class="d-flex mb-3 align-items-center">
                      <span class="caption">Don't have a account? <a href="{{ route('signup')}}">Sign Up</a></span>
