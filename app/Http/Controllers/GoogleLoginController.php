@@ -66,23 +66,16 @@ class GoogleLoginController extends Controller
             return redirect('addwebsite');
         }
 
-        // Check if the request has the email parameter
-        if ($request->has('email')) {
-            // Attempt to decrypt the email
-            $email = Crypt::decryptString($request->email);
+        // Validate email parameter presence
+        $request->validate([
+            'email' => 'required|email'
+        ]);
 
-            // Check if the decrypted email is valid
-            if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                // Pass the decrypted email to the view
-                return view('frontend.subscriptions', ['email' => $email]);
-            } else {
-                // If email is not valid, redirect to login with error
-                return redirect()->route('login')->withErrors('Invalid email data.');
-            }
-        }
+        // Decrypt the email (this should throw an error if encryption is invalid)
+        $email = Crypt::decryptString($request->email);
 
-        // If no email is provided in the request, redirect to login
-        return redirect()->route('login')->withErrors('Email not provided.');
+        // Pass the decrypted email to the view
+        return view('frontend.subscriptions', ['email' => $email]);
     }
 
     public function showSubscription($subscription_id)
@@ -107,21 +100,26 @@ class GoogleLoginController extends Controller
         // Set your Stripe secret key
         \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
-        // Check if the subscription ID exists
-        $subscription = StripeSubscription::retrieve($subscription_id);
+        // Retrieve the subscription from Stripe
+        $subscription = \Stripe\Subscription::retrieve($subscription_id);
 
-        // If subscription is found and active
+        // Check if the subscription exists and is active
         if ($subscription && $subscription->status == 'active') {
             // Cancel the subscription
             $subscription->cancel();
 
-            // Optionally update the subscription status in your database (if applicable)
-            StripeSubscription::where('stripe_subscription_id', $subscription_id)->update(['status' => 'canceled']);
+            // Optionally update the subscription status in your database
+            $updated = StripeSubscription::where('stripe_subscription_id', $subscription_id)->update(['status' => 'canceled']);
 
-            return redirect()->back()->with('success', 'Subscription canceled successfully.');
-        } else {
-            return redirect()->back()->withErrors('Subscription not found or already canceled.');
+            // Check if the database update was successful
+            if ($updated) {
+                return redirect()->back()->with('success', 'Subscription canceled successfully.');
+            } else {
+                return redirect()->back()->withErrors('Failed to update subscription status in the database.');
+            }
         }
+
+        return redirect()->back()->withErrors('Subscription not found or already canceled.');
     }
 
     public function resumeSubscription($subscription_id)
@@ -129,19 +127,27 @@ class GoogleLoginController extends Controller
         // Set your Stripe secret key
         \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
-        // Check if the subscription ID exists
-        $subscription = StripeSubscription::retrieve($subscription_id);
+        // Retrieve the subscription from Stripe
+        $subscription = \Stripe\Subscription::retrieve($subscription_id);
 
-        // If subscription is found and it was set to cancel at the end of the period
-        if ($subscription && $subscription->cancel_at_period_end == true) {
-            // Reactivate the subscription by setting `cancel_at_period_end` to false
+        // Check if the subscription exists and is canceling at the period end
+        if ($subscription && $subscription->cancel_at_period_end) {
+            // Reactivate the subscription by setting cancel_at_period_end to false
             $subscription->cancel_at_period_end = false;
             $subscription->save();
 
-            return redirect()->back()->with('success', 'Subscription reactivated successfully.');
-        } else {
-            return redirect()->back()->withErrors('Subscription not found or is not canceling.');
+            // Optionally update the subscription status in your database
+            $updated = StripeSubscription::where('stripe_subscription_id', $subscription_id)->update(['status' => 'active']);
+
+            // Check if the database update was successful
+            if ($updated) {
+                return redirect()->back()->with('success', 'Subscription reactivated successfully.');
+            } else {
+                return redirect()->back()->withErrors('Failed to update subscription status in the database.');
+            }
         }
+
+        return redirect()->back()->withErrors('Subscription not found or not canceling.');
     }
 
     public function handleWebhook(Request $request)
@@ -154,39 +160,47 @@ class GoogleLoginController extends Controller
         $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
         $endpoint_secret = env('STRIPE_WEBHOOK_SECRET');
 
-        // Check if the signature header exists and payload is not empty
+        // Check if the payload or signature header is missing
         if (!$payload || !$sig_header) {
+            \Log::error('Invalid webhook payload or missing signature.');
             return response()->json(['error' => 'Invalid webhook payload or missing signature.'], 400);
         }
 
         // Verify the webhook signature manually
         $event = Webhook::constructEvent($payload, $sig_header, $endpoint_secret);
 
-        // If the event is verified and type is 'checkout.session.completed'
+        // Check if event is valid
         if ($event && $event->type === 'checkout.session.completed') {
             $session = $event->data->object;
 
-            // Ensure user is authenticated before proceeding
+            // Ensure the user is authenticated
             if (Auth::check()) {
                 // Save subscription details to the database
-                $subscription = new Subscription();
-                $subscription->user_id = Auth::user()->id;
-                $subscription->stripe_subscription_id = $session->subscription;
-                $subscription->status = 'active';
-                $subscription->save();
+                $subscription = new Subscription([
+                    'user_id' => Auth::user()->id,
+                    'stripe_subscription_id' => $session->subscription,
+                    'status' => 'active'
+                ]);
+                
+                // Save the subscription and check for success
+                if ($subscription->save()) {
+                    // Update the user's subscription status
+                    $user = Auth::user();
+                    $user->is_subscribed = true;
+                    $user->save();
 
-                // Optional: Update the user's subscription status
-                $user = Auth::user();
-                $user->is_subscribed = true;
-                $user->save();
-
-                return response()->json(['message' => 'Subscription successful.']);
+                    return response()->json(['message' => 'Subscription successful.']);
+                } else {
+                    \Log::error('Failed to save subscription to the database.');
+                    return response()->json(['error' => 'Failed to save subscription.'], 500);
+                }
             } else {
+                \Log::error('User not authenticated.');
                 return response()->json(['error' => 'User not authenticated.'], 401);
             }
         }
 
-        // Return success response if everything was handled correctly
+        // Return success response
         return response()->json(['status' => 'success'], 200);
     }
 

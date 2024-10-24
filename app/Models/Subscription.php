@@ -2,20 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Subscription extends Model
 {
-    use HasFactory;
+    protected $table = 'subscriptions'; // Make sure this is correct
 
     protected $fillable = [
-        'user_id',
-        'stripe_subscription_id',
-        'status',
+        'user_id', 'stripe_subscription_id', 'status'
     ];
 
-    // Define the relationship with the User model
+    // Add any relationships if needed
     public function user()
     {
         return $this->belongsTo(User::class);
