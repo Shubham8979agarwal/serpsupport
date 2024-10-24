@@ -1,0 +1,48 @@
+/*start styles*/
+.accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.accordion__item {
+    border: 1px solid #e5f3fa;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.accordion__header {
+    padding: 20px 25px;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+}
+
+.accordion__header::after {
+    content: '';
+    background: url(https://www.svgrepo.com/show/357035/angle-down.svg) no-repeat center;
+    width: 20px;
+    height: 20px;
+    transition: .4s;
+    display: inline-block;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    z-index: 1;
+}
+
+.accordion__header.active {
+    background: #e5f3fa;
+}
+
+.accordion__header.active::after {
+    transform: rotateX(180deg);
+}
+
+.accordion__item .accordion__content {
+    padding: 0 25px;
+    max-height: 0;
+    transition: .5s;
+    overflow: hidden;
+}
