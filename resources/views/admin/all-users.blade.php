@@ -1,4 +1,11 @@
 @include('admin.common.header')
+<?php
+echo "<pre>";
+print_r($allusers)
+echo "<br>";
+print_r($subscriptions);
+echo "</pre>";
+?>
 <div class="container">
    <div class="page-inner">
       <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2">

@@ -63,7 +63,8 @@ class AdminAuthController extends Controller
     }
 
     public function all_users(){
-       $data['allusers'] = DB::table('users')->get(); 
+       $data['allusers'] = DB::table('users')->get();
+       $data['subscriptions'] =  DB::table('subscriptions')->get();
        return view('admin.all-users',$data);   
     }
 
