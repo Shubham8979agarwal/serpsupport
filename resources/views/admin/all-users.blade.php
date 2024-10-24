@@ -1,7 +1,7 @@
 @include('admin.common.header')
 <?php
 echo "<pre>";
-print_r($allusers)
+print_r($allusers);
 echo "<br>";
 print_r($subscriptions);
 echo "</pre>";
